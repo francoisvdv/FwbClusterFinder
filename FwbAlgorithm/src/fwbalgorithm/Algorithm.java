@@ -14,4 +14,11 @@ public abstract class Algorithm
 	}
 	
 	public abstract void run();
+	public final void printPoints()
+	{
+		for(Point p : points)
+		{
+			System.out.println(p.getX() + " "  + p.getY() + " " + p.getCluster());
+		}
+	}
 }

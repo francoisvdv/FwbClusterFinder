@@ -14,7 +14,8 @@ public final class Program
 			return;
 		}
 		
-		Algorithm algo1 = new Algorithm1(ip.getMinimumClusters(), ip.getMaximumClusters(), ip.getPoints());
+		Algorithm algo1 = new RandomClusterAlgorithm(ip.getMinimumClusters(), ip.getMaximumClusters(), ip.getPoints());
 		algo1.run();
+		algo1.printPoints();
 	}
 }

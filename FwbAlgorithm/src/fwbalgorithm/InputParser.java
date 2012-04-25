@@ -4,9 +4,9 @@ import java.util.Scanner;
 
 public class InputParser
 {
-	int minimumClusters;
-	int maximumClusters;
-	Point[] points;
+	private int minimumClusters;
+	private int maximumClusters;
+	private Point[] points;
 	
 	public int getMinimumClusters()
 	{
