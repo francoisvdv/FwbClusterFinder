@@ -1,5 +1,3 @@
-package fwbalgorithm;
-
 public abstract class Algorithm
 {
 	protected int minimumClusters;

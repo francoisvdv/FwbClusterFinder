@@ -1,5 +1,3 @@
-package fwbalgorithm;
-
 public final class Program
 {
 	/**

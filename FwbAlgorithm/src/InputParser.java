@@ -1,12 +1,17 @@
-package fwbalgorithm;
-
 import java.util.Scanner;
 
 public class InputParser
 {
-	private int minimumClusters;
-	private int maximumClusters;
-	private Point[] points;
+	int minimumClusters;
+	int maximumClusters;
+	Point[] points;
+	
+	Scanner inputScanner;
+	
+	public InputParser()
+	{
+		inputScanner = new Scanner(System.in);
+	}
 	
 	public int getMinimumClusters()
 	{
@@ -27,7 +32,10 @@ public class InputParser
 	}
 	boolean parseInputClusters()
 	{
-		String line = new Scanner(System.in).nextLine();
+		if(!inputScanner.hasNextLine())
+			return false;
+		
+		String line = inputScanner.nextLine();
 		Scanner scanner = new Scanner(line);
 		
 		String s = scanner.hasNext() ? scanner.next() : "";
@@ -64,7 +72,9 @@ public class InputParser
 	}
 	boolean parseInputPoints()
 	{
-		Scanner inputScanner = new Scanner(System.in);
+		if(!inputScanner.hasNextLine())
+			return false;
+		
 		Scanner lineScanner = new Scanner(inputScanner.nextLine());
 
 		int pointCount = lineScanner.hasNextInt() ? lineScanner.nextInt() : 0;
@@ -79,6 +89,9 @@ public class InputParser
 		
 		for(int i = 0; i < points.length; i++)
 		{
+			if(!inputScanner.hasNextLine())
+				return false;
+			
 			lineScanner = new Scanner(inputScanner.nextLine());
 			
 			if(!lineScanner.hasNextInt())

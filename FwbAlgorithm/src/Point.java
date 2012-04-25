@@ -1,5 +1,3 @@
-package fwbalgorithm;
-
 public class Point
 {
 	int x;

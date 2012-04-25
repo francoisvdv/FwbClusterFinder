@@ -1,5 +1,3 @@
-package fwbalgorithm;
-
 import java.util.Random;
 
 public class RandomClusterAlgorithm extends Algorithm
@@ -17,7 +15,7 @@ public class RandomClusterAlgorithm extends Algorithm
 		
 		for(Point p : points)
 		{
-			p.cluster = random.nextInt(5);
+			p.cluster = random.nextInt(maximumClusters);
 		}
 	}
 }
