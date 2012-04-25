@@ -7,6 +7,14 @@ public final class Program
 	 */
 	public static void main(String[] args)
 	{
-		System.out.println("Test");
+		InputParser ip = new InputParser();
+		if(!ip.parseInput())
+		{
+			System.out.println("Invalid input");
+			return;
+		}
+		
+		Algorithm algo1 = new Algorithm1(ip.getMinimumClusters(), ip.getMaximumClusters(), ip.getPoints());
+		algo1.run();
 	}
 }
