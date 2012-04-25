@@ -13,7 +13,7 @@ public final class Program
 			System.out.println("Invalid input");
 			return;
 		}
-		
+
 		Algorithm algo1 = new RandomClusterAlgorithm(ip.getMinimumClusters(), ip.getMaximumClusters(), ip.getPoints());
 		algo1.run();
 		algo1.printPoints();

@@ -25,7 +25,7 @@ public class InputParser
 	{
 		return parseInputClusters() && parseInputPoints();
 	}
-	public boolean parseInputClusters()
+	boolean parseInputClusters()
 	{
 		String line = new Scanner(System.in).nextLine();
 		Scanner scanner = new Scanner(line);
@@ -62,7 +62,7 @@ public class InputParser
 
 		return true;
 	}
-	public boolean parseInputPoints()
+	boolean parseInputPoints()
 	{
 		Scanner inputScanner = new Scanner(System.in);
 		Scanner lineScanner = new Scanner(inputScanner.nextLine());
@@ -93,5 +93,4 @@ public class InputParser
 		
 		return true;
 	}
-
 }
