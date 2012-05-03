@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<session version="1.0">
-<refactoring comment="Delete resource &apos;FwbAlgorithm&apos;" deleteContents="false" description="Delete resource &apos;FwbAlgorithm&apos;" element1="/FwbAlgorithm" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="1" stamp="1335871911781"/>
-</session>
