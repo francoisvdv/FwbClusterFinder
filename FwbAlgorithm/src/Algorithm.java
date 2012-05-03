@@ -16,7 +16,7 @@ public abstract class Algorithm
 	{
 		for(Point p : points)
 		{
-			System.out.println(p.getX() + " "  + p.getY() + " " + p.getCluster());
+			System.out.println(p.x + " "  + p.y + " " + p.cluster);
 		}
 	}
 }
