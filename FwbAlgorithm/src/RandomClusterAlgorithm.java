@@ -15,7 +15,7 @@ public class RandomClusterAlgorithm extends Algorithm
 		
 		for(Point p : points)
 		{
-			p.cluster = new Cluster(random.nextInt(maximumClusters));
+			p.setCluster(new Cluster(random.nextInt(maximumClusters)));
 		}
 	}
 }
