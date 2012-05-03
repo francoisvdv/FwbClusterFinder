@@ -2,7 +2,7 @@ public class Point
 {
 	int x;
 	int y;
-	int cluster;
+	Cluster cluster;
 	
 	public Point(int x, int y)
 	{
