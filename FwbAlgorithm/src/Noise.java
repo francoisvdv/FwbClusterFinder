@@ -1,8 +1,18 @@
 public class Noise extends PointCategory
 {
-	@Override
-	public String toString()
+	private static Noise instance = null;
+	
+	private Noise() //singleton
 	{
-		return Integer.toString(0);
+		super(false);
+		index = 0;
+	}
+	
+	public static Noise getInstance() //singleton
+	{
+		if(instance == null)
+			instance = new Noise();
+		
+		return instance;
 	}
 }

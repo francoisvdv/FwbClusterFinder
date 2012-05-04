@@ -41,19 +41,19 @@ public class InputParser
 		String s = scanner.hasNext() ? scanner.next() : "";
 		if(!s.equals("find"))
 			return false;
-
-		int numberOfClusters = scanner.hasNextInt() ? scanner.nextInt() : 0;
-		if(numberOfClusters == 0)
+		
+		if(!scanner.hasNextInt())
 			return false;
+		int numberOfClusters = scanner.nextInt();
 		
 		s = scanner.hasNext() ? scanner.next() : "";
 		if(s.equals("to"))
 		{
 			minimumClusters = numberOfClusters;
 			
-			numberOfClusters = scanner.hasNextInt() ? scanner.nextInt() : 0;
-			if(numberOfClusters == 0)
+			if(!scanner.hasNextInt())
 				return false;
+			numberOfClusters = scanner.nextInt();
 			
 			maximumClusters = numberOfClusters;
 			
@@ -76,10 +76,10 @@ public class InputParser
 			return false;
 		
 		Scanner lineScanner = new Scanner(inputScanner.nextLine());
-
-		int pointCount = lineScanner.hasNextInt() ? lineScanner.nextInt() : 0;
-		if(pointCount == 0)
+		
+		if(!lineScanner.hasNextInt())
 			return false;
+		int pointCount = lineScanner.nextInt();
 
 		points = new Point[pointCount];
 		

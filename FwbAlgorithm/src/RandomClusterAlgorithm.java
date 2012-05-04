@@ -17,13 +17,16 @@ public class RandomClusterAlgorithm extends Algorithm
 			int index = random.nextInt(maximumClusters);
 			if(index == 0)
 			{
-				field.setNoise(p);
+				p.assignToPointCategory(field.getNoise());
 			}
 			else
 			{
-				Cluster c = field.createCluster();
-				c.index = index;
-				field.setCluster(p, c);
+				PointCategory c;
+				c = field.getPointCategoryWithIndex(index);
+				if(c == null)
+					c = field.createCluster();
+				
+				p.assignToPointCategory(c);
 			}
 		}
 	}
