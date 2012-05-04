@@ -76,6 +76,11 @@ public class TestProgram extends JFrame implements ActionListener
 	 */
 	public static void main(String[] args) 
 	{
+		try
+		{
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		}
+		catch(Exception x){}
 		// Francois lelijk
 		//JDialog.setDefaultLookAndFeelDecorated(true);
 		//JFrame.setDefaultLookAndFeelDecorated(true);
