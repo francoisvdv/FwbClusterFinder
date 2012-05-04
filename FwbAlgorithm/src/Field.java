@@ -33,7 +33,7 @@ public final class Field extends PointCollection
 		{
 			return this.clusters.get(index); // hoeft niet de goeie te zijn, dit is ff tijdelijk zo
 		}
-		catch(Exception e)
+		catch(IndexOutOfBoundsException e)
 		{
 			return null;
 		}

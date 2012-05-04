@@ -2,7 +2,7 @@ import javax.swing.JPanel;
 
 public class ContentPanel extends JPanel
 {
-	Point[] points;
+	Field field;
 	
 	public ContentPanel()
 	{
