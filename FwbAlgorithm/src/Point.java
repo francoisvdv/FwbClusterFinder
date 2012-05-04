@@ -35,8 +35,9 @@ public class Point
 	 * Should only be called by the Field class.
 	 * @param category
 	 */
-	public void setPointCategory(PointCategory category)
+	public void assignToPointCategory(PointCategory category)
 	{
-		pointCategory = category;
+		this.pointCategory = category;
+		category.add(this);
 	}
 }

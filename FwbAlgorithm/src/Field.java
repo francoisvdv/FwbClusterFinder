@@ -3,7 +3,7 @@ import java.util.ArrayList;
 public final class Field extends PointCollection
 {
 	private ArrayList<Cluster> clusters = new ArrayList<Cluster>();
-	private Noise noise = new Noise();
+	private Noise noise = Noise.getInstance();
 	
 	public Field(ArrayList<Point> points)
 	{
@@ -12,38 +12,38 @@ public final class Field extends PointCollection
 	
 	public Cluster createCluster()
 	{
-		Cluster c = new Cluster(0);
+		Cluster c = new Cluster();
 		clusters.add(c);
 		return c;
 	}
 	
-	public void setCluster(Point point, Cluster c)
+	public PointCollection getPointCollectionAtPosition(int x, int y)
 	{
-		removeFromOldCategory(point);
-		
-		point.setPointCategory(c);
-		c.add(point);
-	}
-	public void setNoise(Point point)
-	{
-		removeFromOldCategory(point);
-		
-		point.setPointCategory(noise);
-		noise.add(point);
+		return this.noise; // omdat KDE e.d. nog niet is toegepast is alles gewoon maar ff noise
 	}
 	
-	private void removeFromOldCategory(Point point)
+	public PointCategory getPointCategoryOfPoint(Point point)
 	{
-		if(point == null)
-			return;
-		
-		PointCategory category = point.getPointCategory();
-		
-		if(category == null)
-			return;
-		
-		category.remove(point);
-		if(category instanceof Cluster && category.size() == 0 && clusters.contains(category))
-			clusters.remove(category);
+		return point.getPointCategory();
 	}
+	
+	public PointCategory getPointCategoryWithIndex(int index)
+	{
+		try
+		{
+			return this.clusters.get(index); // hoeft niet de goeie te zijn, dit is ff tijdelijk zo
+		}
+		catch(Exception e)
+		{
+			return null;
+		}
+	}
+	
+	public Noise getNoise()
+	{
+		return this.noise;
+	}
+	
+	public void scale(int x, int y) { }
+	public void floodFill(int x, int y, Cluster cluster) { }
 }
