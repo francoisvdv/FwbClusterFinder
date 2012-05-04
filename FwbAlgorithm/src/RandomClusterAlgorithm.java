@@ -2,10 +2,9 @@ import java.util.Random;
 
 public class RandomClusterAlgorithm extends Algorithm
 {
-	public RandomClusterAlgorithm(int minimumClusters, int maximumClusters, Point[] points)
+	public RandomClusterAlgorithm(int minimumClusters, int maximumClusters, Field field)
 	{
-		super(minimumClusters, maximumClusters, points);
-		
+		super(minimumClusters, maximumClusters, field);
 	}
 
 	@Override
@@ -13,9 +12,19 @@ public class RandomClusterAlgorithm extends Algorithm
 	{
 		Random random = new Random();
 		
-		for(Point p : points)
+		for(Point p : field)
 		{
-			p.setCluster(new Cluster(random.nextInt(maximumClusters)));
+			int index = random.nextInt(maximumClusters);
+			if(index == 0)
+			{
+				field.setNoise(p);
+			}
+			else
+			{
+				Cluster c = field.createCluster();
+				c.index = index;
+				field.setCluster(p, c);
+			}
 		}
 	}
 }

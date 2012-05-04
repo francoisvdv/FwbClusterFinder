@@ -2,22 +2,22 @@ public abstract class Algorithm
 {
 	protected int minimumClusters;
 	protected int maximumClusters;
-	protected Point[] points;
+	protected Field field;
 	
-	public Algorithm(int minimumClusters, int maximumClusters, Point[] points)
+	public Algorithm(int minimumClusters, int maximumClusters, Field field)
 	{
 		this.minimumClusters = minimumClusters;
 		this.maximumClusters = maximumClusters;
-		this.points = points;
+		this.field = field;
 	}
 	
 	public abstract void run();
 	
 	public final void printPoints()
 	{
-		for(Point p : points)
+		for(Point p : field)
 		{
-			System.out.println(p.getX() + " "  + p.getY() + " " + p.getCluster());
+			System.out.println(p.getX() + " "  + p.getY() + " " + p.getPointCategory().toString());
 		}
 	}
 }
