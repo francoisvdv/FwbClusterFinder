@@ -2,7 +2,7 @@ public class Point
 {
 	private int x;
 	private int y;
-	private Cluster cluster;
+	private PointCategory pointCategory;
 	
 	public Point(int x, int y)
 	{
@@ -26,12 +26,17 @@ public class Point
 	{
 		this.y = y;
 	}
-	public Cluster getCluster()
+	
+	public PointCategory getPointCategory()
 	{
-		return cluster;
+		return pointCategory;
 	}
-	public void setCluster(Cluster cluster)
+	/**
+	 * Should only be called by the Field class.
+	 * @param category
+	 */
+	public void setPointCategory(PointCategory category)
 	{
-		this.cluster = cluster;
+		pointCategory = category;
 	}
 }
