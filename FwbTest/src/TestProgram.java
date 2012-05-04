@@ -8,7 +8,7 @@ public class TestProgram extends JFrame implements ActionListener
 	
 	private static final long serialVersionUID = 6814435897208431145L;
 	
-	JPanel panel;
+	ContentPanel panel;
 	JMenuBar menu;
 	JMenu menu_generate, menu_view, menu_cluster;
 	JMenuItem menuitem_noise, menuitem_save, menuitem_open, menuitem_circel, menuitem_square;
@@ -24,11 +24,12 @@ public class TestProgram extends JFrame implements ActionListener
 		int y = (int) tk.getScreenSize().getHeight() - 100;  
 		this.setSize(x, y);
 		
-		// Close operation
+		// Some settings
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setTitle("Friends With Benefits - Test program");
 
 		// Set the panel
-		panel = new JPanel();
+		panel = new ContentPanel();
 		this.setContentPane(panel);
 		
 		// Menuknopje "Generate"
@@ -75,7 +76,9 @@ public class TestProgram extends JFrame implements ActionListener
 	 */
 	public static void main(String[] args) 
 	{
-		JFrame.setDefaultLookAndFeelDecorated(true);
+		// Francois lelijk
+		//JDialog.setDefaultLookAndFeelDecorated(true);
+		//JFrame.setDefaultLookAndFeelDecorated(true);
 		new TestProgram().start();
 	}
 	
