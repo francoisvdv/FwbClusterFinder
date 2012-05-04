@@ -46,6 +46,7 @@ public class TestProgram extends JFrame implements ActionListener
 		menu_generate.add(new JSeparator());
 		
 		menuitem_save = new JMenuItem("Save");
+		menuitem_save.addActionListener(this);
 		menu_generate.add(menuitem_save);
 		
 		// Menuknopje "View"	
@@ -84,10 +85,26 @@ public class TestProgram extends JFrame implements ActionListener
 		{
 			JFileChooser chooser = new JFileChooser();
 			chooser.setAcceptAllFileFilterUsed(false);
-			chooser.setFileFilter(new InputFileFilter());
+			chooser.setFileFilter(new InputFileFilter(false));
 			int returnValue = chooser.showOpenDialog(this);
-		    if(returnValue == JFileChooser.APPROVE_OPTION) {
-		       System.out.println(chooser.getSelectedFile().getName());
+			if(returnValue == JFileChooser.APPROVE_OPTION) 
+			{
+				boolean approved = ((InputFileFilter) chooser.getFileFilter())
+						.isFileApproved(chooser.getSelectedFile());
+				System.out.println(approved);
+			}
+		}
+		else if(e.getSource() == menuitem_save)
+		{
+			JFileChooser chooser = new JFileChooser();
+			chooser.setAcceptAllFileFilterUsed(false);
+			chooser.setFileFilter(new InputFileFilter(true));
+			int returnValue = chooser.showSaveDialog(this);
+			if(returnValue == JFileChooser.APPROVE_OPTION) 
+			{
+				boolean approved = ((InputFileFilter) chooser.getFileFilter())
+						.isFileApproved(chooser.getSelectedFile());
+				System.out.println(approved);
 			}
 		}
 	}

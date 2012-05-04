@@ -4,7 +4,32 @@ import javax.swing.filechooser.FileFilter;
 
 public class InputFileFilter extends FileFilter 
 {
- 
+	
+	private boolean save;
+	
+	public InputFileFilter(boolean save)
+	{
+		this.save = save;
+	}
+	
+	public boolean isFileApproved(File f)
+	{
+		String ext = Utils.getExtension(f);
+		if(!save)
+		{
+			if(ext.equals(Utils.output))
+			{
+				return true;
+			}
+		}
+		if(ext.equals(Utils.input)) 
+        {
+        	return true;
+        }
+		
+		return false;
+	}
+	
 	@Override
     public boolean accept(File f) 
     {
@@ -16,13 +41,16 @@ public class InputFileFilter extends FileFilter
         String extension = Utils.getExtension(f);
         if(extension != null) 
         {
-            if(extension.equals(Utils.output) || extension.equals(Utils.input)) 
+        	if(!save)
+        	{
+        		if(extension.equals(Utils.output))
+        		{
+        			return true;
+        		}
+        	}
+            if(extension.equals(Utils.input)) 
             {
             	return true;
-            }
-            else 
-            {
-                return false;
             }
         }
  
@@ -30,7 +58,12 @@ public class InputFileFilter extends FileFilter
     }
  
     @Override
-    public String getDescription() {
+    public String getDescription() 
+    {
+    	if(save)
+    	{
+    		return "Input files (.fwbi)";
+    	}
         return "Input and ouput files (.fwbi & .fwbo)";
     }
 }
