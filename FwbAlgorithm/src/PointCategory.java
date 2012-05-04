@@ -9,7 +9,7 @@ public abstract class PointCategory extends PointCollection
 	 */
 	public PointCategory()
 	{
-		this.index = ++lastIndex;
+		this(true);
 	}
 
 	public PointCategory(boolean inc)

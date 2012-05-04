@@ -22,7 +22,8 @@ public class RandomClusterAlgorithm extends Algorithm
 			else
 			{
 				PointCategory c;
-				c = field.getPointCategoryWithIndex(index);
+
+				c = field.getPointCategoryWithIndex(index - 1);
 				if(c == null)
 					c = field.createCluster();
 				
