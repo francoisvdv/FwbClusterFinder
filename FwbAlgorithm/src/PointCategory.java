@@ -1,5 +1,6 @@
 public abstract class PointCategory extends PointCollection
 {
+	private static final long serialVersionUID = -2596019949223210809L;
 	protected static int lastIndex = 0;
 	protected int index = 0;
 	
