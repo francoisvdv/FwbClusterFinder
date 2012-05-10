@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.ListIterator;
 
 public final class Field extends PointCollection
 {
@@ -45,5 +46,44 @@ public final class Field extends PointCollection
 	}
 	
 	public void scale(int x, int y) { }
-	public void floodFill(int x, int y, Cluster cluster) { }
+	
+	/**
+	 * Start assigning every point to a cluster
+	 * 
+	 * @pre there are no clusters yet
+	 * @post all clusters are filled
+	 */
+	public void startAssigningClusters()
+	{
+		int step = 1000000000/this.size();
+		ListIterator<Point> iterator = this.listIterator();
+		while(iterator.hasNext())
+		{
+			Point point = iterator.next();
+			if(point.getPointCategory() == null){
+				floodFill(point.getX(), point.getY(), step);
+			}
+		}
+	}
+	
+	public void floodFill(int x, int y, int step) 
+	{ 
+		/*
+		 * 1. check of deze coördinaten al in een cluster(-lijst) zitten
+		 * 1.a ja: simpel toevoegen.
+		 * 1.b nee: nieuwe cluster maken, floodfill vanuit deze coördinaten met "kleur" cluster
+		 */
+		ArrayList<java.awt.Point> a_cluster = new ArrayList<java.awt.Point>();
+		
+		floodFill(x, y, step, a_cluster);
+		
+		Cluster cluster = this.createCluster();
+		
+		
+	}
+	
+	public void floodFill(int x, int y, int step, ArrayList<java.awt.Point> some_cluster) 
+	{ 
+		
+	}
 }
