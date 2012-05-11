@@ -3,6 +3,7 @@ import java.util.ListIterator;
 
 public final class Field extends PointCollection
 {
+	private static final long serialVersionUID = 7564875408935215437L;
 	private ArrayList<Cluster> clusters = new ArrayList<Cluster>();
 	private Noise noise = Noise.getInstance();
 	
@@ -48,42 +49,61 @@ public final class Field extends PointCollection
 	public void scale(int x, int y) { }
 	
 	/**
-	 * Start assigning every point to a cluster
+	 * Start assigning every point to a cluster.
 	 * 
 	 * @pre there are no clusters yet
 	 * @post all clusters are filled
+	 * @param threshold the threshold
 	 */
-	public void startAssigningClusters()
+	public void startAssigningClusters(Float threshold)
 	{
-		int step = 1000000000/this.size();
 		ListIterator<Point> iterator = this.listIterator();
 		while(iterator.hasNext())
 		{
 			Point point = iterator.next();
-			if(point.getPointCategory() == null){
-				floodFill(point.getX(), point.getY(), step);
+			if(point.getPointCategory() == null)
+			{
+				if(ScaledField.getCell(point).getDensity() < threshold)
+				{
+					point.assignToPointCategory(this.getNoise());
+				}
+				else
+				{
+					floodFill(point);
+				}
 			}
 		}
 	}
 	
-	public void floodFill(int x, int y, int step) 
+	/**
+	 * Begin the floodfill algorithm from a certain
+	 * point.
+	 * 
+	 * @param point the point from where to start the 
+	 * 			floodfill algorithm
+	 */
+	public void floodFill(Point point) 
 	{ 
-		/*
-		 * 1. check of deze coördinaten al in een cluster(-lijst) zitten
-		 * 1.a ja: simpel toevoegen.
-		 * 1.b nee: nieuwe cluster maken, floodfill vanuit deze coördinaten met "kleur" cluster
-		 */
-		ArrayList<java.awt.Point> a_cluster = new ArrayList<java.awt.Point>();
-		
-		floodFill(x, y, step, a_cluster);
-		
-		Cluster cluster = this.createCluster();
-		
-		
+		Cell cell = ScaledField.getCell(point);
+		if(cell.getCategory() == null)
+		{
+			Cluster cluster = this.createCluster();
+			floodFill(cell, cluster);
+		}
+		else
+		{
+			point.assignToPointCategory(cell.getCategory());
+		}		
 	}
 	
-	public void floodFill(int x, int y, int step, ArrayList<java.awt.Point> some_cluster) 
+	/**
+	 * Recursive floodfill method that assigns every
+	 * cell in a same cluster to that cluster.
+	 * @param cell the cell from where to start
+	 * @param cluster the cluster
+	 */
+	public void floodFill(Cell cell, Cluster cluster) 
 	{ 
-		
+		if()
 	}
 }
