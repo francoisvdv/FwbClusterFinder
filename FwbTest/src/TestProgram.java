@@ -13,6 +13,8 @@ public class TestProgram extends JFrame implements ActionListener
 	JMenu menu_generate, menu_view, menu_cluster;
 	JMenuItem menuitem_noise, menuitem_save, menuitem_open, menuitem_circel, menuitem_square;
 	
+	Field field;
+	
 	/**
 	 * Class constructor - make the JFrame ready
 	 */
@@ -27,14 +29,17 @@ public class TestProgram extends JFrame implements ActionListener
 		// Some settings
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setTitle("Friends With Benefits - Test program");
+		field = new Field();
 
 		// Set the panel
+		// TODO
 		panel = new ContentPanel();
 		this.setContentPane(panel);
 		
 		// Menuknopje "Generate"
 		menu_generate = new JMenu("Generate");
 		menuitem_noise = new JMenuItem("Noise");
+		menuitem_noise.addActionListener(this);
 		menu_generate.add(menuitem_noise);
 		
 		menu_cluster = new JMenu("Cluster");
@@ -115,7 +120,28 @@ public class TestProgram extends JFrame implements ActionListener
 				System.out.println(approved);
 			}
 		}
+		else if(e.getSource() == menuitem_noise)
+		{
+			String s = JOptionPane.showInternalInputDialog(panel, "How many points?", "Add noise", JOptionPane.QUESTION_MESSAGE);
+			if(s != null)
+			{
+				int number;
+				try
+				{
+					number = Integer.parseInt(s);
+				}
+				catch(Exception ex)
+				{
+					number = 0;
+				}
+				
+				for(int i = 0; i < number; i++)
+				{
+					int x = (int) Math.round(Math.random() * 1000000000);
+					// TODO indexOF
+				}
+			}
+		}
 	}
 
 }
-

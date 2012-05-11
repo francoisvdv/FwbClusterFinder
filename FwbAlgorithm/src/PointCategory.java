@@ -19,6 +19,8 @@ public abstract class PointCategory extends PointCollection
 			this.index = ++lastIndex;
 	}
 	
+	abstract int getNumber();
+	
 	@Override
 	public String toString()
 	{
