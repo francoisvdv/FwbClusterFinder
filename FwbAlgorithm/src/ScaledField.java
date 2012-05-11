@@ -35,7 +35,7 @@ public class ScaledField
 		return cell;
 	}
 	
-	public static Cell getCell(Point point)
+	public Cell getCell(Point point)
 	{
 		return getCell(point.getX(), point.getY());
 	}

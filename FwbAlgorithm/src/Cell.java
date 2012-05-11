@@ -41,11 +41,6 @@ public class Cell
 		return y2;
 	}
 	
-	public Float getDensity()
-	{
-		return null;
-	}
-	
 	public PointCategory getCategory()
 	{
 		return category;
