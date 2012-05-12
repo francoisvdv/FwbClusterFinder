@@ -7,6 +7,7 @@ public final class Field extends PointCollection
 	private ArrayList<Cluster> clusters = new ArrayList<Cluster>();
 	private Noise noise = Noise.getInstance();
 	private Float threshold;
+	private ScaledField scaledField; // TODO
 	
 	public Field(){
 		super();
@@ -59,10 +60,11 @@ public final class Field extends PointCollection
 	 */
 	public void generateOutput()
 	{
-		ListIterator<Point> iterator = this.listIterator();
-		while(iterator.hasNext())
+		// toArray() is much faster than listIterator()
+		Object[] obj = this.toArray();
+		for(int i = 0; i < obj.length; i++)
 		{
-			Point point = iterator.next();
+			Point point = (Point) obj[i];
 			System.out.println(
 					point.getX() +
 					" " +
@@ -83,13 +85,14 @@ public final class Field extends PointCollection
 	{
 		this.threshold = threshold;
 		
-		ListIterator<Point> iterator = this.listIterator();
-		while(iterator.hasNext())
+		// toArray() is much faster than listIterator()
+		Object[] obj = this.toArray();
+		for(int i = 0; i < obj.length; i++)
 		{
-			Point point = iterator.next();
+			Point point = (Point) obj[i];
 			if(point.getPointCategory() == null)
 			{
-				if(ScaledField.getCell(point).getDensity() < threshold)
+				if(scaledField.getCell(point).getDensity() < threshold)
 				{
 					point.assignToPointCategory(this.getNoise());
 				}
@@ -110,7 +113,7 @@ public final class Field extends PointCollection
 	 */
 	public void floodFill(Point point) 
 	{ 
-		Cell cell = ScaledField.getCell(point);
+		Cell cell = scaledField.getCell(point);
 		if(cell.getCategory() == null)
 		{
 			Cluster cluster = this.createCluster();
@@ -150,16 +153,16 @@ public final class Field extends PointCollection
 		cell.setCategory(cluster);
 		
 		// floodFill in 4 directions
-		floodFill(ScaledField.	// Up
+		floodFill(scaledField.	// Up
 				getCell(point.getX(), cell.getMinY() - 1), 
 				cluster, point);
-		floodFill(ScaledField.	// Right
+		floodFill(scaledField.	// Right
 				getCell(cell.getMaxX() + 1, point.getY()), 
 				cluster, point);
-		floodFill(ScaledField.	// Down
+		floodFill(scaledField.	// Down
 				getCell(point.getX(), cell.getMaxY() + 1), 
 				cluster, point);
-		floodFill(ScaledField.	// Left
+		floodFill(scaledField.	// Left
 				getCell(cell.getMinX() - 1, point.getY()), 
 				cluster, point);
 	}

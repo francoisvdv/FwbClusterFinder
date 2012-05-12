@@ -27,6 +27,16 @@ public class Point
 		this.y = y;
 	}
 	
+	public boolean compareTo(int x, int y)
+	{
+		if(this.x == x && this.y == y)
+		{
+			return true;
+		}
+		
+		return false;
+	}
+	
 	public PointCategory getPointCategory()
 	{
 		return pointCategory;
