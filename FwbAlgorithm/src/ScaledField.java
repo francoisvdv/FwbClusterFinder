@@ -1,3 +1,5 @@
+import java.util.LinkedList;
+
 public class ScaledField
 {
 	protected Cell[][] grid;
@@ -22,6 +24,37 @@ public class ScaledField
 											(int)Math.floor((y+1)*SCALE_Y));
 			}
 		}
+	}
+	
+	public Cell getCell(Point point)
+	{
+		return this.getCell(point.getX(), point.getY());
+	}
+	
+	// Moet nog ff gecheckt worden, kan zijn dat er aan de randen net iets niet goed zit.
+	public Cell[] getCellsCloseTo(Cell cell, float radius)
+	{
+		int r_x    = (int)Math.floor(radius/SCALE_X);
+		int r_y    = (int)Math.floor(radius/SCALE_Y);
+		int cell_x = (int)Math.floor(cell.getMiddleX()/SCALE_X);
+		int cell_y = (int)Math.floor(cell.getMiddleY()/SCALE_Y);
+		
+		LinkedList<Cell> closeCells = new LinkedList<Cell>();
+		
+		for(int x=cell_x-r_x; x<cell_x+r_x; x++)
+		{
+			for(int y=cell_y-r_y; y<cell_y+r_y; y++)
+			{
+				Cell c = this.getCell((int)(x*SCALE_X), (int)(y*SCALE_Y));
+				Float dist = Gonio.calcDistance(cell.getMiddleX(), cell.getMiddleY(), c.getMiddleX(), c.getMiddleY());
+				if(dist < radius)
+				{
+					closeCells.add(c);
+				}
+			}
+		}
+		
+		return (Cell[])closeCells.toArray();
 	}
 	
 	public Cell getCell(int x, int y)
