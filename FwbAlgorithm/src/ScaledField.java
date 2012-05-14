@@ -67,4 +67,9 @@ public class ScaledField
 		
 		return cell;
 	}
+	
+	public Cell getCell(Point point)
+	{
+		return getCell(point.getX(), point.getY());
+	}
 }
