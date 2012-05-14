@@ -48,6 +48,16 @@ public class Cell
 	{
 		this.density += increment;
 	}
+	
+	public int getMiddleX()
+	{
+		return (this.x1+this.x2)/2;
+	}
+	
+	public int getMiddleY()
+	{
+		return (this.y1+this.y2)/2;
+	}
 	/*
 	public void addPoint(Point p)
 	{
