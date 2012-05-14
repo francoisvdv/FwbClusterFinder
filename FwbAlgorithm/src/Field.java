@@ -53,6 +53,29 @@ public final class Field extends PointCollection
 		return this.noise;
 	}
 	
+	/**
+	 * 
+	 * @return a 4-element array with the extremes
+	 */
+	public Rectangle getBoundingRectangle()
+	{
+		Rectangle r = new Rectangle();
+		
+		for(Point p : this)
+		{
+			if(p.getX() < r.x)
+				r.x = p.getX();
+			else if(p.getX() > r.x + r.width)
+				r.width = p.getX() - r.x;
+			else if(p.getY() < r.y)
+				r.y = p.getY();
+			else if(p.getY() > r.y + r.height)
+				r.y = p.getY() - r.y;
+		}
+		
+		return r;
+	}
+	
 	public void scale(int x, int y) { }
 	
 	/**
