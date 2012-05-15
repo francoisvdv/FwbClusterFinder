@@ -33,7 +33,7 @@ public class TestProgram extends JFrame implements ActionListener
 		field = new Field();
 
 		// Set the panel
-		// TODO
+		// TODO		
 		panel = new ContentPanel();
 		this.setContentPane(panel);
 		

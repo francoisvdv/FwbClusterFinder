@@ -55,7 +55,7 @@ public final class Field extends PointCollection
 	
 	/**
 	 * 
-	 * @return a 4-element array with the extremes
+	 * @return a rectangle with the bounds of the field.
 	 */
 	public Rectangle getBoundingRectangle()
 	{
