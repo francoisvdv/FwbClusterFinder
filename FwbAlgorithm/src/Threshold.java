@@ -1,6 +1,6 @@
 import java.util.ArrayList;
 
-public class TThreshold
+public class Threshold
 {
 	public static class KDE
 	{
