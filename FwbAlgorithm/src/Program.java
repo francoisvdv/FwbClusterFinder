@@ -8,7 +8,7 @@ public final class Program
 	 */
 	public static void main(String[] args)
 	{
-		InputParser ip = new InputParser();
+		InputParser ip = new InputParser(System.in);
 		if(!ip.parseInput())
 		{
 			System.out.println("Invalid input");

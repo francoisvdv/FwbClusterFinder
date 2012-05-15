@@ -1,5 +1,10 @@
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.ListIterator;
 
 import javax.swing.*;
@@ -13,6 +18,8 @@ public class TestProgram extends JFrame implements ActionListener
 	JMenuBar menu;
 	JMenu menu_generate, menu_view, menu_cluster;
 	JMenuItem menuitem_noise, menuitem_save, menuitem_open, menuitem_circel, menuitem_square;
+	
+	File loadedFile;
 	
 	Field field;
 	
@@ -94,12 +101,15 @@ public class TestProgram extends JFrame implements ActionListener
 	}
 	
 	@Override
-	public void actionPerformed(ActionEvent e){
+	public void actionPerformed(ActionEvent e)
+	{
 		if(e.getSource() == menuitem_open)
 		{
 			JFileChooser chooser = new JFileChooser();
 			chooser.setAcceptAllFileFilterUsed(false);
 			chooser.setFileFilter(new InputFileFilter(false));
+			if(loadedFile != null)
+				chooser.setSelectedFile(loadedFile);
 			int returnValue = chooser.showOpenDialog(this);
 			if(returnValue == JFileChooser.APPROVE_OPTION) 
 			{
@@ -107,6 +117,21 @@ public class TestProgram extends JFrame implements ActionListener
 						.isFileApproved(chooser.getSelectedFile());
 				System.out.println(approved);
 			}
+			
+			try
+			{
+				loadedFile = chooser.getSelectedFile();
+				FileInputStream fis = new FileInputStream(loadedFile);
+				InputParser ip = new InputParser(fis);
+				if(ip.parseInput())
+					field.addAll(new ArrayList<Point>(Arrays.asList(ip.getPoints())));
+			} catch (FileNotFoundException e1)
+			{
+				// TODO Auto-generated catch block
+				System.out.println("Error: " + e1.toString());
+			}
+			
+			updateContentPanel();
 		}
 		else if(e.getSource() == menuitem_save)
 		{
@@ -136,8 +161,6 @@ public class TestProgram extends JFrame implements ActionListener
 					number = 0;
 				}
 				
-				long time = System.currentTimeMillis();
-				
 				for(int i = 0; i < number; i++)
 				{
 					
@@ -148,38 +171,6 @@ public class TestProgram extends JFrame implements ActionListener
 					while(busy)
 					{
 						y = (int) Math.round(Math.random() * 1000000000);
-						
-						// doesn't depend on clusters, but takes LOOOONNGGG time
-						// times:
-						// add 10.000  noise to an empty   field: 6187   millisec.
-						// add 10.000  noise to a  10.000  field: 17771  millisec.
-						// add 100.000 noise to an empty   field: >> 5 minutes launch terminated
-						//ListIterator<Point> iterator = field.listIterator();
-						//boolean inside = false;
-						//while(iterator.hasNext())
-						//{
-						//	Point point = iterator.next();
-						//	if(point.getX() == x && point.getY() == y)
-						//	{
-						//		inside = true;
-						//		break;
-						//	}
-						//}
-						//
-						//if(!inside)
-						//{
-						//	field.add(new Point(x, y));
-						//	busy = false;
-						//}
-						
-						
-						// doesn't depend on clusters
-						// times:
-						// add 10.000  noise to an empty   field: 1493   millisec.
-						// add 10.000  noise to a  10.000  field: 3652   millisec.
-						// add 100.000 noise to an empty   field: 97948 & 143442  millisec.
-						// add 100	   noise to a  100.000 field: 316   & 281     millisec.
-						// add 1.000   noise to a  100.100 field: 1435  & 1462    millisec.
 						boolean inside = false;
 						Object[] array = field.toArray();
 						for(int j = 0; j < field.size(); j++)
@@ -198,35 +189,14 @@ public class TestProgram extends JFrame implements ActionListener
 						}
 					}
 				}
-				
-				System.out.println("Took: "+ (System.currentTimeMillis() - time));
-				System.out.println(field.size());
-				
-				
-				time = System.currentTimeMillis();
-				Object[] obj = field.toArray();
-				//TOOK 2
-				System.out.println(obj.length);
-				int count = 0;
-				for(int i = 0; i < field.size(); i++)
-				{
-					((Point) obj[i]).compareTo(0, 0);
-				}
-				System.out.println(count);
-				System.out.println("Array Took: "+ (System.currentTimeMillis() - time));
-				
-				time = System.currentTimeMillis();
-				ListIterator<Point> it = field.listIterator();
-				count = 0;
-				// TOOK 14
-				while(it.hasNext())
-				{
-					it.next().compareTo(0, 0);
-				}
-				System.out.println(count);
-				System.out.println("Iterator Took: "+ (System.currentTimeMillis() - time));
 			}
+			
+			updateContentPanel();
 		}
 	}
 
+	public void updateContentPanel()
+	{
+		panel.setField(field);
+	}
 }
