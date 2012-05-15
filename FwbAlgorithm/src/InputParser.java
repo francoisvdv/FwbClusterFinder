@@ -1,3 +1,4 @@
+import java.io.InputStream;
 import java.util.Scanner;
 
 public class InputParser
@@ -8,9 +9,9 @@ public class InputParser
 	
 	Scanner inputScanner;
 	
-	public InputParser()
+	public InputParser(InputStream stream)
 	{
-		inputScanner = new Scanner(System.in);
+		inputScanner = new Scanner(stream);
 	}
 	
 	public int getMinimumClusters()

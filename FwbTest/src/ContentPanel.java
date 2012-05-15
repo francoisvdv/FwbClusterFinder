@@ -8,12 +8,19 @@ public class ContentPanel extends JPanel
 	Field field;
 	Rectangle bounding;
 	
+	int pointWidth = 4;
+	int pointHeight = 4;
 	float zoomFactor = 1;
 	
 	public ContentPanel()
 	{
+		super();
 	}
 	
+	public Field getField()
+	{
+		return field;
+	}
 	public void setField(Field field)
 	{
 		this.field = field;
@@ -27,13 +34,21 @@ public class ContentPanel extends JPanel
 		// TODO Auto-generated method stub
 		super.paintComponent(g1);
 		
+		if(field == null)
+			return;
+		
 		Graphics g = g1.create();
-		g.clearRect(0, 0, g.getClipBounds().width, g.getClipBounds().height);
 		g.setColor(Color.BLACK);
 		
 		for(Point p : field)
 		{
-			g.drawLine(p.getX(), p.getY(), p.getX(), p.getY());
+			System.out.println(bounding.getLeft() + " | " + bounding.getRight() + " | " + (bounding.getRight() - bounding.getLeft()));
+			System.out.println(bounding.getTop() + " | " + bounding.getBottom() + " | " + (bounding.getBottom() - bounding.getTop()));
+			
+			float x = (float)(p.getX() - bounding.x1) / (float)(bounding.x2 - bounding.x1);
+			float y = (float)(p.getY() - bounding.y1) / (float)(bounding.y2 - bounding.y1);
+
+			g.fillOval((int)(x * getWidth()) - pointWidth / 2, (int)(y * getHeight()) - pointHeight / 2, pointWidth, pointHeight);
 		}
 	}
 }

@@ -1,5 +1,9 @@
 import java.awt.*;
 import java.awt.event.*;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.ListIterator;
 
 import javax.swing.*;
@@ -33,7 +37,7 @@ public class TestProgram extends JFrame implements ActionListener
 		field = new Field();
 
 		// Set the panel
-		// TODO		
+		// TODO
 		panel = new ContentPanel();
 		this.setContentPane(panel);
 		
@@ -107,6 +111,21 @@ public class TestProgram extends JFrame implements ActionListener
 						.isFileApproved(chooser.getSelectedFile());
 				System.out.println(approved);
 			}
+			
+			
+			try
+			{
+				FileInputStream fis = new FileInputStream(chooser.getSelectedFile());
+				InputParser ip = new InputParser(fis);
+				if(ip.parseInput())
+					field = new Field(new ArrayList<Point>(Arrays.asList(ip.getPoints())));
+			} catch (FileNotFoundException e1)
+			{
+				// TODO Auto-generated catch block
+				System.out.println("Error: " + e1.toString());
+			}
+			
+			updateContentPanel();
 		}
 		else if(e.getSource() == menuitem_save)
 		{
@@ -225,8 +244,17 @@ public class TestProgram extends JFrame implements ActionListener
 				}
 				System.out.println(count);
 				System.out.println("Iterator Took: "+ (System.currentTimeMillis() - time));
+				
+				updateContentPanel();
 			}
 		}
 	}
 
+	public void updateContentPanel()
+	{
+		if(panel.getField() != field)
+			panel.setField(field);
+		
+		panel.repaint();
+	}
 }
