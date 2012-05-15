@@ -25,7 +25,7 @@ public class ContentPanel extends JPanel
 	{
 		this.field = field;
 		this.bounding = field.getBoundingRectangle();
-		invalidate();
+		repaint();
 	}
 	
 	@Override
@@ -37,18 +37,41 @@ public class ContentPanel extends JPanel
 		if(field == null)
 			return;
 		
+		int dimension = getWidth() > getHeight() ? getHeight() : getWidth();
+		
 		Graphics g = g1.create();
 		g.setColor(Color.BLACK);
-		
+
 		for(Point p : field)
 		{
-			System.out.println(bounding.getLeft() + " | " + bounding.getRight() + " | " + (bounding.getRight() - bounding.getLeft()));
-			System.out.println(bounding.getTop() + " | " + bounding.getBottom() + " | " + (bounding.getBottom() - bounding.getTop()));
-			
-			float x = (float)(p.getX() - bounding.x1) / (float)(bounding.x2 - bounding.x1);
-			float y = (float)(p.getY() - bounding.y1) / (float)(bounding.y2 - bounding.y1);
+			float relX = AbsoluteToRelativeX(p.getX());
+			float relY = AbsoluteToRelativeY(p.getY());
 
-			g.fillOval((int)(x * getWidth()) - pointWidth / 2, (int)(y * getHeight()) - pointHeight / 2, pointWidth, pointHeight);
+			int x = (int)(relX * dimension) + ((getWidth() - dimension) / 2) - (pointWidth / 2);
+			int y = (int)(relY * dimension) + ((getHeight() - dimension) / 2) - (pointHeight / 2);
+			
+			g.fillOval(x, y, pointWidth, pointHeight);
 		}
+	}
+	
+	/**
+	 * Get relative position on screen. E.g. you have leftmost point x=0 and the rightmost x=10.000, then
+	 * this function will return 0.5f for point at x=5.000.
+	 * @param x
+	 * @return
+	 */
+	public float AbsoluteToRelativeX(float x)
+	{
+		return (float)(x - bounding.x1) / (float)(bounding.x2 - bounding.x1);
+	}
+	/**
+	 * Get relative position on screen. E.g. you have leftmost point with y=0 and the rightmost with y=10.000, then
+	 * this function will return 0.5f for point at y=5.000.
+	 * @param x
+	 * @return
+	 */
+	public float AbsoluteToRelativeY(float y)
+	{
+		return (float)(y - bounding.y1) / (float)(bounding.y2 - bounding.y1);
 	}
 }

@@ -1,5 +1,6 @@
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -17,6 +18,8 @@ public class TestProgram extends JFrame implements ActionListener
 	JMenuBar menu;
 	JMenu menu_generate, menu_view, menu_cluster;
 	JMenuItem menuitem_noise, menuitem_save, menuitem_open, menuitem_circel, menuitem_square;
+	
+	File loadedFile;
 	
 	Field field;
 	
@@ -104,6 +107,8 @@ public class TestProgram extends JFrame implements ActionListener
 			JFileChooser chooser = new JFileChooser();
 			chooser.setAcceptAllFileFilterUsed(false);
 			chooser.setFileFilter(new InputFileFilter(false));
+			if(loadedFile != null)
+				chooser.setSelectedFile(loadedFile);
 			int returnValue = chooser.showOpenDialog(this);
 			if(returnValue == JFileChooser.APPROVE_OPTION) 
 			{
@@ -112,13 +117,13 @@ public class TestProgram extends JFrame implements ActionListener
 				System.out.println(approved);
 			}
 			
-			
 			try
 			{
-				FileInputStream fis = new FileInputStream(chooser.getSelectedFile());
+				loadedFile = chooser.getSelectedFile();
+				FileInputStream fis = new FileInputStream(loadedFile);
 				InputParser ip = new InputParser(fis);
 				if(ip.parseInput())
-					field = new Field(new ArrayList<Point>(Arrays.asList(ip.getPoints())));
+					field.addAll(new ArrayList<Point>(Arrays.asList(ip.getPoints())));
 			} catch (FileNotFoundException e1)
 			{
 				// TODO Auto-generated catch block
@@ -244,17 +249,14 @@ public class TestProgram extends JFrame implements ActionListener
 				}
 				System.out.println(count);
 				System.out.println("Iterator Took: "+ (System.currentTimeMillis() - time));
-				
-				updateContentPanel();
 			}
+			
+			updateContentPanel();
 		}
 	}
 
 	public void updateContentPanel()
 	{
-		if(panel.getField() != field)
-			panel.setField(field);
-		
-		panel.repaint();
+		panel.setField(field);
 	}
 }
