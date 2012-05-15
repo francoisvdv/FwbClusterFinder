@@ -9,7 +9,8 @@ public final class Field extends PointCollection
 	private Float threshold;
 	private ScaledField scaledField; // TODO
 	
-	public Field(){
+	public Field()
+	{
 		super();
 	}
 	
@@ -26,9 +27,9 @@ public final class Field extends PointCollection
 	}
 	
 	// TODO
-	public PointCollection getPointCollectionAtPosition(int x, int y)
+	public PointCategory getPointCategoryAtPosition(int x, int y)
 	{
-		return this.noise; // omdat KDE e.d. nog niet is toegepast is alles gewoon maar ff noise
+		return this.scaledField.getCell(x, y).getCategory();
 	}
 	
 	public PointCategory getPointCategoryOfPoint(Point point)
@@ -59,6 +60,7 @@ public final class Field extends PointCollection
 	 */
 	public Rectangle getBoundingRectangle()
 	{
+		//Huib, dinsdag 15-5 : dit returnt geen array en volgens mij klopt er iets niet aan r.height
 		Rectangle r = new Rectangle();
 		
 		for(Point p : this)
@@ -75,8 +77,6 @@ public final class Field extends PointCollection
 		
 		return r;
 	}
-	
-	public void scale(int x, int y) { }
 	
 	/**
 	 * Generate and print the output of the algorithm

@@ -26,11 +26,6 @@ public class ScaledField
 		}
 	}
 	
-	public Cell getCell(Point point)
-	{
-		return this.getCell(point.getX(), point.getY());
-	}
-	
 	// Moet nog ff gecheckt worden, kan zijn dat er aan de randen net iets niet goed zit.
 	public Cell[] getCellsCloseTo(Cell cell, float radius)
 	{
