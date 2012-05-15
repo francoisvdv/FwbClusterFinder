@@ -2,8 +2,8 @@ import java.io.File;
 
 public class Utils 
 {
-    public final static String input = "fwbi";
-    public final static String output = "fwbo";
+    public final static String input = "in";
+    public final static String output = "fwbout";
 
     /**
      * Get the extension of a file.

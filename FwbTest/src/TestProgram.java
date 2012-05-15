@@ -1,5 +1,11 @@
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.ListIterator;
 
 import javax.swing.*;
 
@@ -12,6 +18,8 @@ public class TestProgram extends JFrame implements ActionListener
 	JMenuBar menu;
 	JMenu menu_generate, menu_view, menu_cluster;
 	JMenuItem menuitem_noise, menuitem_save, menuitem_open, menuitem_circel, menuitem_square;
+	
+	File loadedFile;
 	
 	Field field;
 	
@@ -100,6 +108,8 @@ public class TestProgram extends JFrame implements ActionListener
 			JFileChooser chooser = new JFileChooser();
 			chooser.setAcceptAllFileFilterUsed(false);
 			chooser.setFileFilter(new InputFileFilter(false));
+			if(loadedFile != null)
+				chooser.setSelectedFile(loadedFile);
 			int returnValue = chooser.showOpenDialog(this);
 			if(returnValue == JFileChooser.APPROVE_OPTION) 
 			{
@@ -107,6 +117,21 @@ public class TestProgram extends JFrame implements ActionListener
 						.isFileApproved(chooser.getSelectedFile());
 				System.out.println(approved);
 			}
+			
+			try
+			{
+				loadedFile = chooser.getSelectedFile();
+				FileInputStream fis = new FileInputStream(loadedFile);
+				InputParser ip = new InputParser(fis);
+				if(ip.parseInput())
+					field.addAll(new ArrayList<Point>(Arrays.asList(ip.getPoints())));
+			} catch (FileNotFoundException e1)
+			{
+				// TODO Auto-generated catch block
+				System.out.println("Error: " + e1.toString());
+			}
+			
+			updateContentPanel();
 		}
 		else if(e.getSource() == menuitem_save)
 		{
@@ -165,7 +190,13 @@ public class TestProgram extends JFrame implements ActionListener
 					}
 				}
 			}
+			
+			updateContentPanel();
 		}
 	}
 
+	public void updateContentPanel()
+	{
+		panel.setField(field);
+	}
 }

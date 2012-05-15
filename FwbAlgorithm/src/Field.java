@@ -63,14 +63,23 @@ public final class Field extends PointCollection
 		
 		for(Point p : this)
 		{
-			if(p.getX() < r.x)
-				r.x = p.getX();
-			else if(p.getX() > r.x + r.width)
-				r.width = p.getX() - r.x;
-			else if(p.getY() < r.y)
-				r.y = p.getY();
-			else if(p.getY() > r.y + r.height)
-				r.y = p.getY() - r.y;
+			if(this.indexOf(p) == 0)
+			{
+				r.x1 = p.getX();
+				r.x2 = p.getX();
+				r.y1 = p.getY();
+				r.y2 = p.getY();
+			}
+			
+			if(p.getX() < r.x1)
+				r.x1 = p.getX();
+			else if(p.getX() > r.x2)
+				r.x2 = p.getX();
+			
+			if(p.getY() < r.y1)
+				r.y1 = p.getY();
+			else if(p.getY() > r.y2)
+				r.y2 = p.getY();
 		}
 		
 		return r;
