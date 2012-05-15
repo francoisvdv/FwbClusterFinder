@@ -1,9 +1,14 @@
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
-public class ContentPanel extends JPanel
+public class ContentPanel extends JPanel implements MouseListener, MouseWheelListener
 {
 	Field field;
 	Rectangle bounding;
@@ -15,6 +20,9 @@ public class ContentPanel extends JPanel
 	public ContentPanel()
 	{
 		super();
+		
+		addMouseListener(this);
+		addMouseWheelListener(this);
 	}
 	
 	public Field getField()
@@ -25,6 +33,7 @@ public class ContentPanel extends JPanel
 	{
 		this.field = field;
 		this.bounding = field.getBoundingRectangle();
+		
 		repaint();
 	}
 	
@@ -37,7 +46,7 @@ public class ContentPanel extends JPanel
 		if(field == null)
 			return;
 		
-		int dimension = getWidth() > getHeight() ? getHeight() : getWidth();
+		int dimension = (int)(zoomFactor * (getWidth() > getHeight() ? getHeight() : getWidth()));
 		
 		Graphics g = g1.create();
 		g.setColor(Color.BLACK);
@@ -73,5 +82,53 @@ public class ContentPanel extends JPanel
 	public float AbsoluteToRelativeY(float y)
 	{
 		return (float)(y - bounding.y1) / (float)(bounding.y2 - bounding.y1);
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseWheelMoved(MouseWheelEvent e)
+	{
+		// TODO Auto-generated method stub
+
+		if(e.getWheelRotation() > 0)
+			zoomFactor /= 2;
+		else if(e.getWheelRotation() < 0)
+			zoomFactor *= 2;
+
+		repaint();
 	}
 }
