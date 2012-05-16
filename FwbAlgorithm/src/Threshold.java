@@ -1,31 +1,21 @@
 import java.util.ArrayList;
 
+import com.sun.corba.se.impl.javax.rmi.CORBA.Util;
+
 public class Threshold
 {
-	public static class KDE
-	{
-		public static float getMaxDensity()
-		{
-			return 0.8f;
-		}
-		public static int getPointCountAboveThreshold(float threshold)
-		{
-			return 0;
-		}
-	}
-
 	int stepCount = 100; //TODO: veranderen door testen
 	
 	int previousNumberOfPoints;
 	int numberOfPoints;
 	float currentThreshold;
 	float maxThreshold;
-
+	
 	/**
 	 * Returns a Threshold value. Everything BELOW this threshold should be cut off (noise).
 	 * @return
 	 */
-	public float findThreshold()
+	public float findThreshold(KDE KDE)
 	{
 		//Tussen element 0 en 1 zit een switch, tussen element 2 en 3 een switch, etc.
 		ArrayList<Float> switches = new ArrayList<Float>();
@@ -33,9 +23,11 @@ public class Threshold
 		maxThreshold = KDE.getMaxDensity();
 		previousNumberOfPoints = 0;
 		
-		boolean inCluster = false;
+		boolean inCluster = false; //Variabele die aangeeft of we op het moment 'in' een cluster zitten
+		float step = maxThreshold / stepCount;
 		
-		float step = maxThreshold / (float)stepCount;
+		if(Utils.floatAlmostEquals(step, 0))
+			return 0;
 		
 		for(currentThreshold = maxThreshold; currentThreshold >= 0; currentThreshold -= step)
 		{

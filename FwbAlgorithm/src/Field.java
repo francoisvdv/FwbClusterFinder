@@ -1,13 +1,11 @@
 import java.util.ArrayList;
-import java.util.ListIterator;
 
 public final class Field extends PointCollection
 {
-	private static final long serialVersionUID = 7564875408935215437L;
 	private ArrayList<Cluster> clusters = new ArrayList<Cluster>();
 	private Noise noise = Noise.getInstance();
 	private Float threshold;
-	private ScaledField scaledField; // TODO
+	private ScaledField scaledField = null;
 	
 	public Field()
 	{
@@ -65,7 +63,6 @@ public final class Field extends PointCollection
 	 */
 	public Rectangle getBoundingRectangle()
 	{
-		//Huib, dinsdag 15-5 : dit returnt geen array en volgens mij klopt er iets niet aan r.height
 		Rectangle r = new Rectangle();
 		
 		for(Point p : this)
@@ -109,6 +106,11 @@ public final class Field extends PointCollection
 					" " +
 					point.getPointCategory().getNumber());
 		}
+	}
+	
+	public void setScaledField(ScaledField scaledField)
+	{
+		this.scaledField = scaledField;
 	}
 	
 	/**

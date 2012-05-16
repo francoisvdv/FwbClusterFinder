@@ -17,7 +17,7 @@ public abstract class Algorithm
 	{
 		for(Point p : field)
 		{
-			System.out.println(p.getX() + " "  + p.getY() + " " + p.getPointCategory().toString());
+			System.out.println(p.getX() + " "  + p.getY() + (p.getPointCategory() != null ? " " + p.getPointCategory().toString() : ""));
 		}
 	}
 }

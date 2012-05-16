@@ -1,10 +1,11 @@
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
-import java.awt.event.ActionEvent;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -12,12 +13,14 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-
-import com.sun.corba.se.impl.oa.poa.ActiveObjectMap.Key;
+import javax.swing.JScrollBar;
 
 public class ContentPanel extends JPanel implements MouseListener, MouseMotionListener, MouseWheelListener
 {
+	public static final int SELECT_NONE = 0;
+	public static final int SELECT_SQUARE = 1;
+	public static final int SELECT_CIRCLE = 2;
+	
 	Field field;
 	Rectangle bounding;
 	
@@ -40,6 +43,8 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
 		addMouseMotionListener(this);
 		addMouseWheelListener(this);
 
+		setLayout(new BorderLayout());
+		
 		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyEventDispatcher()
 		{
 			@Override
@@ -47,10 +52,10 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
 			{
 				// TODO Auto-generated method stub
 				keyCtrl = e.isControlDown();
-				//System.out.println(keyCtrl);
 				return false;
 			}
 		});
+
 	}
 	
 	public Field getField()
@@ -79,8 +84,9 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
 		Graphics g = g1.create();
 		g.setColor(Color.BLACK);
 
-		for(Point p : field)
+		for(int i = 0; i < field.size(); i++)
 		{
+			Point p = field.get(i);
 			float relX = AbsoluteToRelativeX(p.getX());
 			float relY = AbsoluteToRelativeY(p.getY());
 
@@ -121,7 +127,7 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
 			zoomFactor /= 1.5f;
 		else if(e.getWheelRotation() < 0)
 			zoomFactor *= 1.5f;
-
+		
 		repaint();
 	}
 	@Override
