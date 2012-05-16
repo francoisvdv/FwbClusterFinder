@@ -3,9 +3,11 @@ import java.awt.event.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.ListIterator;
 
 import javax.swing.*;
 
@@ -14,10 +16,13 @@ public class TestProgram extends JFrame implements ActionListener
 	
 	private static final long serialVersionUID = 6814435897208431145L;
 	
-	ContentPanel panel;
-	JMenuBar menu;
-	JMenu menu_generate, menu_view, menu_cluster;
-	JMenuItem menuitem_noise, menuitem_save, menuitem_open, menuitem_circel, menuitem_square;
+	ContentPanel contentpanel;
+	JPanel menupanel;
+	Container c;
+	GridLayout layout;
+	
+	JButton open, save, addnoise;
+	JFileChooser chooser;
 	
 	File loadedFile;
 	
@@ -40,39 +45,33 @@ public class TestProgram extends JFrame implements ActionListener
 		field = new Field();
 
 		// Set the panel
+		c = this.getContentPane();
+		c.setLayout(new BorderLayout());
+		
+		contentpanel = new ContentPanel();
+		c.add(contentpanel, BorderLayout.CENTER);
+		
+		// Menupanel
+		layout = new GridLayout(20, 1);
+		
+		menupanel = new JPanel();
+		menupanel.setBackground(Color.CYAN);
+		menupanel.setLayout(layout);
+		c.add(menupanel, BorderLayout.EAST);
+		
+		JPanel p1 = new JPanel();
+		open = new JButton("Open");
+		save = new JButton("Save");
+		open.addActionListener(this);
+		save.addActionListener(this);
+		p1.add(open);
+		p1.add(save);
+		menupanel.add(p1);
+		
+		addnoise = new JButton("Add noise");
+		addnoise.addActionListener(this);
+		menupanel.add(addnoise);
 		// TODO
-		panel = new ContentPanel();
-		this.setContentPane(panel);
-		
-		// Menuknopje "Generate"
-		menu_generate = new JMenu("Generate");
-		menuitem_noise = new JMenuItem("Noise");
-		menuitem_noise.addActionListener(this);
-		menu_generate.add(menuitem_noise);
-		
-		menu_cluster = new JMenu("Cluster");
-		menuitem_circel = new JMenuItem("Cirkel");
-		menu_cluster.add(menuitem_circel);
-		menuitem_square = new JMenuItem("Square");
-		menu_cluster.add(menuitem_square);
-		menu_generate.add(menu_cluster);
-		
-		menu_generate.add(new JSeparator());
-		
-		menuitem_save = new JMenuItem("Save");
-		menuitem_save.addActionListener(this);
-		menu_generate.add(menuitem_save);
-		
-		// Menuknopje "View"	
-		menu_view = new JMenu("View");
-		menuitem_open = new JMenuItem("Open");
-		menuitem_open.addActionListener(this);
-		menu_view.add(menuitem_open);
-		
-		menu = new JMenuBar();
-		menu.add(menu_generate);
-		menu.add(menu_view);
-		this.setJMenuBar(menu);
 	}
 	
 	/**
@@ -94,18 +93,16 @@ public class TestProgram extends JFrame implements ActionListener
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		}
 		catch(Exception x){}
-		// Francois lelijk
-		//JDialog.setDefaultLookAndFeelDecorated(true);
-		//JFrame.setDefaultLookAndFeelDecorated(true);
 		new TestProgram().start();
 	}
+
 	
 	@Override
 	public void actionPerformed(ActionEvent e)
 	{
-		if(e.getSource() == menuitem_open)
+		if(e.getSource() == open)
 		{
-			JFileChooser chooser = new JFileChooser();
+			chooser = new JFileChooser();
 			chooser.setAcceptAllFileFilterUsed(false);
 			chooser.setFileFilter(new InputFileFilter(false));
 			if(loadedFile != null)
@@ -115,40 +112,75 @@ public class TestProgram extends JFrame implements ActionListener
 			{
 				boolean approved = ((InputFileFilter) chooser.getFileFilter())
 						.isFileApproved(chooser.getSelectedFile());
-				System.out.println(approved);
+				if(approved)
+				{
+					try
+					{
+						loadedFile = chooser.getSelectedFile();
+						FileInputStream fis = new FileInputStream(loadedFile);
+						InputParser ip = new InputParser(fis);
+						if(ip.parseInput())
+						{
+							field = new Field(new ArrayList<Point>(Arrays.asList(ip.getPoints())));
+						}
+					} 
+					catch (FileNotFoundException e1){}
+					updateContentPanel();
+				}
 			}
-			
-			try
-			{
-				loadedFile = chooser.getSelectedFile();
-				FileInputStream fis = new FileInputStream(loadedFile);
-				InputParser ip = new InputParser(fis);
-				if(ip.parseInput())
-					field.addAll(new ArrayList<Point>(Arrays.asList(ip.getPoints())));
-			} catch (FileNotFoundException e1)
-			{
-				// TODO Auto-generated catch block
-				System.out.println("Error: " + e1.toString());
-			}
-			
-			updateContentPanel();
 		}
-		else if(e.getSource() == menuitem_save)
+		else if(e.getSource() == save)
 		{
-			JFileChooser chooser = new JFileChooser();
+			chooser = new JFileChooser();
 			chooser.setAcceptAllFileFilterUsed(false);
 			chooser.setFileFilter(new InputFileFilter(true));
+			if(loadedFile != null)
+				chooser.setSelectedFile(loadedFile);
 			int returnValue = chooser.showSaveDialog(this);
 			if(returnValue == JFileChooser.APPROVE_OPTION) 
 			{
 				boolean approved = ((InputFileFilter) chooser.getFileFilter())
 						.isFileApproved(chooser.getSelectedFile());
-				System.out.println(approved);
+				if(approved)
+				{
+					loadedFile = chooser.getSelectedFile();
+					boolean halt = loadedFile.exists();
+					if(halt)
+					{
+						int i = JOptionPane.showInternalConfirmDialog(c,
+                                "Are you sure you want to override this file?",
+                                "Warning",
+                                JOptionPane.YES_NO_OPTION,
+                                JOptionPane.WARNING_MESSAGE);
+						if(i == JOptionPane.YES_OPTION)
+						{
+							halt = false;
+						}
+					}
+					
+					if(!halt)
+					{
+						try 
+						{
+							PrintWriter pw = new PrintWriter(new FileWriter(loadedFile));
+							pw.println("find "+ field.getNumberOfClusters() +" clusters");
+							pw.println(field.size() +" points");
+							Object[] obj = field.toArray();
+							for(int i = 0; i < obj.length; i++)
+							{
+								Point p = (Point) obj[i];
+								pw.println(p.getX() +" "+ p.getY());
+							}
+							pw.close();
+						} catch (IOException e1) {}
+					}
+				}
 			}
 		}
-		else if(e.getSource() == menuitem_noise)
-		{
-			String s = JOptionPane.showInternalInputDialog(panel, "How many points?", "Add noise", JOptionPane.QUESTION_MESSAGE);
+		else if(e.getSource() == addnoise)
+		{		
+			String s = JOptionPane.showInternalInputDialog(c, "How many points?", "Add noise", JOptionPane.QUESTION_MESSAGE);
+
 			if(s != null)
 			{
 				int number;
@@ -197,6 +229,6 @@ public class TestProgram extends JFrame implements ActionListener
 
 	public void updateContentPanel()
 	{
-		panel.setField(field);
+		contentpanel.setField(field);
 	}
 }

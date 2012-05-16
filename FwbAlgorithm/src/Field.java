@@ -24,6 +24,11 @@ public final class Field extends PointCollection
 		return c;
 	}
 	
+	public int getNumberOfClusters()
+	{
+		return clusters.size();
+	}
+	
 	// TODO
 	public PointCategory getPointCategoryAtPosition(int x, int y)
 	{
