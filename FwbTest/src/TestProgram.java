@@ -10,19 +10,24 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import javax.swing.*;
+import javax.swing.border.TitledBorder;
 
 public class TestProgram extends JFrame implements ActionListener
 {
 	
-	private static final long serialVersionUID = 6814435897208431145L;
+	static final long serialVersionUID = 6814435897208431145L;
+	static Font f;
 	
 	ContentPanel contentpanel;
 	JPanel menupanel;
 	Container c;
-	GridLayout layout;
+	GroupLayout layout;
 	
-	JButton open, save, addnoise;
+	JButton open, save, addnoise, addacluster;
 	JFileChooser chooser;
+	JTextField clustersize;
+	ButtonGroup buttons;
+	JRadioButton circle, square;
 	
 	File loadedFile;
 	
@@ -40,7 +45,6 @@ public class TestProgram extends JFrame implements ActionListener
 		this.setSize(x, y);
 		
 		// Some settings
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setTitle("Friends With Benefits - Test program");
 		field = new Field();
 
@@ -52,26 +56,103 @@ public class TestProgram extends JFrame implements ActionListener
 		c.add(contentpanel, BorderLayout.CENTER);
 		
 		// Menupanel
-		layout = new GridLayout(20, 1);
-		
 		menupanel = new JPanel();
-		menupanel.setBackground(Color.CYAN);
+		layout = new GroupLayout(menupanel);
 		menupanel.setLayout(layout);
 		c.add(menupanel, BorderLayout.EAST);
 		
-		JPanel p1 = new JPanel();
 		open = new JButton("Open");
+		open.setFocusPainted(false);
 		save = new JButton("Save");
+		save.setFocusPainted(false);
 		open.addActionListener(this);
 		save.addActionListener(this);
-		p1.add(open);
-		p1.add(save);
-		menupanel.add(p1);
+
 		
 		addnoise = new JButton("Add noise");
+		addnoise.setFocusPainted(false);
 		addnoise.addActionListener(this);
-		menupanel.add(addnoise);
-		// TODO
+		
+		circle = new JRadioButton("Circle");
+		circle.setFocusPainted(false);
+		square = new JRadioButton("Square");
+		square.setFocusPainted(false);
+		circle.setSelected(true);
+		
+		buttons = new ButtonGroup();
+		buttons.add(circle);
+		buttons.add(square);
+		
+		clustersize = new JTextField();
+		addacluster = new JButton("Add");
+		
+		JSeparator sep1 = new JSeparator();
+		JSeparator sep2 = new JSeparator();
+		JSeparator sep3 = new JSeparator();
+		JPanel empty = new JPanel();
+		JLabel addcluster = new JLabel("Add cluster:");
+		JLabel addclustersize = new JLabel("Size:");
+		addcluster.setFont(f);
+		
+		contentpanel.setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
+		
+		layout.setHorizontalGroup(
+			layout.createParallelGroup(GroupLayout.Alignment.CENTER)
+				.addGroup(layout.createSequentialGroup()
+					.addComponent(open)
+					.addGap(2)
+					.addComponent(save))
+				.addComponent(sep1)
+				.addComponent(addnoise)
+				.addComponent(sep2)
+				.addComponent(addcluster)
+				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+					.addComponent(circle)
+					.addComponent(square))
+				.addComponent(addclustersize)
+				.addComponent(clustersize)
+				.addComponent(addacluster)
+				.addComponent(sep3)
+				.addComponent(empty)
+				
+		);
+		layout.setVerticalGroup(
+			layout.createSequentialGroup()
+				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+					.addComponent(open)
+					.addComponent(save))
+				.addGap(5)
+				.addComponent(sep1)
+				.addGap(5)
+				.addComponent(addnoise)
+				.addGap(5)
+				.addComponent(sep2)
+				.addGap(5)
+				.addComponent(addcluster)
+				.addComponent(circle)
+				.addComponent(square)
+				.addGap(3)
+				.addComponent(addclustersize)
+				.addComponent(clustersize)
+				.addGap(3)
+				.addComponent(addacluster)
+				.addGap(5)
+				.addComponent(sep3)
+				.addComponent(empty)
+		);
+		
+		int width = menupanel.getPreferredSize().width;
+		addacluster.setMinimumSize(new Dimension(width, addacluster.getPreferredSize().height));
+		clustersize.setMaximumSize(new Dimension(width, clustersize.getPreferredSize().height));
+		addcluster.setMinimumSize(new Dimension(width - 10, addcluster.getPreferredSize().height));
+		circle.setMinimumSize(new Dimension(width - 20, circle.getPreferredSize().height));
+		square.setMinimumSize(new Dimension(width - 20, square.getPreferredSize().height));
+		addnoise.setMinimumSize(new Dimension(width, addnoise.getPreferredSize().height));
+		empty.setPreferredSize(new Dimension(width, 1000));
+		
+		menupanel.setBorder(BorderFactory
+				.createTitledBorder(BorderFactory
+					.createLineBorder(Color.BLACK), "Menu", TitledBorder.CENTER, TitledBorder.DEFAULT_POSITION, f));
 	}
 	
 	/**
@@ -79,8 +160,10 @@ public class TestProgram extends JFrame implements ActionListener
 	 */
 	public void start() 
 	{
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setLocationRelativeTo(null);
 		this.setVisible(true);
+		circle.requestFocusInWindow();
 	}
 	
 	/**
@@ -89,8 +172,10 @@ public class TestProgram extends JFrame implements ActionListener
 	public static void main(String[] args) 
 	{
 		try
-		{
+		{	
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			f = UIManager.getDefaults().getFont("TabbedPane.font");
+			f = new Font(f.getFamily(), Font.BOLD, f.getSize());
 		}
 		catch(Exception x){}
 		new TestProgram().start();
@@ -179,10 +264,12 @@ public class TestProgram extends JFrame implements ActionListener
 		}
 		else if(e.getSource() == addnoise)
 		{		
+			System.out.println(field.size());
 			String s = JOptionPane.showInternalInputDialog(c, "How many points?", "Add noise", JOptionPane.QUESTION_MESSAGE);
 
 			if(s != null)
 			{
+				System.out.println(field.size());
 				int number;
 				try
 				{
@@ -193,16 +280,18 @@ public class TestProgram extends JFrame implements ActionListener
 					number = 0;
 				}
 				
+				System.out.println(field.size());
+				
 				for(int i = 0; i < number; i++)
 				{
 					
-					int x = (int) Math.round(Math.random() * 1000000000);
+					int x = (int) (Math.random() * 1000000000);
 					int y;
 					
 					boolean busy = true;
 					while(busy)
 					{
-						y = (int) Math.round(Math.random() * 1000000000);
+						y = (int) (Math.random() * 1000000000);
 						boolean inside = false;
 						Object[] array = field.toArray();
 						for(int j = 0; j < field.size(); j++)
@@ -221,6 +310,8 @@ public class TestProgram extends JFrame implements ActionListener
 						}
 					}
 				}
+				System.out.println(field.size());
+				
 			}
 			
 			updateContentPanel();

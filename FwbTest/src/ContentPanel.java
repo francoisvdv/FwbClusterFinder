@@ -47,7 +47,7 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
 			{
 				// TODO Auto-generated method stub
 				keyCtrl = e.isControlDown();
-				System.out.println(keyCtrl);
+				//System.out.println(keyCtrl);
 				return false;
 			}
 		});
