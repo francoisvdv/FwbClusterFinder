@@ -47,7 +47,6 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
 			{
 				// TODO Auto-generated method stub
 				keyCtrl = e.isControlDown();
-				System.out.println(keyCtrl);
 				return false;
 			}
 		});
@@ -79,8 +78,9 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
 		Graphics g = g1.create();
 		g.setColor(Color.BLACK);
 
-		for(Point p : field)
+		for(int i = 0; i < field.size(); i++)
 		{
+			Point p = field.get(i);
 			float relX = AbsoluteToRelativeX(p.getX());
 			float relY = AbsoluteToRelativeY(p.getY());
 
@@ -121,7 +121,7 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
 			zoomFactor /= 1.5f;
 		else if(e.getWheelRotation() < 0)
 			zoomFactor *= 1.5f;
-
+		
 		repaint();
 	}
 	@Override
