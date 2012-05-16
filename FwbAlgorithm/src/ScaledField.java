@@ -21,10 +21,10 @@ public class ScaledField
 		{
 			for(int y=0; y<GRID_HEIGHT; y++)
 			{
-				this.grid[x][y] =  new Cell((int)Math.floor(x*SCALE_X),
-											(int)Math.floor(y*SCALE_Y),
-											(int)Math.floor((x+1)*SCALE_X),
-											(int)Math.floor((y+1)*SCALE_Y));
+				this.grid[x][y] =  new Cell((int)Math.floor(unscaleX(x)),
+											(int)Math.floor(unscaleY(y)),
+											(int)Math.floor(unscaleX(x+1)),
+											(int)Math.floor(unscaleY(y+1)));
 			}
 		}
 	}
@@ -32,8 +32,8 @@ public class ScaledField
 	// Moet nog ff gecheckt worden, kan zijn dat er aan de randen net iets niet goed zit.
 	public Cell[] getCellsCloseTo(Cell cell, float radius)
 	{
-		int r_x    = (int)Math.floor(radius/SCALE_X);
-		int r_y    = (int)Math.floor(radius/SCALE_Y);
+		int r_x    = (int)Math.floor(scaleX(radius));
+		int r_y    = (int)Math.floor(scaleY(radius));
 		int cell_x = (int)Math.floor(cell.getMiddleX()/SCALE_X);
 		int cell_y = (int)Math.floor(cell.getMiddleY()/SCALE_Y);
 		
@@ -75,5 +75,22 @@ public class ScaledField
 		assert cell.isInCell(x, y);
 		
 		return cell;
+	}
+	
+	public int scaleX(int x)
+	{
+		
+	}
+	public int scaleY(int y)
+	{
+		
+	}
+	public int unscaleX(int x)
+	{
+		
+	}
+	public int unscaleY(int y)
+	{
+		
 	}
 }
