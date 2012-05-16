@@ -79,17 +79,34 @@ public class ScaledField
 	
 	public int scaleX(int x)
 	{
-		
+		return scaleX((float)x);
 	}
 	public int scaleY(int y)
 	{
-		
+		return scaleY((float)y);
 	}
 	public int unscaleX(int x)
 	{
-		
+		return unscaleX((float)x);
 	}
 	public int unscaleY(int y)
+	{
+		return unscaleY((float)y);
+	}
+	
+	public int scaleX(float x)
+	{
+		
+	}
+	public int scaleY(float y)
+	{
+		
+	}
+	public int unscaleX(float x)
+	{
+		
+	}
+	public int unscaleY(float y)
 	{
 		
 	}
