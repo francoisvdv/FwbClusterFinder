@@ -1,5 +1,7 @@
 import java.util.ArrayList;
 
+import com.sun.corba.se.impl.javax.rmi.CORBA.Util;
+
 public class Threshold
 {
 	int stepCount = 100; //TODO: veranderen door testen
@@ -21,9 +23,11 @@ public class Threshold
 		maxThreshold = KDE.getMaxDensity();
 		previousNumberOfPoints = 0;
 		
-		boolean inCluster = false;
+		boolean inCluster = false; //Variabele die aangeeft of we op het moment 'in' een cluster zitten
+		float step = maxThreshold / stepCount;
 		
-		float step = maxThreshold / (float)stepCount;
+		if(Utils.floatAlmostEquals(step, 0))
+			return 0;
 		
 		for(currentThreshold = maxThreshold; currentThreshold >= 0; currentThreshold -= step)
 		{
