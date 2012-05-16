@@ -2,7 +2,7 @@
 
 public class KDE
 {
-	protected ScaledField scaledField;
+	public    ScaledField scaledField;
 	protected Field field;
 	protected float bandwidth;
 	protected Point[] sortedPoints;
@@ -10,18 +10,22 @@ public class KDE
 	public KDE(Field field)
 	{
 		this.field = field;
+		Rectangle r = field.getBoundingRectangle();
+		this.scaledField = new ScaledField(r);
 	}
 	
 	public void initialize()
 	{
 		this.calcBandwidth();
 		
-		Point[] points = (Point[])this.field.toArray();
+		Point[] points = new Point[this.field.size()];
+		this.field.toArray(points);
+		
 		for(int i=0; i<points.length; i++)
 		{
 			//Hier valt snelheid te winnen: getCellsCloseTo berekent afstanden die in deze methode opnieuw berekend worden.
 			
-			Point p = points[i];
+			Point p = (Point) points[i];
 			Cell c = this.scaledField.getCell(p);
 			Cell[] cells = this.scaledField.getCellsCloseTo(c, 3*this.bandwidth);
 			
@@ -69,6 +73,8 @@ public class KDE
 		return middle+1;
 	}
 	
+	// uses quicksort
+	// change to some form of counting sort
 	protected Point[] sort(Point[] unsorted)
 	{
 		Point[] sorted = unsorted.clone();

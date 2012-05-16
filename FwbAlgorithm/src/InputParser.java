@@ -1,11 +1,14 @@
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class InputParser
 {
-	int minimumClusters;
-	int maximumClusters;
-	Point[] points;
+	protected int minimumClusters;
+	protected int maximumClusters;
+	protected Point[] points;
+	protected Field field;
 	
 	Scanner inputScanner;
 	
@@ -25,6 +28,13 @@ public class InputParser
 	public Point[] getPoints()
 	{
 		return points;
+	}
+	public Field getField()
+	{
+		if(field == null)
+			field = new Field(new ArrayList<Point>(Arrays.asList(this.getPoints())));
+		
+		return field;
 	}
 	
 	public boolean parseInput()

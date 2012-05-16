@@ -2,15 +2,18 @@ import java.util.LinkedList;
 
 public class ScaledField
 {
+	protected Rectangle rectangle;
 	protected Cell[][] grid;
 	protected final float SCALE_X, SCALE_Y;
-	protected final int GRID_WIDTH  = 10000,
-						GRID_HEIGHT = 10000;
+	protected final int GRID_WIDTH  = 1000,
+						GRID_HEIGHT = 1000;
 	
-	public ScaledField(int width, int height)
+	public ScaledField(Rectangle rect)
 	{
-		this.SCALE_X = width /this.GRID_WIDTH;
-		this.SCALE_Y = height/this.GRID_HEIGHT;
+		this.rectangle = rect;
+		
+		this.SCALE_X = rect.getWidth() /this.GRID_WIDTH;
+		this.SCALE_Y = rect.getHeight()/this.GRID_HEIGHT;
 		
 		this.grid = new Cell[GRID_WIDTH][GRID_HEIGHT];
 		
@@ -41,10 +44,13 @@ public class ScaledField
 			for(int y=cell_y-r_y; y<cell_y+r_y; y++)
 			{
 				Cell c = this.getCell((int)(x*SCALE_X), (int)(y*SCALE_Y));
-				Float dist = Gonio.calcDistance(cell.getMiddleX(), cell.getMiddleY(), c.getMiddleX(), c.getMiddleY());
-				if(dist < radius)
+				if(c != null)
 				{
-					closeCells.add(c);
+					Float dist = Gonio.calcDistance(cell.getMiddleX(), cell.getMiddleY(), c.getMiddleX(), c.getMiddleY());
+					if(dist < radius)
+					{
+						closeCells.add(c);
+					}
 				}
 			}
 		}
@@ -52,8 +58,16 @@ public class ScaledField
 		return (Cell[])closeCells.toArray();
 	}
 	
+	public Cell getCell(Point point)
+	{
+		return getCell(point.getX(), point.getY());
+	}
+	
 	public Cell getCell(int x, int y)
 	{
+		if(!this.rectangle.contains(x, y))
+			return null;
+		
 		int scaled_x = (int) Math.floor(x/this.SCALE_X);
 		int scaled_y = (int) Math.floor(y/this.SCALE_Y);
 		

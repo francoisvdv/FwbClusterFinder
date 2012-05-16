@@ -26,4 +26,8 @@ public class Rectangle
 	{
 		return y2 - y1;
 	}
+	public boolean contains(int x, int y)
+	{
+		return (x > getLeft() && x < getRight() && y > getTop() && y < getBottom());
+	}
 }

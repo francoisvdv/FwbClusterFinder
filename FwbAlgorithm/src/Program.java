@@ -1,6 +1,3 @@
-import java.util.ArrayList;
-import java.util.Arrays;
-
 public final class Program
 {	
 	/**
@@ -15,9 +12,10 @@ public final class Program
 			return;
 		}
 		
-		Field field = new Field(new ArrayList<Point>(Arrays.asList(ip.getPoints())));
+		Field field = ip.getField();
 		
-		Algorithm algo1 = new RandomClusterAlgorithm(ip.getMinimumClusters(), ip.getMaximumClusters(), field);
+		//Algorithm algo1 = new RandomClusterAlgorithm(ip.getMinimumClusters(), ip.getMaximumClusters(), field);
+		Algorithm algo1 = new AlphaAlgorithm(ip.getMinimumClusters(), ip.getMaximumClusters(), field);
 		algo1.run();
 		algo1.printPoints();
 	}

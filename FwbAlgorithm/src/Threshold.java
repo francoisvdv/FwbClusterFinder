@@ -2,30 +2,18 @@ import java.util.ArrayList;
 
 public class Threshold
 {
-	public static class KDE
-	{
-		public static float getMaxDensity()
-		{
-			return 0.8f;
-		}
-		public static int getPointCountAboveThreshold(float threshold)
-		{
-			return 0;
-		}
-	}
-
 	int stepCount = 100; //TODO: veranderen door testen
 	
 	int previousNumberOfPoints;
 	int numberOfPoints;
 	float currentThreshold;
 	float maxThreshold;
-
+	
 	/**
 	 * Returns a Threshold value. Everything BELOW this threshold should be cut off (noise).
 	 * @return
 	 */
-	public float findThreshold()
+	public float findThreshold(KDE KDE)
 	{
 		//Tussen element 0 en 1 zit een switch, tussen element 2 en 3 een switch, etc.
 		ArrayList<Float> switches = new ArrayList<Float>();
