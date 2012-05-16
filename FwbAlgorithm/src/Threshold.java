@@ -4,11 +4,11 @@ public class Threshold
 {
 	public static class KDE
 	{
-		public static float GetMaxThreshold()
+		public static float getMaxDensity()
 		{
 			return 0.8f;
 		}
-		public static int GetPointCountAboveThreshold(float threshold)
+		public static int getPointCountAboveThreshold(float threshold)
 		{
 			return 0;
 		}
@@ -25,12 +25,12 @@ public class Threshold
 	 * Returns a Threshold value. Everything BELOW this threshold should be cut off (noise).
 	 * @return
 	 */
-	public float FindThreshold()
+	public float findThreshold()
 	{
 		//Tussen element 0 en 1 zit een switch, tussen element 2 en 3 een switch, etc.
 		ArrayList<Float> switches = new ArrayList<Float>();
 		
-		maxThreshold = KDE.GetMaxThreshold();
+		maxThreshold = KDE.getMaxDensity();
 		previousNumberOfPoints = 0;
 		
 		boolean inCluster = false;
@@ -39,7 +39,7 @@ public class Threshold
 		
 		for(currentThreshold = maxThreshold; currentThreshold >= 0; currentThreshold -= step)
 		{
-			numberOfPoints = KDE.GetPointCountAboveThreshold(currentThreshold);
+			numberOfPoints = KDE.getPointCountAboveThreshold(currentThreshold);
 			
 			if(numberOfPoints > previousNumberOfPoints)
 			{
