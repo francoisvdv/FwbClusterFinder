@@ -68,10 +68,10 @@ public class ScaledField
 	{
 		if(!this.rectangle.contains(x, y))
 			return null;
-
+		
 		int scaled_x = scaleX(x);
 		int scaled_y = scaleY(y);
-
+		
 		Cell cell = this.grid[scaled_x][scaled_y];
 		assert cell.isInCell(x, y);
 		
@@ -99,12 +99,20 @@ public class ScaledField
 	{
 		x-=(float)this.rectangle.getLeft();
 		x/=this.SCALE_X;
+		
+		if((int)x == GRID_WIDTH)
+			return GRID_WIDTH-1;
+		
 		return (int)x;
 	}
 	public int scaleY(float y)
 	{
 		y-=(float)this.rectangle.getTop();
 		y/=this.SCALE_Y;
+		
+		if((int)y == GRID_HEIGHT)
+			return GRID_HEIGHT-1;
+		
 		return (int)y;
 	}
 	public int unscaleX(float x)

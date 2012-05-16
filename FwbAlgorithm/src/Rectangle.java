@@ -28,6 +28,6 @@ public class Rectangle
 	}
 	public boolean contains(int x, int y)
 	{
-		return (x > getLeft() && x < getRight() && y > getTop() && y < getBottom());
+		return (x >= getLeft() && x <= getRight() && y >= getTop() && y <= getBottom());
 	}
 }
