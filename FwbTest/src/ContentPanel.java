@@ -17,6 +17,10 @@ import javax.swing.JScrollBar;
 
 public class ContentPanel extends JPanel implements MouseListener, MouseMotionListener, MouseWheelListener
 {
+	public static final int SELECT_NONE = 0;
+	public static final int SELECT_SQUARE = 1;
+	public static final int SELECT_CIRCLE = 2;
+	
 	Field field;
 	Rectangle bounding;
 	
