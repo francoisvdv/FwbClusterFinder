@@ -27,6 +27,9 @@ public class KDE
 			
 			Point p = (Point) points[i];
 			Cell c = this.scaledField.getCell(p);
+			if(c==null)
+				System.out.println(p.getX()+","+p.getY());
+			else{
 			Cell[] cells = this.scaledField.getCellsCloseTo(c, 3*this.bandwidth);
 			
 			for(int j=0; j<cells.length; j++)
@@ -34,7 +37,7 @@ public class KDE
 				Cell cell = cells[j];
 				float sqdist = Gonio.calcSquaredDistance(cell.getMiddleX(), cell.getMiddleY(), p.getX(), p.getY());
 				cell.increaseDensity(this.calcDensity(sqdist));
-			}
+			}}
 		}
 		
 		this.sortedPoints = this.sort(points);
@@ -68,7 +71,7 @@ public class KDE
 	
 	protected int getPointCountAboveThreshold_moveLeft(float threshold, int middle)
 	{
-		while(scaledField.getCell(sortedPoints[middle--]).getDensity() == threshold);
+		while(middle >= 0 && scaledField.getCell(sortedPoints[middle--]).getDensity() == threshold);
 		
 		return middle+1;
 	}
@@ -85,7 +88,7 @@ public class KDE
 	// in-place version of quicksort
 	protected void sort_recursive(Point[] partiallySorted, int start, int end)
 	{
-		if(start == end)
+		if(start >= end)
 			return;
 		
 		int pivotPos = getPivotPos(start, end);
@@ -104,7 +107,7 @@ public class KDE
 	protected int partition(Point[] partiallySorted, int start, int end, int pivotPos)
 	{
 		assert start <= pivotPos;
-		assert pivotPos >= end;
+		assert pivotPos <= end;
 		assert start < end;
 		
 		// var used for swapping
@@ -139,7 +142,7 @@ public class KDE
 				// swap point at i with the point at i => do nothing
 		}
 		// move pivot
-		temp = partiallySorted[middle];
+		temp = partiallySorted[++middle];
 		partiallySorted[middle] = partiallySorted[partiallySorted.length-1];
 		partiallySorted[partiallySorted.length-1] = temp;
 		
