@@ -96,18 +96,26 @@ public class ScaledField
 	
 	public int scaleX(float x)
 	{
-		
+		x-=this.rectangle.getLeft();
+		x/=this.SCALE_X;
+		return (int)x;
 	}
 	public int scaleY(float y)
 	{
-		
+		y-=this.rectangle.getTop();
+		y/=this.SCALE_Y;
+		return (int)y;
 	}
 	public int unscaleX(float x)
 	{
-		
+		x*=this.SCALE_X;
+		x+=this.rectangle.getLeft();
+		return (int)x;
 	}
 	public int unscaleY(float y)
 	{
-		
+		y*=this.SCALE_Y;
+		y+=this.rectangle.getTop();
+		return (int)y;
 	}
 }
