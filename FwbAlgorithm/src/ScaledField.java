@@ -12,8 +12,8 @@ public class ScaledField
 	{
 		this.rectangle = rect;
 		
-		this.SCALE_X = rect.getWidth() /this.GRID_WIDTH;
-		this.SCALE_Y = rect.getHeight()/this.GRID_HEIGHT;
+		this.SCALE_X = (float)rect.getWidth() /this.GRID_WIDTH;
+		this.SCALE_Y = (float)rect.getHeight()/this.GRID_HEIGHT;
 		
 		this.grid = new Cell[GRID_WIDTH][GRID_HEIGHT];
 		
@@ -21,10 +21,10 @@ public class ScaledField
 		{
 			for(int y=0; y<GRID_HEIGHT; y++)
 			{
-				this.grid[x][y] =  new Cell((int)Math.floor(unscaleX(x)),
-											(int)Math.floor(unscaleY(y)),
-											(int)Math.floor(unscaleX(x+1)),
-											(int)Math.floor(unscaleY(y+1)));
+				this.grid[x][y] =  new Cell(unscaleX(x),
+											unscaleY(y),
+											unscaleX(x+1),
+											unscaleY(y+1));
 			}
 		}
 	}
@@ -32,10 +32,10 @@ public class ScaledField
 	// Moet nog ff gecheckt worden, kan zijn dat er aan de randen net iets niet goed zit.
 	public Cell[] getCellsCloseTo(Cell cell, float radius)
 	{
-		int r_x    = (int)Math.floor(scaleX(radius));
-		int r_y    = (int)Math.floor(scaleY(radius));
-		int cell_x = (int)Math.floor(scaleX(cell.getMiddleX()));
-		int cell_y = (int)Math.floor(scaleY(cell.getMiddleY()));
+		int r_x    = scaleX(radius);
+		int r_y    = scaleY(radius);
+		int cell_x = scaleX(cell.getMiddleX());
+		int cell_y = scaleY(cell.getMiddleY());
 		
 		LinkedList<Cell> closeCells = new LinkedList<Cell>();
 		
@@ -55,7 +55,8 @@ public class ScaledField
 			}
 		}
 		
-		return (Cell[])closeCells.toArray();
+		Cell[] cells = new Cell[closeCells.size()];
+		return closeCells.toArray(cells);
 	}
 	
 	public Cell getCell(Point point)
@@ -67,10 +68,10 @@ public class ScaledField
 	{
 		if(!this.rectangle.contains(x, y))
 			return null;
-		
+
 		int scaled_x = scaleX(x);
 		int scaled_y = scaleY(y);
-		
+
 		Cell cell = this.grid[scaled_x][scaled_y];
 		assert cell.isInCell(x, y);
 		
@@ -96,26 +97,26 @@ public class ScaledField
 	
 	public int scaleX(float x)
 	{
-		x-=this.rectangle.getLeft();
+		x-=(float)this.rectangle.getLeft();
 		x/=this.SCALE_X;
 		return (int)x;
 	}
 	public int scaleY(float y)
 	{
-		y-=this.rectangle.getTop();
+		y-=(float)this.rectangle.getTop();
 		y/=this.SCALE_Y;
 		return (int)y;
 	}
 	public int unscaleX(float x)
 	{
 		x*=this.SCALE_X;
-		x+=this.rectangle.getLeft();
+		x+=(float)this.rectangle.getLeft();
 		return (int)x;
 	}
 	public int unscaleY(float y)
 	{
 		y*=this.SCALE_Y;
-		y+=this.rectangle.getTop();
+		y+=(float)this.rectangle.getTop();
 		return (int)y;
 	}
 }
