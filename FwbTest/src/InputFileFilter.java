@@ -15,6 +15,10 @@ public class InputFileFilter extends FileFilter
 	public boolean isFileApproved(File f)
 	{
 		String ext = Utils.getExtension(f);
+		if(ext == null)
+		{
+			return false;
+		}
 		if(!save)
 		{
 			if(ext.equals(Utils.output))
@@ -62,8 +66,8 @@ public class InputFileFilter extends FileFilter
     {
     	if(save)
     	{
-    		return "Input files (.fwbi)";
+    		return "Input files (.in)";
     	}
-        return "Input and ouput files (.fwbi & .fwbo)";
+        return "Input and ouput files (.in & .fwbo)";
     }
 }
