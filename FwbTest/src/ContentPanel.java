@@ -1,10 +1,11 @@
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
-import java.awt.event.ActionEvent;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -12,9 +13,7 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-
-import com.sun.corba.se.impl.oa.poa.ActiveObjectMap.Key;
+import javax.swing.JScrollBar;
 
 public class ContentPanel extends JPanel implements MouseListener, MouseMotionListener, MouseWheelListener
 {
@@ -40,6 +39,8 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
 		addMouseMotionListener(this);
 		addMouseWheelListener(this);
 
+		setLayout(new BorderLayout());
+		
 		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyEventDispatcher()
 		{
 			@Override
@@ -50,6 +51,7 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
 				return false;
 			}
 		});
+
 	}
 	
 	public Field getField()
