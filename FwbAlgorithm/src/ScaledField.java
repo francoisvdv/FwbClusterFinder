@@ -34,8 +34,8 @@ public class ScaledField
 	{
 		int r_x    = (int)Math.floor(scaleX(radius));
 		int r_y    = (int)Math.floor(scaleY(radius));
-		int cell_x = (int)Math.floor(cell.getMiddleX()/SCALE_X);
-		int cell_y = (int)Math.floor(cell.getMiddleY()/SCALE_Y);
+		int cell_x = (int)Math.floor(scaleX(cell.getMiddleX()));
+		int cell_y = (int)Math.floor(scaleY(cell.getMiddleY()));
 		
 		LinkedList<Cell> closeCells = new LinkedList<Cell>();
 		
@@ -43,7 +43,7 @@ public class ScaledField
 		{
 			for(int y=cell_y-r_y; y<cell_y+r_y; y++)
 			{
-				Cell c = this.getCell((int)(x*SCALE_X), (int)(y*SCALE_Y));
+				Cell c = this.getCell(unscaleX(x), unscaleY(y));
 				if(c != null)
 				{
 					Float dist = Gonio.calcDistance(cell.getMiddleX(), cell.getMiddleY(), c.getMiddleX(), c.getMiddleY());
@@ -68,8 +68,8 @@ public class ScaledField
 		if(!this.rectangle.contains(x, y))
 			return null;
 		
-		int scaled_x = (int) Math.floor(x/this.SCALE_X);
-		int scaled_y = (int) Math.floor(y/this.SCALE_Y);
+		int scaled_x = scaleX(x);
+		int scaled_y = scaleY(y);
 		
 		Cell cell = this.grid[scaled_x][scaled_y];
 		assert cell.isInCell(x, y);
