@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Random;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -23,15 +24,17 @@ public class TestProgram extends JFrame implements ActionListener
 	Container c;
 	GroupLayout layout;
 	
-	JButton open, save, addnoise, addacluster;
+	boolean progressWorks = false;
+	JProgressBar progress;
+	JButton open, save, addnoise, addacluster, clear;
 	JFileChooser chooser;
 	JTextField clustersize;
-	ButtonGroup buttons;
-	JRadioButton circle, square;
+	ButtonGroup squarecircle, placeOfCluster;
+	JRadioButton circle, square, everywhere, inRectangle;
 	
 	File loadedFile;
-	
 	Field field;
+	Random random;
 	
 	/**
 	 * Class constructor - make the JFrame ready
@@ -47,6 +50,7 @@ public class TestProgram extends JFrame implements ActionListener
 		// Some settings
 		this.setTitle("Friends With Benefits - Test program");
 		field = new Field();
+		random = new Random(System.currentTimeMillis());
 
 		// Set the panel
 		c = this.getContentPane();
@@ -61,6 +65,9 @@ public class TestProgram extends JFrame implements ActionListener
 		menupanel.setLayout(layout);
 		c.add(menupanel, BorderLayout.EAST);
 		
+		progress = new JProgressBar(0, 99);
+		progress.setValue(99);
+		
 		open = new JButton("Open");
 		open.setFocusPainted(false);
 		save = new JButton("Save");
@@ -68,6 +75,9 @@ public class TestProgram extends JFrame implements ActionListener
 		open.addActionListener(this);
 		save.addActionListener(this);
 
+		clear = new JButton("Clear field");
+		clear.addActionListener(this);
+		clear.setFocusPainted(false);
 		
 		addnoise = new JButton("Add noise");
 		addnoise.setFocusPainted(false);
@@ -79,20 +89,33 @@ public class TestProgram extends JFrame implements ActionListener
 		square.setFocusPainted(false);
 		circle.setSelected(true);
 		
-		buttons = new ButtonGroup();
-		buttons.add(circle);
-		buttons.add(square);
+		everywhere = new JRadioButton("Everywhere");
+		everywhere.setFocusPainted(false);
+		inRectangle = new JRadioButton("In bounding rectangle");
+		inRectangle.setFocusPainted(false);
+		everywhere.setSelected(true);
+		
+		placeOfCluster = new ButtonGroup();
+		placeOfCluster.add(everywhere);
+		placeOfCluster.add(inRectangle);
+		
+		squarecircle = new ButtonGroup();
+		squarecircle.add(circle);
+		squarecircle.add(square);
 		
 		clustersize = new JTextField();
 		addacluster = new JButton("Add");
+		addacluster.setFocusPainted(false);
 		
 		JSeparator sep1 = new JSeparator();
 		JSeparator sep2 = new JSeparator();
 		JSeparator sep3 = new JSeparator();
 		JPanel empty = new JPanel();
 		JLabel addcluster = new JLabel("Add cluster:");
+		JLabel addNoise = new JLabel("Add noise");
 		JLabel addclustersize = new JLabel("Size:");
 		addcluster.setFont(f);
+		addNoise.setFont(f);
 		
 		contentpanel.setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
 		
@@ -103,6 +126,10 @@ public class TestProgram extends JFrame implements ActionListener
 					.addGap(2)
 					.addComponent(save))
 				.addComponent(sep1)
+				.addComponent(addNoise)
+				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+					.addComponent(everywhere)
+					.addComponent(inRectangle))
 				.addComponent(addnoise)
 				.addComponent(sep2)
 				.addComponent(addcluster)
@@ -113,8 +140,9 @@ public class TestProgram extends JFrame implements ActionListener
 				.addComponent(clustersize)
 				.addComponent(addacluster)
 				.addComponent(sep3)
+				.addComponent(clear)
 				.addComponent(empty)
-				
+				.addComponent(progress)
 		);
 		layout.setVerticalGroup(
 			layout.createSequentialGroup()
@@ -124,6 +152,10 @@ public class TestProgram extends JFrame implements ActionListener
 				.addGap(5)
 				.addComponent(sep1)
 				.addGap(5)
+				.addComponent(addNoise)
+				.addComponent(everywhere)
+				.addComponent(inRectangle)
+				.addGap(3)
 				.addComponent(addnoise)
 				.addGap(5)
 				.addComponent(sep2)
@@ -138,16 +170,26 @@ public class TestProgram extends JFrame implements ActionListener
 				.addComponent(addacluster)
 				.addGap(5)
 				.addComponent(sep3)
+				.addGap(5)
+				.addComponent(clear)
 				.addComponent(empty)
+				.addComponent(progress)
 		);
 		
 		int width = menupanel.getPreferredSize().width;
-		addacluster.setMinimumSize(new Dimension(width, addacluster.getPreferredSize().height));
-		clustersize.setMaximumSize(new Dimension(width, clustersize.getPreferredSize().height));
+		
+		addNoise.setMinimumSize(new Dimension(width - 10, addNoise.getPreferredSize().height));
+		everywhere.setMinimumSize(new Dimension(width - 20, everywhere.getPreferredSize().height));
+		inRectangle.setMinimumSize(new Dimension(width - 20, inRectangle.getPreferredSize().height));
+		addnoise.setMinimumSize(new Dimension(width, addnoise.getPreferredSize().height));
+		
 		addcluster.setMinimumSize(new Dimension(width - 10, addcluster.getPreferredSize().height));
 		circle.setMinimumSize(new Dimension(width - 20, circle.getPreferredSize().height));
 		square.setMinimumSize(new Dimension(width - 20, square.getPreferredSize().height));
-		addnoise.setMinimumSize(new Dimension(width, addnoise.getPreferredSize().height));
+		addacluster.setMinimumSize(new Dimension(width, addacluster.getPreferredSize().height));
+		clustersize.setMaximumSize(new Dimension(width, clustersize.getPreferredSize().height));
+		
+		clear.setMinimumSize(new Dimension(width, clear.getPreferredSize().height));
 		empty.setPreferredSize(new Dimension(width, 1000));
 		
 		menupanel.setBorder(BorderFactory
@@ -166,6 +208,40 @@ public class TestProgram extends JFrame implements ActionListener
 		circle.requestFocusInWindow();
 	}
 	
+	protected synchronized void startProgress()
+	{
+		progressWorks = true;
+		new Thread(new Runnable(){
+			public void run()
+			{
+				int value = 0;
+				while(progressWorks)
+				{
+					try
+					{
+						progress.setValue(value);
+						value++;
+						value %= 100;
+						Thread.sleep(10);
+					}
+					catch(Exception ex){}
+				}
+			}
+		}).start();
+	}
+	
+	protected synchronized boolean isInProgress()
+	{
+		return progressWorks;
+	}
+	
+	protected synchronized void stopProgress()
+	{
+		progressWorks = false;
+		progress.setValue(99);
+		updateContentPanel();
+	}
+	
 	/**
 	 * @param args command line params
 	 */
@@ -180,6 +256,11 @@ public class TestProgram extends JFrame implements ActionListener
 		catch(Exception x){}
 		new TestProgram().start();
 	}
+	
+	private void systemIsBusy()
+	{
+		JOptionPane.showInternalMessageDialog(c, "The system is currently busy.", "Busy", JOptionPane.INFORMATION_MESSAGE);
+	}
 
 	
 	@Override
@@ -187,6 +268,12 @@ public class TestProgram extends JFrame implements ActionListener
 	{
 		if(e.getSource() == open)
 		{
+			if(isInProgress())
+			{
+				systemIsBusy();
+				return;
+			}
+			
 			chooser = new JFileChooser();
 			chooser.setAcceptAllFileFilterUsed(false);
 			chooser.setFileFilter(new InputFileFilter(false));
@@ -216,6 +303,12 @@ public class TestProgram extends JFrame implements ActionListener
 		}
 		else if(e.getSource() == save)
 		{
+			if(isInProgress())
+			{
+				systemIsBusy();
+				return;
+			}
+			
 			chooser = new JFileChooser();
 			chooser.setAcceptAllFileFilterUsed(false);
 			chooser.setFileFilter(new InputFileFilter(true));
@@ -262,64 +355,107 @@ public class TestProgram extends JFrame implements ActionListener
 				}
 			}
 		}
-		else if(e.getSource() == addnoise)
-		{		
-			System.out.println(field.size());
-			String s = JOptionPane.showInternalInputDialog(c, "How many points?", "Add noise", JOptionPane.QUESTION_MESSAGE);
-
-			if(s != null)
+		else if(e.getSource() == clear)
+		{
+			int i = JOptionPane.showInternalConfirmDialog(c,
+                    "Are you sure you want to clear the field?",
+                    "Warning",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.WARNING_MESSAGE);
+			if(i == JOptionPane.YES_OPTION)
 			{
-				System.out.println(field.size());
-				int number;
-				try
+				field = new Field();
+				updateContentPanel();
+			}
+		}
+		else if(e.getSource() == addnoise)
+		{	
+			if(isInProgress())
+			{
+				systemIsBusy();
+				return;
+			}
+			final String s = JOptionPane.showInternalInputDialog(c, "How many points?", "Add noise", JOptionPane.QUESTION_MESSAGE);
+			
+			startProgress();
+			new MultiThread(new Runnable(){
+				public void run()
 				{
-					number = Integer.parseInt(s);
-				}
-				catch(Exception ex)
-				{
-					number = 0;
-				}
-				
-				System.out.println(field.size());
-				
-				for(int i = 0; i < number; i++)
-				{
-					
-					int x = (int) (Math.random() * 1000000000);
-					int y;
-					
-					boolean busy = true;
-					while(busy)
+					if(s != null)
 					{
-						y = (int) (Math.random() * 1000000000);
-						boolean inside = false;
-						Object[] array = field.toArray();
-						for(int j = 0; j < field.size(); j++)
+						int number;
+						try
 						{
-							if(((Point) array[j]).compareTo(x, y))
+							number = Integer.parseInt(s);
+						}
+						catch(Exception ex)
+						{
+							number = 0;
+						}
+						
+						int tillX = 1000000000;
+						int tillY = 1000000000;
+						int addX = 0;
+						int addY = 0;
+						if(inRectangle.isSelected())
+						{
+							Rectangle r = field.getBoundingRectangle();
+							if(!(r.x1 == 0 && r.y1 == 0 && r.x2 == 0 && r.y2 == 0))
 							{
-								inside = true;
-								break;
+								tillX = r.x2 - r.x1;
+								addX = r.x1;
+								tillY = r.y2 - r.y1;
+								addY = r.y1;
 							}
 						}
 						
-						if(!inside)
+						for(int i = 0; i < number; i++)
 						{
-							field.add(new Point(x, y));
-							busy = false;
+							int x = random.nextInt(tillX);
+							x += addX;
+							int y;
+							
+							boolean busy = true;
+							while(busy)
+							{
+								y = random.nextInt(tillY);
+								y += addY;
+								boolean inside = false;
+								Object[] array = field.toArray();
+								for(int j = 0; j < field.size(); j++)
+								{
+									if(((Point) array[j]).compareTo(x, y))
+									{
+										inside = true;
+										break;
+									}
+								}
+								
+								if(!inside)
+								{
+									field.add(new Point(x, y));
+									busy = false;
+								}
+							}
 						}
 					}
+					
+					stopProgress();
 				}
-				System.out.println(field.size());
-				
-			}
-			
-			updateContentPanel();
+			}).start();
 		}
 	}
 
 	public void updateContentPanel()
 	{
 		contentpanel.setField(field);
+	}
+	
+	class MultiThread extends Thread
+	{	
+		public MultiThread(Runnable r)
+		{
+			super(r);
+		}
 	}
 }

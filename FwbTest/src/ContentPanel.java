@@ -11,6 +11,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.util.Collections;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
@@ -64,9 +65,9 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
 	}
 	public void setField(Field field)
 	{
-		this.field = field;
+		// Prevent a NullPointerException
+		this.field = (Field) field.clone();
 		this.bounding = field.getBoundingRectangle();
-		
 		repaint();
 	}
 	
