@@ -15,9 +15,12 @@ public abstract class Algorithm
 	
 	public final void printPoints()
 	{
-		for(Point p : field)
+		// toArray() is much faster than listIterator()
+		Object[] obj = field.toArray();
+		for(int i = 0; i < obj.length; i++)
 		{
-			System.out.println(p.getX() + " "  + p.getY() + (p.getPointCategory() != null ? " " + p.getPointCategory().toString() : ""));
+			Point point = (Point) obj[i];
+			System.out.println(point);
 		}
 	}
 }

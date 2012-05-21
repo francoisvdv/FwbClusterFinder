@@ -63,6 +63,14 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
 	{
 		return field;
 	}
+	
+	public void center()
+	{
+		offsetX = 0;
+		offsetY = 0;
+		zoomFactor = 1;
+	}
+	
 	public void setField(Field field)
 	{
 		// Prevent a NullPointerException

@@ -50,4 +50,10 @@ public class Point
 		this.pointCategory = category;
 		category.add(this);
 	}
+	
+	@Override
+	public String toString()
+	{
+		return this.getX() + " " + this.getY() + " " + this.getPointCategory();
+	}
 }

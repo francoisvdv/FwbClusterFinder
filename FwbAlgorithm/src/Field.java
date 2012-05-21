@@ -89,25 +89,6 @@ public final class Field extends PointCollection
 		return r;
 	}
 	
-	/**
-	 * Generate and print the output of the algorithm
-	 */
-	public void generateOutput()
-	{
-		// toArray() is much faster than listIterator()
-		Object[] obj = this.toArray();
-		for(int i = 0; i < obj.length; i++)
-		{
-			Point point = (Point) obj[i];
-			System.out.println(
-					point.getX() +
-					" " +
-					point.getY() +
-					" " +
-					point.getPointCategory().getNumber());
-		}
-	}
-	
 	public void setScaledField(ScaledField scaledField)
 	{
 		this.scaledField = scaledField;
@@ -156,6 +137,7 @@ public final class Field extends PointCollection
 		if(cell.getCategory() == null)
 		{
 			Cluster cluster = this.createCluster();
+			point.assignToPointCategory(cluster);
 			floodFill(cell, cluster, point);
 		}
 		else

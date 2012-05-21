@@ -26,7 +26,7 @@ public class TestProgram extends JFrame implements ActionListener
 	
 	boolean progressWorks = false;
 	JProgressBar progress;
-	JButton open, save, addnoise, addacluster, clear;
+	JButton open, save, addnoise, addacluster, clear, center;
 	JFileChooser chooser;
 	JTextField clustersize;
 	ButtonGroup squarecircle, placeOfCluster;
@@ -79,6 +79,10 @@ public class TestProgram extends JFrame implements ActionListener
 		clear.addActionListener(this);
 		clear.setFocusPainted(false);
 		
+		center = new JButton("Center field");
+		center.addActionListener(this);
+		center.setFocusPainted(false);
+		
 		addnoise = new JButton("Add noise");
 		addnoise.setFocusPainted(false);
 		addnoise.addActionListener(this);
@@ -93,7 +97,7 @@ public class TestProgram extends JFrame implements ActionListener
 		everywhere.setFocusPainted(false);
 		inRectangle = new JRadioButton("In bounding rectangle");
 		inRectangle.setFocusPainted(false);
-		everywhere.setSelected(true);
+		inRectangle.setSelected(true);
 		
 		placeOfCluster = new ButtonGroup();
 		placeOfCluster.add(everywhere);
@@ -140,6 +144,7 @@ public class TestProgram extends JFrame implements ActionListener
 				.addComponent(clustersize)
 				.addComponent(addacluster)
 				.addComponent(sep3)
+				.addComponent(center)
 				.addComponent(clear)
 				.addComponent(empty)
 				.addComponent(progress)
@@ -171,6 +176,8 @@ public class TestProgram extends JFrame implements ActionListener
 				.addGap(5)
 				.addComponent(sep3)
 				.addGap(5)
+				.addComponent(center)
+				.addGap(3)
 				.addComponent(clear)
 				.addComponent(empty)
 				.addComponent(progress)
@@ -189,6 +196,7 @@ public class TestProgram extends JFrame implements ActionListener
 		addacluster.setMinimumSize(new Dimension(width, addacluster.getPreferredSize().height));
 		clustersize.setMaximumSize(new Dimension(width, clustersize.getPreferredSize().height));
 		
+		center.setMinimumSize(new Dimension(width, center.getPreferredSize().height));
 		clear.setMinimumSize(new Dimension(width, clear.getPreferredSize().height));
 		empty.setPreferredSize(new Dimension(width, 1000));
 		
@@ -242,6 +250,13 @@ public class TestProgram extends JFrame implements ActionListener
 		updateContentPanel();
 	}
 	
+	protected synchronized void stopProgressRepaint()
+	{
+		progressWorks = false;
+		progress.setValue(99);
+		contentpanel.repaint();
+	}
+	
 	/**
 	 * @param args command line params
 	 */
@@ -286,20 +301,47 @@ public class TestProgram extends JFrame implements ActionListener
 						.isFileApproved(chooser.getSelectedFile());
 				if(approved)
 				{
-					try
-					{
-						loadedFile = chooser.getSelectedFile();
-						FileInputStream fis = new FileInputStream(loadedFile);
-						InputParser ip = new InputParser(fis);
-						if(ip.parseInput())
+					startProgress();
+					new MultiThread(new Runnable(){
+						public void run()
 						{
-							field = new Field(new ArrayList<Point>(Arrays.asList(ip.getPoints())));
+							try
+							{
+								
+								loadedFile = chooser.getSelectedFile();
+								FileInputStream fis = new FileInputStream(loadedFile);
+								InputParser ip = new InputParser(fis);
+								if(ip.parseInput())
+								{
+									field = new Field(new ArrayList<Point>(Arrays.asList(ip.getPoints())));
+								}
+							} 
+							catch (FileNotFoundException e1){}
+							contentpanel.center();
+							stopProgress();
 						}
-					} 
-					catch (FileNotFoundException e1){}
-					updateContentPanel();
+					}).start();
+					
 				}
 			}
+		}
+		else if(e.getSource() == center)
+		{
+			if(isInProgress())
+			{
+				systemIsBusy();
+				return;
+			}
+			startProgress();
+			new MultiThread(new Runnable(){
+				public void run()
+				{
+					contentpanel.removeMouseWheelListener(contentpanel);
+					contentpanel.center();
+					contentpanel.addMouseWheelListener(contentpanel);
+					stopProgressRepaint();
+				}
+			}).start();
 		}
 		else if(e.getSource() == save)
 		{
@@ -357,6 +399,11 @@ public class TestProgram extends JFrame implements ActionListener
 		}
 		else if(e.getSource() == clear)
 		{
+			if(isInProgress())
+			{
+				systemIsBusy();
+				return;
+			}
 			int i = JOptionPane.showInternalConfirmDialog(c,
                     "Are you sure you want to clear the field?",
                     "Warning",

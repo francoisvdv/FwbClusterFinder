@@ -13,6 +13,11 @@ public class Noise extends PointCategory
 		return 0;
 	}
 	
+	public String toString()
+	{
+		return "0";
+	}
+	
 	public static Noise getInstance() //singleton
 	{
 		if(instance == null)
