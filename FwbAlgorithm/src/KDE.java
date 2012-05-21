@@ -38,6 +38,9 @@ public class KDE
 		}
 		
 		this.sortedPoints = this.sort(points);
+		
+		if(Algorithm.DEBUG)
+			this.scaledField.toFile(this.getMaxDensity());
 	}
 	
 	public float getMaxDensity()

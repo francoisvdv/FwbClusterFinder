@@ -127,4 +127,55 @@ public class ScaledField
 		y+=(float)this.rectangle.getTop();
 		return (int)y;
 	}
+	
+	public boolean toFile()
+	{
+		return this.toFile(-1f);
+	}
+	
+	public boolean toFile(float maxDens)
+	{
+		return this.toFile("outputscaledfield.fwb", maxDens);
+	}
+	
+	public boolean toFile(String filename, float maxDens)
+	{
+		java.io.File file = new java.io.File(filename);
+		if(file.exists());
+		{
+			try
+			{
+				java.io.PrintWriter out = new java.io.PrintWriter(new java.io.FileWriter(filename));
+				
+				out.println("[head]");
+				out.println("type: output");
+				out.println("source: scaledField");
+				out.println("width: " + this.GRID_WIDTH);
+				out.println("height: " + this.GRID_HEIGHT);
+				if(maxDens >= 0)
+					out.println("maxDensity: " + maxDens);
+				
+				out.println("[body]");
+				for(Cell[] row : this.grid)
+				{
+					for(Cell c : row)
+					{
+						out.print(c.getDensity() + " ");
+					}
+					
+					out.println();
+				}
+				
+				out.close();
+				
+				return true;
+			}
+			catch(java.io.IOException e)
+			{
+				System.out.println("errooooor, put your computer upside down and try again");
+				return false;
+			}
+			
+		}
+	}
 }
