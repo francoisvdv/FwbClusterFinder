@@ -32,8 +32,8 @@ public class ScaledField
 	// Moet nog ff gecheckt worden, kan zijn dat er aan de randen net iets niet goed zit.
 	public Cell[] getCellsCloseTo(Cell cell, float radius)
 	{
-		int r_x    = scaleX(radius);
-		int r_y    = scaleY(radius);
+		int r_x    = scaleX(radius) - scaleX(0);
+		int r_y    = scaleY(radius) - scaleY(0);
 		int cell_x = scaleX(cell.getMiddleX());
 		int cell_y = scaleY(cell.getMiddleY());
 		
@@ -46,7 +46,7 @@ public class ScaledField
 				Cell c = this.getCell(unscaleX(x), unscaleY(y));
 				if(c != null)
 				{
-					Float dist = Gonio.calcDistance(cell.getMiddleX(), cell.getMiddleY(), c.getMiddleX(), c.getMiddleY());
+					Float dist = Utils.calcDistance(cell.getMiddleX(), cell.getMiddleY(), c.getMiddleX(), c.getMiddleY());
 					if(dist < radius)
 					{
 						closeCells.add(c);

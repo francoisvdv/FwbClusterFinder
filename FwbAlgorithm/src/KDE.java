@@ -27,17 +27,14 @@ public class KDE
 			
 			Point p = (Point) points[i];
 			Cell c = this.scaledField.getCell(p);
-			if(c==null)
-				System.out.println(p.getX()+","+p.getY());
-			else{
 			Cell[] cells = this.scaledField.getCellsCloseTo(c, 3*this.bandwidth);
 			
 			for(int j=0; j<cells.length; j++)
 			{
 				Cell cell = cells[j];
-				float sqdist = Gonio.calcSquaredDistance(cell.getMiddleX(), cell.getMiddleY(), p.getX(), p.getY());
+				float sqdist = Utils.calcSquaredDistance(cell.getMiddleX(), cell.getMiddleY(), p.getX(), p.getY());
 				cell.increaseDensity(this.calcDensity(sqdist));
-			}}
+			}
 		}
 		
 		this.sortedPoints = this.sort(points);
@@ -56,15 +53,15 @@ public class KDE
 	// uses binarysearch
 	public int getPointCountAboveThreshold(float threshold, int start, int end)
 	{
-		if(start == end)
-			return start-sortedPoints.length-1;
+		if(start >= end)
+			return sortedPoints.length-1-start;
 		
 		int middle = (int)Math.floor((start+end)/2);
 		float dens = scaledField.getCell(sortedPoints[middle]).getDensity();
 		if(dens < threshold)
 			return getPointCountAboveThreshold(threshold, middle+1, end);
 		else if(dens > threshold)
-			return getPointCountAboveThreshold(threshold, start, middle+1);
+			return getPointCountAboveThreshold(threshold, start, middle-1);
 		else
 			return getPointCountAboveThreshold_moveLeft(threshold, middle);
 	}
@@ -159,7 +156,7 @@ public class KDE
 	// http://en.wikipedia.org/wiki/Kernel_density_estimation#Practical_estimation_of_the_bandwidth
 	protected void calcBandwidth()
 	{
-		this.bandwidth = 2;
+		this.bandwidth = 500;
 	}
 	
 	//TODO
