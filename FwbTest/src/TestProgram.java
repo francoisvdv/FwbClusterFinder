@@ -28,20 +28,22 @@ public class TestProgram extends JFrame implements ActionListener
 	JProgressBar progress;
 	JButton open, save, addnoise, addacluster, clear, center;
 	JFileChooser chooser;
-	JTextField clustersize;
 	ButtonGroup squarecircle, placeOfCluster;
 	JRadioButton circle, square, everywhere, inRectangle;
+	JSlider fillFactor;
 	
 	File loadedFile;
 	Field field;
 	Random random;
 	
+	
+	//TODO: SETACTIONMODE
 	/**
 	 * Class constructor - make the JFrame ready
 	 */
 	public TestProgram() 
 	{
-		// Set screensize
+		// Set screen size
 		Toolkit tk = Toolkit.getDefaultToolkit();  
 		int x = (int) tk.getScreenSize().getWidth() - 150;  
 		int y = (int) tk.getScreenSize().getHeight() - 100;  
@@ -57,6 +59,7 @@ public class TestProgram extends JFrame implements ActionListener
 		c.setLayout(new BorderLayout());
 		
 		contentpanel = new ContentPanel();
+		contentpanel.setField(field);
 		c.add(contentpanel, BorderLayout.CENTER);
 		
 		// Menupanel
@@ -75,13 +78,15 @@ public class TestProgram extends JFrame implements ActionListener
 		open.addActionListener(this);
 		save.addActionListener(this);
 
-		clear = new JButton("Clear field");
-		clear.addActionListener(this);
-		clear.setFocusPainted(false);
+		everywhere = new JRadioButton("Everywhere");
+		everywhere.setFocusPainted(false);
+		inRectangle = new JRadioButton("In bounding rectangle");
+		inRectangle.setFocusPainted(false);
+		inRectangle.setSelected(true);
 		
-		center = new JButton("Center field");
-		center.addActionListener(this);
-		center.setFocusPainted(false);
+		placeOfCluster = new ButtonGroup();
+		placeOfCluster.add(everywhere);
+		placeOfCluster.add(inRectangle);
 		
 		addnoise = new JButton("Add noise");
 		addnoise.setFocusPainted(false);
@@ -93,35 +98,38 @@ public class TestProgram extends JFrame implements ActionListener
 		square.setFocusPainted(false);
 		circle.setSelected(true);
 		
-		everywhere = new JRadioButton("Everywhere");
-		everywhere.setFocusPainted(false);
-		inRectangle = new JRadioButton("In bounding rectangle");
-		inRectangle.setFocusPainted(false);
-		inRectangle.setSelected(true);
-		
-		placeOfCluster = new ButtonGroup();
-		placeOfCluster.add(everywhere);
-		placeOfCluster.add(inRectangle);
-		
 		squarecircle = new ButtonGroup();
 		squarecircle.add(circle);
 		squarecircle.add(square);
 		
-		clustersize = new JTextField();
-		addacluster = new JButton("Add");
-		addacluster.setFocusPainted(false);
+		fillFactor = new JSlider();
+		fillFactor.setMajorTickSpacing(20);
+	    fillFactor.setMinorTickSpacing(5);
+	    fillFactor.setPaintTicks(true);
 		
+		addacluster = new JButton("Add simple cluster");
+		addacluster.setFocusPainted(false);
+		addacluster.addActionListener(this);
+		
+		clear = new JButton("Clear field");
+		clear.addActionListener(this);
+		clear.setFocusPainted(false);
+		
+		center = new JButton("Center field");
+		center.addActionListener(this);
+		center.setFocusPainted(false);
+	    
 		JSeparator sep1 = new JSeparator();
 		JSeparator sep2 = new JSeparator();
 		JSeparator sep3 = new JSeparator();
 		JPanel empty = new JPanel();
-		JLabel addcluster = new JLabel("Add cluster:");
+		JLabel addcluster = new JLabel("Add simple cluster:");
 		JLabel addNoise = new JLabel("Add noise");
-		JLabel addclustersize = new JLabel("Size:");
+		JLabel fillf = new JLabel("Fill factor:");
 		addcluster.setFont(f);
 		addNoise.setFont(f);
 		
-		contentpanel.setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
+		fillFactor.setPreferredSize(new Dimension(menupanel.getPreferredSize().width / 2, fillFactor.getPreferredSize().height));
 		
 		layout.setHorizontalGroup(
 			layout.createParallelGroup(GroupLayout.Alignment.CENTER)
@@ -140,8 +148,8 @@ public class TestProgram extends JFrame implements ActionListener
 				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 					.addComponent(circle)
 					.addComponent(square))
-				.addComponent(addclustersize)
-				.addComponent(clustersize)
+				.addComponent(fillf)
+				.addComponent(fillFactor)
 				.addComponent(addacluster)
 				.addComponent(sep3)
 				.addComponent(center)
@@ -169,8 +177,9 @@ public class TestProgram extends JFrame implements ActionListener
 				.addComponent(circle)
 				.addComponent(square)
 				.addGap(3)
-				.addComponent(addclustersize)
-				.addComponent(clustersize)
+				.addComponent(fillf)
+				.addGap(3)
+				.addComponent(fillFactor)
 				.addGap(3)
 				.addComponent(addacluster)
 				.addGap(5)
@@ -194,7 +203,6 @@ public class TestProgram extends JFrame implements ActionListener
 		circle.setMinimumSize(new Dimension(width - 20, circle.getPreferredSize().height));
 		square.setMinimumSize(new Dimension(width - 20, square.getPreferredSize().height));
 		addacluster.setMinimumSize(new Dimension(width, addacluster.getPreferredSize().height));
-		clustersize.setMaximumSize(new Dimension(width, clustersize.getPreferredSize().height));
 		
 		center.setMinimumSize(new Dimension(width, center.getPreferredSize().height));
 		clear.setMinimumSize(new Dimension(width, clear.getPreferredSize().height));
@@ -414,6 +422,24 @@ public class TestProgram extends JFrame implements ActionListener
 				field = new Field();
 				updateContentPanel();
 			}
+		}
+		else if(e.getSource() == circle)
+		{
+			
+		}
+		else if(e.getSource() == square)
+		{
+			
+		}
+		else if(e.getSource() == addacluster)
+		{
+			if(isInProgress())
+			{
+				systemIsBusy();
+				return;
+			}
+			
+			contentpanel.setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
 		}
 		else if(e.getSource() == addnoise)
 		{	
