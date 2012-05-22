@@ -31,6 +31,7 @@ public class TestProgram extends JFrame implements ActionListener
 	ButtonGroup squarecircle, placeOfCluster;
 	JRadioButton circle, square, everywhere, inRectangle;
 	JSlider fillFactor;
+	JButton run;
 	
 	File loadedFile;
 	Field field;
@@ -127,6 +128,9 @@ public class TestProgram extends JFrame implements ActionListener
 		addcluster.setFont(f);
 		addNoise.setFont(f);
 		
+		run = new JButton("Run algo");
+		run.addActionListener(this);
+		
 		fillFactor.setPreferredSize(new Dimension(menupanel.getPreferredSize().width / 2, fillFactor.getPreferredSize().height));
 		
 		layout.setHorizontalGroup(
@@ -152,6 +156,7 @@ public class TestProgram extends JFrame implements ActionListener
 				.addComponent(sep3)
 				.addComponent(center)
 				.addComponent(clear)
+				.addComponent(run)
 				.addComponent(empty)
 				.addComponent(progress)
 		);
@@ -186,6 +191,8 @@ public class TestProgram extends JFrame implements ActionListener
 				.addComponent(center)
 				.addGap(3)
 				.addComponent(clear)
+				.addGap(3)
+				.addComponent(run)
 				.addComponent(empty)
 				.addComponent(progress)
 		);
@@ -519,6 +526,34 @@ public class TestProgram extends JFrame implements ActionListener
 					stopProgress();
 				}
 			}).start();
+		}
+		else if(e.getSource() == run)
+		{
+			String s = JOptionPane.showInternalInputDialog(c, "Minimum clusters?", "Minimum", JOptionPane.QUESTION_MESSAGE);
+			int minimum;
+			try
+			{
+				minimum = Integer.parseInt(s);
+			}
+			catch(Exception ex)
+			{
+				minimum = 0;
+			}
+			s = JOptionPane.showInternalInputDialog(c, "Maximum clusters?", "Maximum", JOptionPane.QUESTION_MESSAGE);
+			int maximum;
+			try
+			{
+				maximum = Integer.parseInt(s);
+			}
+			catch(Exception ex)
+			{
+				maximum = 0;
+			}
+			
+			Algorithm a = new AlphaAlgorithm(minimum, maximum, field);
+			a.run();
+			
+			updateContentPanel();
 		}
 	}
 

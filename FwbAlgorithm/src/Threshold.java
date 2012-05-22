@@ -128,6 +128,6 @@ public class Threshold
 			}
 		}
 
-		return 0.005242949f;//switches.get(switches.size() - 1);
+		return switches.get(switches.size() - 1);
 	}
 }
