@@ -12,6 +12,9 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
@@ -31,6 +34,9 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
 	float zoomFactor = 1;
 	int offsetX = 0;
 	int offsetY = 0;
+	
+	Random random = new Random();
+	HashMap<PointCategory, Color> colors = new HashMap<PointCategory, Color>();
 	
 	//Input vars
 	int selectionMode = SELECT_CIRCLE;
@@ -78,6 +84,10 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
 	
 	public void setField(Field field)
 	{
+		colors.clear();
+		colors.put(null, Color.WHITE);
+		colors.put(field.getNoise(), Color.WHITE);
+		
 		this.field = field;
 		this.bounding = field.getBoundingRectangle();
 		repaint();
@@ -85,6 +95,14 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
 	public void setSelectionMode(int mode)
 	{
 		selectionMode = mode;
+	}
+	
+	public Color createOrGetColor(PointCategory category)
+	{
+		if(!colors.containsKey(category))
+			return colors.put(category, new Color(random.nextInt(255), random.nextInt(255), random.nextInt(255)));
+		
+		return colors.get(category);
 	}
 	
 	@Override
@@ -100,10 +118,14 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
 		
 		Graphics g = g1.create();
 		g.setColor(Color.BLACK);
-
+		g.fillRect(0, 0, getWidth(), getHeight());
+		
 		for(int i = 0; i < field.size(); i++)
 		{
 			Point p = field.get(i);
+			
+			g.setColor(createOrGetColor(p.getPointCategory()));
+			
 			float relX = AbsoluteToRelativeX(p.getX());
 			float relY = AbsoluteToRelativeY(p.getY());
 
@@ -112,7 +134,7 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
 			
 			g.fillOval(x, y, pointWidth, pointHeight);
 		}
-		
+		System.out.println(colors.size());
 		if(!keyCtrl && mousePressed)
 		{
 			int x1, x2, y1, y2, w, h;
@@ -122,6 +144,8 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
 			y2 = currentY > startY ? currentY : startY;
 			w = x2 - x1;
 			h = y2 - y1;
+			
+			g.setColor(Color.GRAY);
 			
 			//if(selectionMode == SELECT_SQUARE)
 				g.drawRect(x1, y1, w, h);
