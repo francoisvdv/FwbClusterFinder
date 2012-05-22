@@ -10,14 +10,21 @@ public class KDE
 	public KDE(Field field)
 	{
 		this.field = field;
+		Stopwatch.Timer boundingTimer = Stopwatch.startNewTimer("getBoundingRectangle()");
 		Rectangle r = field.getBoundingRectangle();
+		boundingTimer.stop();
+		Stopwatch.Timer SFTimer = Stopwatch.startNewTimer("constructing scaled field");
 		this.scaledField = new ScaledField(r);
+		SFTimer.stop();
 	}
 	
 	public void initialize()
 	{
+		Stopwatch.Timer bwTimer = Stopwatch.startNewTimer("calcBandwidth()");
 		this.calcBandwidth();
+		bwTimer.stop();
 		
+		Stopwatch.Timer foreachTimer = Stopwatch.startNewTimer("for each point...");
 		Point[] points = new Point[this.field.size()];
 		this.field.toArray(points);
 		
@@ -36,11 +43,12 @@ public class KDE
 				cell.increaseDensity(this.calcDensity(sqdist));
 			}
 		}
+		foreachTimer.stop();
 		
-		this.sortedPoints = this.sort(points);
-		
-		if(Algorithm.DEBUG)
-			this.scaledField.toFile(this.getMaxDensity());
+//		this.sortedPoints = this.sort(points);
+//		
+//		if(Program.DEBUG)
+//			this.scaledField.toFile(this.getMaxDensity());
 	}
 	
 	public float getMaxDensity()
