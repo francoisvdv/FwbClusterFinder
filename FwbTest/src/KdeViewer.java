@@ -62,9 +62,9 @@ public final class KdeViewer
 		if(rel <= (1/3f))
 			c = new Color(0, rel / (1/3f), 0);
 		else if(rel > (1/3f) && rel <= (2/3f))
-			c = new Color(0, 1, (rel - (1/3f)) / (1/3f));
+			c = new Color(0, 0, (rel - (1/3f)) / (1/3f));
 		else if(rel > (2/3f))
-			c = new Color((rel - (2/3f)) / (1/3f), 1, 1);
+			c = new Color((rel - (2/3f)) / (1/3f), 0, 0);
 		
 		return c;
 	}
