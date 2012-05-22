@@ -36,8 +36,6 @@ public class TestProgram extends JFrame implements ActionListener
 	Field field;
 	Random random;
 	
-	
-	//TODO: SETACTIONMODE
 	/**
 	 * Class constructor - make the JFrame ready
 	 */
@@ -425,11 +423,11 @@ public class TestProgram extends JFrame implements ActionListener
 		}
 		else if(e.getSource() == circle)
 		{
-			
+			contentpanel.setSelectionMode(ContentPanel.SELECT_CIRCLE);
 		}
 		else if(e.getSource() == square)
 		{
-			
+			contentpanel.setSelectionMode(ContentPanel.SELECT_SQUARE);
 		}
 		else if(e.getSource() == addacluster)
 		{
@@ -479,6 +477,11 @@ public class TestProgram extends JFrame implements ActionListener
 								addX = r.x1;
 								tillY = r.y2 - r.y1;
 								addY = r.y1;
+							}
+							else
+							{
+								tillX = 500000000;
+								tillY = 500000000;
 							}
 						}
 						
