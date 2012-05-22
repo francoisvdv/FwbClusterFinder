@@ -62,7 +62,7 @@ public class Threshold
   
   //Merge last thresholds  
   float mergeThreshold = (float)Math.PI / stepCount * maxThreshold; //TODO: aanpassen door testen
-  for(int i = switches.size() - 1; i >= 0; i -= 2)
+  for(int i = switches.size() - 1; i > 0; i -= 2)
   {
    if(Math.abs(switches.get(i) - switches.get(i - 1)) > mergeThreshold)
     break; //Als het een cluster is dan breakt ie altijd. Als het noise is kán hij breaken.
