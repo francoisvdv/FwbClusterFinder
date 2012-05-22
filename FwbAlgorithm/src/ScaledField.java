@@ -32,8 +32,8 @@ public class ScaledField
 	// Moet nog ff gecheckt worden, kan zijn dat er aan de randen net iets niet goed zit.
 	public Cell[] getCellsCloseTo(Cell cell, float radius)
 	{
-		int r_x    = scaleX(radius);
-		int r_y    = scaleY(radius);
+		int r_x    = scaleX(radius) - scaleX(0);
+		int r_y    = scaleY(radius) - scaleY(0);
 		int cell_x = scaleX(cell.getMiddleX());
 		int cell_y = scaleY(cell.getMiddleY());
 		
@@ -46,7 +46,7 @@ public class ScaledField
 				Cell c = this.getCell(unscaleX(x), unscaleY(y));
 				if(c != null)
 				{
-					Float dist = Gonio.calcDistance(cell.getMiddleX(), cell.getMiddleY(), c.getMiddleX(), c.getMiddleY());
+					Float dist = Utils.calcDistance(cell.getMiddleX(), cell.getMiddleY(), c.getMiddleX(), c.getMiddleY());
 					if(dist < radius)
 					{
 						closeCells.add(c);
@@ -126,5 +126,56 @@ public class ScaledField
 		y*=this.SCALE_Y;
 		y+=(float)this.rectangle.getTop();
 		return (int)y;
+	}
+	
+	public boolean toFile()
+	{
+		return this.toFile(-1f);
+	}
+	
+	public boolean toFile(float maxDens)
+	{
+		return this.toFile("outputscaledfield.fwb", maxDens);
+	}
+	
+	public boolean toFile(String filename, float maxDens)
+	{
+		java.io.File file = new java.io.File(filename);
+		if(file.exists());
+		{
+			try
+			{
+				java.io.PrintWriter out = new java.io.PrintWriter(new java.io.FileWriter(filename));
+				
+				out.println("[head]");
+				out.println("type: output");
+				out.println("source: scaledField");
+				out.println("width: " + this.GRID_WIDTH);
+				out.println("height: " + this.GRID_HEIGHT);
+				if(maxDens >= 0)
+					out.println("maxDensity: " + maxDens);
+				
+				out.println("[body]");
+				for(Cell[] row : this.grid)
+				{
+					for(Cell c : row)
+					{
+						out.print(c.getDensity() + " ");
+					}
+					
+					out.println();
+				}
+				
+				out.close();
+				
+				return true;
+			}
+			catch(java.io.IOException e)
+			{
+				System.out.println("errooooor, put your computer upside down and try again");
+				return false;
+			}
+			
+		}
 	}
 }

@@ -18,13 +18,13 @@ import javax.swing.JScrollBar;
 
 public class ContentPanel extends JPanel implements MouseListener, MouseMotionListener, MouseWheelListener
 {
-	public static final int SELECT_NONE = 0;
-	public static final int SELECT_SQUARE = 1;
-	public static final int SELECT_CIRCLE = 2;
+	public static final int SELECT_SQUARE = 0;
+	public static final int SELECT_CIRCLE = 1;
 	
 	Field field;
 	Rectangle bounding;
 	
+	//View vars
 	int pointWidth = 4;
 	int pointHeight = 4;
 	
@@ -32,9 +32,13 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
 	int offsetX = 0;
 	int offsetY = 0;
 	
+	//Input vars
+	int selectionMode = SELECT_CIRCLE;
 	boolean keyCtrl = false;
 	boolean mousePressed = false;
 	int startX, startY;
+	int currentX, currentY;
+	
 	
 	public ContentPanel()
 	{
@@ -45,6 +49,7 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
 		addMouseWheelListener(this);
 
 		setLayout(new BorderLayout());
+		setIgnoreRepaint(true);
 		
 		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyEventDispatcher()
 		{
@@ -73,10 +78,13 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
 	
 	public void setField(Field field)
 	{
-		// Prevent a NullPointerException
-		this.field = (Field) field.clone();
+		this.field = field;
 		this.bounding = field.getBoundingRectangle();
 		repaint();
+	}
+	public void setSelectionMode(int mode)
+	{
+		selectionMode = mode;
 	}
 	
 	@Override
@@ -103,6 +111,22 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
 			int y = offsetY + (int)(relY * dimension) + ((getHeight() - dimension) / 2) - (pointHeight / 2);
 			
 			g.fillOval(x, y, pointWidth, pointHeight);
+		}
+		
+		if(!keyCtrl && mousePressed)
+		{
+			int x1, x2, y1, y2, w, h;
+			x1 = currentX > startX ? startX : currentX;
+			x2 = currentX > startX ? currentX : startX;
+			y1 = currentY > startY ? startY : currentY;
+			y2 = currentY > startY ? currentY : startY;
+			w = x2 - x1;
+			h = y2 - y1;
+			
+			//if(selectionMode == SELECT_SQUARE)
+				g.drawRect(x1, y1, w, h);
+			if(selectionMode == SELECT_CIRCLE)
+				g.drawOval(x1, y1, w, h);
 		}
 	}
 	
@@ -145,11 +169,15 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
 		mousePressed = true;
 		startX = e.getX();
 		startY = e.getY();
+		currentX = startX;
+		currentY = startY;
+		repaint();
 	}
 	@Override
 	public void mouseReleased(MouseEvent e)
 	{
 		mousePressed = false;
+		repaint();
 	}
 	@Override
 	public void mouseDragged(MouseEvent e)
@@ -160,9 +188,14 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
 			offsetY += e.getY() - startY;
 			startX = e.getX();
 			startY = e.getY();
-			
-			repaint();
 		}
+		else
+		{
+			currentX = e.getX();
+			currentY = e.getY();
+		}
+		
+		repaint();
 	}
 	
 	@Override
