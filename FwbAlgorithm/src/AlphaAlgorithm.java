@@ -13,10 +13,10 @@ public class AlphaAlgorithm extends Algorithm
 		kde.initialize();
 		KDETimer.stop();
 		
-//		Threshold thresholdFinder = new Threshold();
-//		float threshold = thresholdFinder.findThreshold(kde);
-//		
-//		field.setScaledField(kde.scaledField);
-//		field.startAssigningClusters(threshold);
+		Threshold thresholdFinder = new Threshold();
+		float threshold = thresholdFinder.findThreshold(kde);
+		
+		field.setScaledField(kde.scaledField);
+		field.startAssigningClusters(threshold);
 	}
 }

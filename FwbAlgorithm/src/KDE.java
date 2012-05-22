@@ -45,10 +45,10 @@ public class KDE
 		}
 		foreachTimer.stop();
 		
-//		this.sortedPoints = this.sort(points);
-//		
-//		if(Program.DEBUG)
-//			this.scaledField.toFile(this.getMaxDensity());
+		this.sortedPoints = this.sort(points);
+		
+		if(Program.DEBUG)
+			this.scaledField.toFile(this.getMaxDensity());
 	}
 	
 	public float getMaxDensity()
