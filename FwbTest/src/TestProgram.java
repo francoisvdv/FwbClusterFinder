@@ -15,7 +15,6 @@ import javax.swing.border.TitledBorder;
 
 public class TestProgram extends JFrame implements ActionListener
 {
-	
 	static final long serialVersionUID = 6814435897208431145L;
 	static Font f;
 	
