@@ -31,6 +31,7 @@ public class TestProgram extends JFrame implements ActionListener
 	ButtonGroup squarecircle, placeOfCluster;
 	JRadioButton circle, square, everywhere, inRectangle;
 	JSlider fillFactor;
+	JTextField minAlgo, maxAlgo;
 	JButton run;
 	
 	File loadedFile;
@@ -117,19 +118,22 @@ public class TestProgram extends JFrame implements ActionListener
 		center = new JButton("Center field");
 		center.addActionListener(this);
 		center.setFocusPainted(false);
-	    
-		JSeparator sep1 = new JSeparator();
-		JSeparator sep2 = new JSeparator();
-		JSeparator sep3 = new JSeparator();
-		JPanel empty = new JPanel();
-		JLabel addcluster = new JLabel("Add simple cluster:");
-		JLabel addNoise = new JLabel("Add noise");
-		JLabel fillf = new JLabel("Fill factor:");
-		addcluster.setFont(f);
-		addNoise.setFont(f);
 		
+		minAlgo = new JTextField();
+		maxAlgo = new JTextField();
 		run = new JButton("Run algo");
 		run.addActionListener(this);
+		run.setFocusPainted(false);
+	    
+		JSeparator sep1 = new JSeparator(); JSeparator sep2 = new JSeparator();
+		JSeparator sep3 = new JSeparator(); JSeparator sep4 = new JSeparator();
+		JPanel empty = new JPanel();
+		JLabel runalgo = new JLabel("Run algorithm"), addcluster = new JLabel("Add simple cluster");
+		JLabel addNoise = new JLabel("Add noise"), fillf = new JLabel("Fill factor:");
+		JLabel minalgo = new JLabel("Min:"), maxalgo = new JLabel("Max:");
+		addcluster.setFont(f);
+		addNoise.setFont(f);
+		runalgo.setFont(f);
 		
 		fillFactor.setPreferredSize(new Dimension(menupanel.getPreferredSize().width / 2, fillFactor.getPreferredSize().height));
 		
@@ -156,6 +160,16 @@ public class TestProgram extends JFrame implements ActionListener
 				.addComponent(sep3)
 				.addComponent(center)
 				.addComponent(clear)
+				.addComponent(sep4)
+				.addComponent(runalgo)
+				.addGroup(layout.createSequentialGroup()
+					.addComponent(minalgo)
+					.addGap(2)
+					.addComponent(minAlgo)
+					.addGap(10)
+					.addComponent(maxalgo)
+					.addGap(2)
+					.addComponent(maxAlgo))
 				.addComponent(run)
 				.addComponent(empty)
 				.addComponent(progress)
@@ -191,7 +205,16 @@ public class TestProgram extends JFrame implements ActionListener
 				.addComponent(center)
 				.addGap(3)
 				.addComponent(clear)
+				.addGap(5)
+				.addComponent(sep4)
+				.addGap(5)
+				.addComponent(runalgo)
 				.addGap(3)
+				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+					.addComponent(minalgo)
+					.addComponent(minAlgo)
+					.addComponent(maxalgo)
+					.addComponent(maxAlgo))
 				.addComponent(run)
 				.addComponent(empty)
 				.addComponent(progress)
@@ -199,23 +222,41 @@ public class TestProgram extends JFrame implements ActionListener
 		
 		int width = menupanel.getPreferredSize().width;
 		
-		addNoise.setMinimumSize(new Dimension(width - 10, addNoise.getPreferredSize().height));
-		everywhere.setMinimumSize(new Dimension(width - 20, everywhere.getPreferredSize().height));
-		inRectangle.setMinimumSize(new Dimension(width - 20, inRectangle.getPreferredSize().height));
-		addnoise.setMinimumSize(new Dimension(width, addnoise.getPreferredSize().height));
+		setSize(addNoise, width - 10);
+		setSize(everywhere, width - 20);
+		setSize(inRectangle, width - 20);
+		setSize(addnoise, width);
 		
-		addcluster.setMinimumSize(new Dimension(width - 10, addcluster.getPreferredSize().height));
-		circle.setMinimumSize(new Dimension(width - 20, circle.getPreferredSize().height));
-		square.setMinimumSize(new Dimension(width - 20, square.getPreferredSize().height));
-		addacluster.setMinimumSize(new Dimension(width, addacluster.getPreferredSize().height));
+		setSize(addcluster, width - 10);
+		setSize(circle, width - 20);
+		setSize(square, width - 20);
+		setSize(addacluster, width);
 		
-		center.setMinimumSize(new Dimension(width, center.getPreferredSize().height));
-		clear.setMinimumSize(new Dimension(width, clear.getPreferredSize().height));
+		setSize(center, width);
+		setSize(clear, width);
+		
+		setSize(runalgo, width - 10);
+		setSize(minalgo, (int) Math.floor(width/4) - 20);
+		setMaxSize(minAlgo, (int) Math.ceil(width/4));
+		setSize(maxalgo, (int) Math.floor(width/4) - 20);
+		setMaxSize(maxAlgo, (int) Math.ceil(width/4));
+		setSize(run, width);
+		
 		empty.setPreferredSize(new Dimension(width, 1000));
 		
 		menupanel.setBorder(BorderFactory
 				.createTitledBorder(BorderFactory
 					.createLineBorder(Color.BLACK), "Menu", TitledBorder.CENTER, TitledBorder.DEFAULT_POSITION, f));
+	}
+	
+	void setSize(Component comp, int i)
+	{
+		comp.setMinimumSize(new Dimension(i, comp.getPreferredSize().height));
+	}
+	
+	void setMaxSize(Component comp, int i)
+	{
+		comp.setMaximumSize(new Dimension(i, comp.getPreferredSize().height));
 	}
 	
 	/**
@@ -529,31 +570,47 @@ public class TestProgram extends JFrame implements ActionListener
 		}
 		else if(e.getSource() == run)
 		{
-			String s = JOptionPane.showInternalInputDialog(c, "Minimum clusters?", "Minimum", JOptionPane.QUESTION_MESSAGE);
-			int minimum;
-			try
+			if(isInProgress())
 			{
-				minimum = Integer.parseInt(s);
-			}
-			catch(Exception ex)
-			{
-				minimum = 0;
-			}
-			s = JOptionPane.showInternalInputDialog(c, "Maximum clusters?", "Maximum", JOptionPane.QUESTION_MESSAGE);
-			int maximum;
-			try
-			{
-				maximum = Integer.parseInt(s);
-			}
-			catch(Exception ex)
-			{
-				maximum = 0;
+				systemIsBusy();
+				return;
 			}
 			
-			Algorithm a = new AlphaAlgorithm(minimum, maximum, field);
-			a.run();
+			startProgress();
+			new MultiThread(new Runnable(){
+				public void run()
+				{
+					int minumum, maximum;
+					try
+					{
+						minumum = Integer.parseInt(minAlgo.getText());
+					}
+					catch(Exception ex)
+					{
+						minumum = 0;
+					}
+					try
+					{
+						maximum = Integer.parseInt(maxAlgo.getText());
+					}
+					catch(Exception ex)
+					{
+						maximum = 0;
+					}
 			
-			updateContentPanel();
+					if(minumum <= maximum)
+					{
+						Algorithm a = new AlphaAlgorithm(minumum, maximum, field);
+						a.run();
+						stopProgress();
+					}
+					else
+					{
+						stopProgress();
+						JOptionPane.showInternalMessageDialog(c, "The min is higher than max", "Error", JOptionPane.ERROR_MESSAGE);
+					}
+				}
+			}).start();
 		}
 	}
 
