@@ -6,6 +6,7 @@ public final class Field extends PointCollection
 	private Noise noise = Noise.getInstance();
 	private Float threshold;
 	private ScaledField scaledField = null;
+	protected Rectangle boundingRectangle = null;
 	
 	public Field()
 	{
@@ -76,32 +77,40 @@ public final class Field extends PointCollection
 	 */
 	public Rectangle getBoundingRectangle()
 	{
-		Rectangle r = new Rectangle();
+		Stopwatch.Timer boundingTimer = Stopwatch.startNewTimer("getBoundingRectangle()");
 		
-		for(int i=0; i<this.size(); i++)
+		if(this.boundingRectangle == null)
 		{
-			Point p = this.get(i);
+			Rectangle r = new Rectangle();
 			
-			if(i == 0)
+			for(int i=0; i<this.size(); i++)
 			{
-				r.x1 = p.getX();
-				r.x2 = p.getX();
-				r.y1 = p.getY();
-				r.y2 = p.getY();
+				Point p = this.get(i);
+				
+				if(i == 0)
+				{
+					r.x1 = p.getX();
+					r.x2 = p.getX();
+					r.y1 = p.getY();
+					r.y2 = p.getY();
+				}
+				
+				if(p.getX() < r.x1)
+					r.x1 = p.getX();
+				else if(p.getX() > r.x2)
+					r.x2 = p.getX();
+				
+				if(p.getY() < r.y1)
+					r.y1 = p.getY();
+				else if(p.getY() > r.y2)
+					r.y2 = p.getY();
 			}
 			
-			if(p.getX() < r.x1)
-				r.x1 = p.getX();
-			else if(p.getX() > r.x2)
-				r.x2 = p.getX();
-			
-			if(p.getY() < r.y1)
-				r.y1 = p.getY();
-			else if(p.getY() > r.y2)
-				r.y2 = p.getY();
+			this.boundingRectangle = r;
 		}
-		
-		return r;
+
+		boundingTimer.stop();
+		return this.boundingRectangle;
 	}
 	
 	public void setScaledField(ScaledField scaledField)

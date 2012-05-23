@@ -13,12 +13,7 @@ public class KDE
 	public KDE(Field field)
 	{
 		this.field = field;
-		Stopwatch.Timer boundingTimer = Stopwatch.startNewTimer("getBoundingRectangle()");
-		Rectangle r = field.getBoundingRectangle();
-		boundingTimer.stop();
-		Stopwatch.Timer SFTimer = Stopwatch.startNewTimer("constructing scaled field");
-		this.scaledField = new ScaledField(r);
-		SFTimer.stop();
+		this.initialize();
 	}
 	
 	public void initialize()
@@ -27,7 +22,9 @@ public class KDE
 		this.calcBandwidth();
 		bwTimer.stop();
 		
-		int cellcount = 0;
+		Stopwatch.Timer SFTimer = Stopwatch.startNewTimer("constructing scaled field");
+		this.scaledField = new ScaledField(field.getBoundingRectangle(), this.bandwidth);
+		SFTimer.stop();
 		
 		Stopwatch.Timer foreachTimer = Stopwatch.startNewTimer("for each point...");
 		Point[] points = new Point[this.field.size()];
@@ -39,11 +36,7 @@ public class KDE
 			
 			Point p = (Point) points[i];
 			Cell c = this.scaledField.getCell(p);
-			Cell[] cells = this.scaledField.getCellsCloseTo(c, 3*this.bandwidth);
-			
-			if(cells.length > cellcount)
-				cellcount = cells.length;
-			//cellcount += cells.length/points.length;
+			Cell[] cells = this.scaledField.getCellsCloseTo(c, Constants.KDE.BWRADIUS*this.bandwidth);
 			
 			for(int j=0; j<cells.length; j++)
 			{
@@ -56,11 +49,13 @@ public class KDE
 			}
 		}
 		foreachTimer.stop();
-		System.out.println(cellcount);
+		
 		if(Program.DEBUG)
 			this.scaledField.toFile(this.getMaxDensity());
 		
-		//this.sortedPoints = this.sort(points);
+		Stopwatch.Timer sortTimer = Stopwatch.startNewTimer("sorting points on density");
+		this.sortedPoints = this.sort(points);
+		sortTimer.stop();
 	}
 	
 	public float getMaxDensity()
@@ -184,7 +179,12 @@ public class KDE
 	// http://en.wikipedia.org/wiki/Kernel_density_estimation#Practical_estimation_of_the_bandwidth
 	protected void calcBandwidth()
 	{
-		this.bandwidth = 5000000;
+		float c = Constants.KDE.BWFACTOR;
+		float s = this.field.getBoundingRectangle().getSurface();
+		float n = this.field.size();
+		this.bandwidth = (float) (c*Math.sqrt((double)s)/n);
+//		System.out.println("w: " + field.getBoundingRectangle().getWidth() + ", h: " + field.getBoundingRectangle().getHeight());
+//		System.out.println(c + "*sqrt(" + s + ")/" + n + " = " + this.bandwidth);
 	}
 	
 	//TODO
@@ -195,7 +195,7 @@ public class KDE
 		return (float) (a * Math.pow(
 				Math.E,
 				//-1 * (Math.pow(distance ,2) / (2*Math.pow(this.bandwidth, 2)))
-				-1 * (squaredDistance / (2*Math.pow(this.bandwidth, 2))) // distance is al squared
+				-1 * (squaredDistance / (2*Math.pow(this.bandwidth, 2))) // distance is already squared
 			));
 	}
 }

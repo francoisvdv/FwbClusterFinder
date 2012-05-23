@@ -30,4 +30,8 @@ public class Rectangle
 	{
 		return (x >= getLeft() && x <= getRight() && y >= getTop() && y <= getBottom());
 	}
+	public float getSurface()
+	{
+		return (long)getWidth()*(long)getHeight();
+	}
 }
