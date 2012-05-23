@@ -85,7 +85,7 @@ public class ScaledField
 		if(!this.rectangle.contains(x, y))
 			return null;
 		
-		Cell cell = this.grid[scaledX][scaledX];
+		Cell cell = this.grid[scaledX][scaledY];
 		assert cell.isInCell(x, y);
 		
 		return cell;
