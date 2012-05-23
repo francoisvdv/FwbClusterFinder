@@ -17,7 +17,7 @@ public class FwbParser
 	
 	static Scanner inputScanner;
 	
-	public static Result parse(InputStream stream)
+	public static Result parse(InputStream stream, boolean output)
 	{
 		inputScanner = new Scanner(stream);
 		inputScanner.useLocale(Locale.US);
@@ -41,11 +41,24 @@ public class FwbParser
 
 		r.densities = new float[r.width][r.height];
 		
+		int lastPercentage = 0;
+		
 		for(int i = 0; i < r.width; i++)
 		{
 			for(int j = 0; j < r.height; j++)
 			{
 				r.densities[i][j] = inputScanner.nextFloat();
+			}
+			
+			if(output)
+			{
+				//Output parse percentage
+				int newPercentage = Math.round(i / (float)r.width * 100);
+				if(newPercentage != lastPercentage)
+				{
+					System.out.print(".");
+					lastPercentage = newPercentage;
+				}
 			}
 		}
 		
