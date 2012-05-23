@@ -6,21 +6,24 @@ import java.util.ArrayList;
  */
 
 
-public class Stopwatch
+public final class Stopwatch
 {
-	protected String name;
-	protected ArrayList<Timer> timers = new ArrayList<Timer>();
+	protected static String name;
+	protected static ArrayList<Timer> timers = new ArrayList<Timer>();
 	
-	public Stopwatch(String name)
+	public static void setName(String name)
 	{
-		this.name = name;
+		Stopwatch.name = name;
 	}
 	
-	protected class Timer
+	protected static class Timer
 	{
 		protected String name;
 		protected long startTime;
-		protected long stopTime;
+		protected long stopTime = -1;
+		protected static int numberOfTimersRunning = 0;
+		protected static final int maxNameLength = 48;
+		protected int r = 0;
 		
 		public Timer(String name)
 		{
@@ -29,24 +32,62 @@ public class Stopwatch
 		
 		public void start()
 		{
-	        this.startTime = System.currentTimeMillis();
+	        assert stopTime != -1 : "Cannot restart a timer";
+	        
+	        this.r = Timer.numberOfTimersRunning++;
+			this.startTime = System.currentTimeMillis();
 	    }
 	    
 	    public void stop()
 	    {
-	        this.stopTime = System.currentTimeMillis();
+	    	Timer.numberOfTimersRunning--;
+	    	this.stopTime = System.currentTimeMillis();
 	    }
 	    
-	    public long getElapsedTime() {
+	    public long getElapsedTime()
+	    {
 	        return stopTime - startTime;
+	    }
+	    
+	    public String getResult()
+	    {
+	    	assert Timer.numberOfTimersRunning == 0;
+	    	
+	    	String space1 = "";
+	    	for(int i=0; i<r; i++)
+	    		space1 += "  ";
+	    	
+	    	String time = Long.toString(this.getElapsedTime());
+	    	
+	    	String space2 = "";
+	    	for(int i=0; i<Timer.maxNameLength - this.name.length() - 2*this.r + 10 - time.length(); i++)
+	    		space2 += " ";
+	    	
+	    	return  space1 + "+ " + this.name + space2 + time + "\r\n";
 	    }
 	}
 	
-	public Timer StartNewTimer(String name)
+	public static Timer startNewTimer(String name)
 	{
 		Timer t = new Timer(name);
-		this.timers.add(t);
+		Stopwatch.timers.add(t);
 		t.start();
 		return t;
+	}
+	
+	public static String getResult()
+	{
+		String result = "-----------------------\r\n";
+		result       += "-- Stopwatch results --\r\n";
+		result       += "-----------------------\r\n";
+		
+		for(Timer t : Stopwatch.timers)
+		{
+			result += t.getResult();
+		}
+		
+		result       += "-----------------------\r\n";
+		
+		return result;
 	}
 }

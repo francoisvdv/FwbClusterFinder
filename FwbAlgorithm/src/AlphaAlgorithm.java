@@ -8,8 +8,10 @@ public class AlphaAlgorithm extends Algorithm
 	@Override
 	public void run()
 	{
+		Stopwatch.Timer KDETimer = Stopwatch.startNewTimer("KDE initialize");
 		KDE kde = new KDE(this.field);
 		kde.initialize();
+		KDETimer.stop();
 		
 		Threshold thresholdFinder = new Threshold();
 		float threshold = thresholdFinder.findThreshold(kde);

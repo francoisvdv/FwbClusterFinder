@@ -65,9 +65,11 @@ public final class Field extends PointCollection
 	{
 		Rectangle r = new Rectangle();
 		
-		for(Point p : this)
+		for(int i=0; i<this.size(); i++)
 		{
-			if(this.indexOf(p) == 0)
+			Point p = this.get(i);
+			
+			if(i == 0)
 			{
 				r.x1 = p.getX();
 				r.x2 = p.getX();

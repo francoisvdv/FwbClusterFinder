@@ -1,3 +1,5 @@
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.LinkedList;
 
 public class ScaledField
@@ -7,6 +9,7 @@ public class ScaledField
 	protected final float SCALE_X, SCALE_Y;
 	protected final int GRID_WIDTH  = 1000,
 						GRID_HEIGHT = 1000;
+	NumberFormat formatter = new DecimalFormat("#0.00000000");
 	
 	public ScaledField(Rectangle rect)
 	{
@@ -15,8 +18,11 @@ public class ScaledField
 		this.SCALE_X = (float)rect.getWidth() /this.GRID_WIDTH;
 		this.SCALE_Y = (float)rect.getHeight()/this.GRID_HEIGHT;
 		
+		Stopwatch.Timer gridTimer = Stopwatch.startNewTimer("make emty grid");
 		this.grid = new Cell[GRID_WIDTH][GRID_HEIGHT];
+		gridTimer.stop();
 		
+		Stopwatch.Timer fillTimer = Stopwatch.startNewTimer("filling the grid");
 		for(int x=0; x<GRID_WIDTH; x++)
 		{
 			for(int y=0; y<GRID_HEIGHT; y++)
@@ -27,6 +33,7 @@ public class ScaledField
 											unscaleY(y+1));
 			}
 		}
+		fillTimer.stop();
 	}
 	
 	// Moet nog ff gecheckt worden, kan zijn dat er aan de randen net iets niet goed zit.
@@ -161,6 +168,7 @@ public class ScaledField
 					for(Cell c : row)
 					{
 						out.print(c.getDensity() + " ");
+						//out.print(formatter.format( ( (double) Math.round(c.getDensity()*100000000) ) / 1000000 ) + " ");
 					}
 					
 					out.println();

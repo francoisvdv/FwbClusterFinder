@@ -4,8 +4,6 @@ public abstract class Algorithm
 	protected int maximumClusters;
 	protected Field field;
 	
-	public final static boolean DEBUG = true;
-	
 	public Algorithm(int minimumClusters, int maximumClusters, Field field)
 	{
 		this.minimumClusters = minimumClusters;
