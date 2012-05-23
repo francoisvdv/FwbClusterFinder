@@ -120,7 +120,9 @@ public class TestProgram extends JFrame implements ActionListener
 		center.setFocusPainted(false);
 		
 		minAlgo = new JTextField();
+		minAlgo.setText("0");
 		maxAlgo = new JTextField();
+		maxAlgo.setText("10");
 		run = new JButton("Run algo");
 		run.addActionListener(this);
 		run.setFocusPainted(false);
@@ -273,23 +275,7 @@ public class TestProgram extends JFrame implements ActionListener
 	protected synchronized void startProgress()
 	{
 		progressWorks = true;
-		new Thread(new Runnable(){
-			public void run()
-			{
-				int value = 0;
-				while(progressWorks)
-				{
-					try
-					{
-						progress.setValue(value);
-						value++;
-						value %= 100;
-						Thread.sleep(10);
-					}
-					catch(Exception ex){}
-				}
-			}
-		}).start();
+		progress.setIndeterminate(true);
 	}
 	
 	protected synchronized boolean isInProgress()
@@ -300,14 +286,14 @@ public class TestProgram extends JFrame implements ActionListener
 	protected synchronized void stopProgress()
 	{
 		progressWorks = false;
-		progress.setValue(99);
+		progress.setIndeterminate(false);
 		updateContentPanel();
 	}
 	
 	protected synchronized void stopProgressRepaint()
 	{
 		progressWorks = false;
-		progress.setValue(99);
+		progress.setIndeterminate(false);
 		contentpanel.repaint();
 	}
 	
