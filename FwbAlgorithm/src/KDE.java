@@ -6,6 +6,9 @@ public class KDE
 	protected Field field;
 	protected float bandwidth;
 	protected Point[] sortedPoints;
+	protected float maxDens;
+	
+	protected int recursiveCount = 0;
 	
 	public KDE(Field field)
 	{
@@ -24,6 +27,8 @@ public class KDE
 		this.calcBandwidth();
 		bwTimer.stop();
 		
+		int cellcount = 0;
+		
 		Stopwatch.Timer foreachTimer = Stopwatch.startNewTimer("for each point...");
 		Point[] points = new Point[this.field.size()];
 		this.field.toArray(points);
@@ -36,24 +41,31 @@ public class KDE
 			Cell c = this.scaledField.getCell(p);
 			Cell[] cells = this.scaledField.getCellsCloseTo(c, 3*this.bandwidth);
 			
+			if(cells.length > cellcount)
+				cellcount = cells.length;
+			//cellcount += cells.length/points.length;
+			
 			for(int j=0; j<cells.length; j++)
 			{
 				Cell cell = cells[j];
 				float sqdist = Utils.calcSquaredDistance(cell.getMiddleX(), cell.getMiddleY(), p.getX(), p.getY());
 				cell.increaseDensity(this.calcDensity(sqdist));
+				
+				if(cell.getDensity() > this.maxDens)
+					this.maxDens = cell.getDensity();
 			}
 		}
 		foreachTimer.stop();
-		
-		this.sortedPoints = this.sort(points);
-		
+		System.out.println(cellcount);
 		if(Program.DEBUG)
 			this.scaledField.toFile(this.getMaxDensity());
+		
+		//this.sortedPoints = this.sort(points);
 	}
 	
 	public float getMaxDensity()
 	{
-		return scaledField.getCell(sortedPoints[sortedPoints.length-1]).getDensity();
+		return this.maxDens;
 	}
 	
 	public int getPointCountAboveThreshold(float threshold)
@@ -96,6 +108,11 @@ public class KDE
 	// in-place version of quicksort
 	protected void sort_recursive(Point[] partiallySorted, int start, int end)
 	{
+		recursiveCount++;
+		String s;
+		if(recursiveCount > 64)
+			s = "breakpoint here";
+		
 		if(start >= end)
 			return;
 		
@@ -167,7 +184,7 @@ public class KDE
 	// http://en.wikipedia.org/wiki/Kernel_density_estimation#Practical_estimation_of_the_bandwidth
 	protected void calcBandwidth()
 	{
-		this.bandwidth = 500;
+		this.bandwidth = 5000000;
 	}
 	
 	//TODO

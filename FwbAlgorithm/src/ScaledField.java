@@ -9,7 +9,7 @@ public class ScaledField
 	protected final float SCALE_X, SCALE_Y;
 	protected final int GRID_WIDTH  = 1000,
 						GRID_HEIGHT = 1000;
-	NumberFormat formatter = new DecimalFormat("#0.00000000");
+	//NumberFormat formatter = new DecimalFormat("#0.00000000");
 	
 	public ScaledField(Rectangle rect)
 	{
@@ -44,17 +44,23 @@ public class ScaledField
 		int cell_x = scaleX(cell.getMiddleX());
 		int cell_y = scaleY(cell.getMiddleY());
 		
+		int leftBorder = Math.max(cell_x-r_x, 0);
+		int rightBorder = Math.min(cell_x+r_x, GRID_WIDTH-1);
+		int topBorder = Math.max(cell_y-r_y, 0);
+		int botBorder = Math.min(cell_y+r_y, GRID_HEIGHT-1);
+		
 		LinkedList<Cell> closeCells = new LinkedList<Cell>();
 		
-		for(int x=cell_x-r_x; x<cell_x+r_x; x++)
+		for(int x=leftBorder; x<=rightBorder; x++)
 		{
-			for(int y=cell_y-r_y; y<cell_y+r_y; y++)
+			for(int y=topBorder; y<=botBorder; y++)
 			{
-				Cell c = this.getCell(unscaleX(x), unscaleY(y));
+				Cell c = this.getCell_scaled(x, y);
+				//Cell c = this.getCell(scaleX(x), scaleY(y));
 				if(c != null)
 				{
-					Float dist = Utils.calcDistance(cell.getMiddleX(), cell.getMiddleY(), c.getMiddleX(), c.getMiddleY());
-					if(dist < radius)
+					float dist = Utils.calcDistance(cell.getMiddleX(), cell.getMiddleY(), c.getMiddleX(), c.getMiddleY());
+					if(dist <= radius)
 					{
 						closeCells.add(c);
 					}
@@ -69,6 +75,20 @@ public class ScaledField
 	public Cell getCell(Point point)
 	{
 		return getCell(point.getX(), point.getY());
+	}
+	
+	public Cell getCell_scaled(int scaledX, int scaledY)
+	{
+		int x = unscaleX(scaledX);
+		int y = unscaleY(scaledY);
+
+		if(!this.rectangle.contains(x, y))
+			return null;
+		
+		Cell cell = this.grid[scaledX][scaledX];
+		assert cell.isInCell(x, y);
+		
+		return cell;
 	}
 	
 	public Cell getCell(int x, int y)
@@ -161,6 +181,7 @@ public class ScaledField
 				out.println("height: " + this.GRID_HEIGHT);
 				if(maxDens >= 0)
 					out.println("maxDensity: " + maxDens);
+					//out.println("maxDensity: " + String.format(java.util.Locale.US, "%f", maxDens));
 				
 				out.println("[body]");
 				for(Cell[] row : this.grid)
@@ -168,6 +189,7 @@ public class ScaledField
 					for(Cell c : row)
 					{
 						out.print(c.getDensity() + " ");
+						//out.print(String.format(java.util.Locale.US, "%f", c.getDensity()) + " ");
 						//out.print(formatter.format( ( (double) Math.round(c.getDensity()*100000000) ) / 1000000 ) + " ");
 					}
 					

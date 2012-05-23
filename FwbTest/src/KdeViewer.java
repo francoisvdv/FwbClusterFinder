@@ -18,8 +18,12 @@ public final class KdeViewer
 		FwbParser.Result in = null;
 		try
 		{
-			in = FwbParser.parse(new FileInputStream(new File("../FwbAlgorithm/outputscaledfield.fwb")));
-		} catch (FileNotFoundException e)
+			File f = new File("../FwbAlgorithm/outputscaledfield.fwb");
+			assert f.exists();
+			
+			in = FwbParser.parse(new FileInputStream(f));
+		}
+		catch (FileNotFoundException e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
