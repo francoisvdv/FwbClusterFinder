@@ -52,9 +52,22 @@ public final class Field extends PointCollection
 		}
 	}
 	
+	/**
+	 * Get the noise
+	 * @return the noise
+	 */
 	public Noise getNoise()
 	{
 		return this.noise;
+	}
+	
+	/**
+	 * Get the clusters
+	 * @return the clusters in an ArrayList
+	 */
+	public ArrayList<Cluster> getClusters()
+	{
+		return clusters;
 	}
 	
 	/**

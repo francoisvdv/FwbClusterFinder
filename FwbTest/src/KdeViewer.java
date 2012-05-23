@@ -1,4 +1,5 @@
 import java.awt.Color;
+import java.awt.Desktop;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -12,30 +13,36 @@ public final class KdeViewer
 {	
 	/**
 	 * @param args
+	 * @throws IOException 
 	 */
-	public static void main(String[] args)
+	public static void main(String[] args) throws IOException
 	{
-		FwbParser.Result in = null;
-		try
+		File f = new File("../FwbAlgorithm/outputscaledfield.fwb");
+		if(!f.exists())
 		{
-			File f = new File("../FwbAlgorithm/outputscaledfield.fwb");
-			assert f.exists();
-			
-			in = FwbParser.parse(new FileInputStream(f));
-		}
-		catch (FileNotFoundException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("File doesn't exist");
+			return;
 		}
 		
+		System.out.print("Parsing input file... 0%");
+		
+		FwbParser.Result in = FwbParser.parse(new FileInputStream(f), true);
 		if(in == null || in.densities == null)
+		{
+			System.out.println("Wrong input format");
 			return;
+		}
+		
+		System.out.println("100%");
+		
+		System.out.print("Writing png file... 0%");
 		
 		BufferedImage img = new BufferedImage(in.width, in.height, BufferedImage.TYPE_INT_RGB);
 		Graphics g = img.createGraphics();
 		g.setColor(Color.WHITE);
 		g.fillRect(0, 0, img.getWidth(), img.getHeight());
+		
+		int lastPercentage = 0;
 		
 		for(int i = 0; i < in.width; i++)
 		{
@@ -44,8 +51,18 @@ public final class KdeViewer
 				g.setColor(densityToColor(in.densities[i][j], in.maxDensity));
 				g.drawLine(i, j, i, j);
 			}
+
+			//Output parse percentage
+			int newPercentage = Math.round(i / (float)in.width * 100);
+			if(newPercentage != lastPercentage)
+			{
+				System.out.print(".");
+				lastPercentage = newPercentage;
+			}
 		}
 
+		System.out.print("100%");
+		
 	    // retrieve image
 	    File outputfile = new File("outputscaledfield.png");
 	    try
@@ -56,7 +73,8 @@ public final class KdeViewer
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
+	    
+	    Desktop.getDesktop().open(outputfile);
 	}
 	
 	static Color densityToColor(float density, float maxDensity)
