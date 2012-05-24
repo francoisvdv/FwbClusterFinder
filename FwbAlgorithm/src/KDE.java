@@ -6,16 +6,14 @@ public class KDE
 	protected Field field;
 	protected float bandwidth;
 	protected Point[] sortedPoints;
+	protected float maxDens;
+	
+	protected int recursiveCount = 0;
 	
 	public KDE(Field field)
 	{
 		this.field = field;
-		Stopwatch.Timer boundingTimer = Stopwatch.startNewTimer("getBoundingRectangle()");
-		Rectangle r = field.getBoundingRectangle();
-		boundingTimer.stop();
-		Stopwatch.Timer SFTimer = Stopwatch.startNewTimer("constructing scaled field");
-		this.scaledField = new ScaledField(r);
-		SFTimer.stop();
+		this.initialize();
 	}
 	
 	public void initialize()
@@ -23,6 +21,10 @@ public class KDE
 		Stopwatch.Timer bwTimer = Stopwatch.startNewTimer("calcBandwidth()");
 		this.calcBandwidth();
 		bwTimer.stop();
+		
+		Stopwatch.Timer SFTimer = Stopwatch.startNewTimer("constructing scaled field");
+		this.scaledField = new ScaledField(field.getBoundingRectangle(), this.bandwidth);
+		SFTimer.stop();
 		
 		Stopwatch.Timer foreachTimer = Stopwatch.startNewTimer("for each point...");
 		Point[] points = new Point[this.field.size()];
@@ -34,26 +36,31 @@ public class KDE
 			
 			Point p = (Point) points[i];
 			Cell c = this.scaledField.getCell(p);
-			Cell[] cells = this.scaledField.getCellsCloseTo(c, 3*this.bandwidth);
+			Cell[] cells = this.scaledField.getCellsCloseTo(c, Constants.KDE.BWRADIUS*this.bandwidth);
 			
 			for(int j=0; j<cells.length; j++)
 			{
 				Cell cell = cells[j];
 				float sqdist = Utils.calcSquaredDistance(cell.getMiddleX(), cell.getMiddleY(), p.getX(), p.getY());
 				cell.increaseDensity(this.calcDensity(sqdist));
+				
+				if(cell.getDensity() > this.maxDens)
+					this.maxDens = cell.getDensity();
 			}
 		}
 		foreachTimer.stop();
 		
-		this.sortedPoints = this.sort(points);
-		
 		if(Program.DEBUG)
 			this.scaledField.toFile(this.getMaxDensity());
+		
+		Stopwatch.Timer sortTimer = Stopwatch.startNewTimer("sorting points on density");
+		this.sortedPoints = this.sort(points);
+		sortTimer.stop();
 	}
 	
 	public float getMaxDensity()
 	{
-		return scaledField.getCell(sortedPoints[sortedPoints.length-1]).getDensity();
+		return this.maxDens;
 	}
 	
 	public int getPointCountAboveThreshold(float threshold)
@@ -96,6 +103,11 @@ public class KDE
 	// in-place version of quicksort
 	protected void sort_recursive(Point[] partiallySorted, int start, int end)
 	{
+		recursiveCount++;
+		String s;
+		if(recursiveCount > 64)
+			s = "breakpoint here";
+		
 		if(start >= end)
 			return;
 		
@@ -167,7 +179,12 @@ public class KDE
 	// http://en.wikipedia.org/wiki/Kernel_density_estimation#Practical_estimation_of_the_bandwidth
 	protected void calcBandwidth()
 	{
-		this.bandwidth = 500;
+		float c = Constants.KDE.BWFACTOR;
+		float s = this.field.getBoundingRectangle().getSurface();
+		float n = this.field.size();
+		this.bandwidth = (float) (c*Math.sqrt((double)s)/n);
+//		System.out.println("w: " + field.getBoundingRectangle().getWidth() + ", h: " + field.getBoundingRectangle().getHeight());
+//		System.out.println(c + "*sqrt(" + s + ")/" + n + " = " + this.bandwidth);
 	}
 	
 	//TODO
@@ -178,7 +195,7 @@ public class KDE
 		return (float) (a * Math.pow(
 				Math.E,
 				//-1 * (Math.pow(distance ,2) / (2*Math.pow(this.bandwidth, 2)))
-				-1 * (squaredDistance / (2*Math.pow(this.bandwidth, 2))) // distance is al squared
+				-1 * (squaredDistance / (2*Math.pow(this.bandwidth, 2))) // distance is already squared
 			));
 	}
 }

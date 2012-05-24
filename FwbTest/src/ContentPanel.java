@@ -33,6 +33,7 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
 	int pointWidth = 4;
 	int pointHeight = 4;
 	
+	Rectangle visible;
 	float zoomFactor = 1;
 	int offsetX = 0;
 	int offsetY = 0;
@@ -51,7 +52,7 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
 	public ContentPanel()
 	{
 		super();
-		
+
 		addMouseListener(this);
 		addMouseMotionListener(this);
 		addMouseWheelListener(this);
@@ -177,15 +178,29 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
 		return (float)(y - bounding.y1) / (float)(bounding.y2 - bounding.y1);
 	}
 	
+	public float RelativeToAbsoluteX(float x)
+	{
+		return 0;
+	}
+	
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e)
 	{
 		// TODO Auto-generated method stub
 
 		if(e.getWheelRotation() > 0)
+		{
 			zoomFactor /= 1.5f;
+			offsetX /= 1.5f;
+			offsetY /= 1.5f;
+		}
 		else if(e.getWheelRotation() < 0)
+		{
 			zoomFactor *= 1.5f;
+			offsetX *= 1.5f;
+			offsetY *= 1.5f;
+		}
+		
 		
 		repaint();
 	}
