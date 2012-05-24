@@ -41,6 +41,7 @@ public class Point
 	{
 		return pointCategory;
 	}
+	
 	/**
 	 * Should only be called by the Field class.
 	 * @param category
