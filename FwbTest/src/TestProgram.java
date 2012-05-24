@@ -582,43 +582,8 @@ public class TestProgram extends JFrame implements ActionListener
 			checkRunned();
 			
 			startProgress();
-			new MultiThread(new Runnable(){
-				public void run()
-				{
-					int minumum, maximum;
-					try
-					{
-						minumum = Integer.parseInt(minAlgo.getText());
-					}
-					catch(Exception ex)
-					{
-						minumum = 0;
-					}
-					try
-					{
-						maximum = Integer.parseInt(maxAlgo.getText());
-					}
-					catch(Exception ex)
-					{
-						maximum = 0;
-					}
 			
-					if(minumum <= maximum)
-					{
-						Algorithm a = new AlphaAlgorithm(minumum, maximum, field);
-						a.run();
-						runned = true;
-						updateList();
-						stopProgress();
-						list.selectAll();
-					}
-					else
-					{
-						stopProgress();
-						JOptionPane.showInternalMessageDialog(c, "The min is higher than max", "Error", JOptionPane.ERROR_MESSAGE);
-					}
-				}
-			}).start();
+			
 		}
 	}
 
@@ -683,6 +648,49 @@ public class TestProgram extends JFrame implements ActionListener
 	void repaintContentPanel()
 	{
 		contentpanel.repaint();
+	}
+	
+	void runAlgo()
+	{
+		new MultiThread(new Runnable(){
+			public void run()
+			{
+				int minumum, maximum;
+				try
+				{
+					minumum = Integer.parseInt(minAlgo.getText());
+				}
+				catch(Exception ex)
+				{
+					minumum = 0;
+				}
+				try
+				{
+					maximum = Integer.parseInt(maxAlgo.getText());
+				}
+				catch(Exception ex)
+				{
+					maximum = 0;
+				}
+		
+				if(minumum <= maximum)
+				{
+					AlphaAlgorithm a = new AlphaAlgorithm(minumum, maximum, field);
+					a.run();
+					runned = true;
+					updateList();
+					stopProgress();
+					list.selectAll();
+					
+					
+				}
+				else
+				{
+					stopProgress();
+					JOptionPane.showInternalMessageDialog(c, "The min is higher than max", "Error", JOptionPane.ERROR_MESSAGE);
+				}
+			}
+		}).start();
 	}
 	
 	class MultiThread extends Thread
