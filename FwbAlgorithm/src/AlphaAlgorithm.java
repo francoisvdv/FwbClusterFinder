@@ -1,5 +1,7 @@
 public class AlphaAlgorithm extends Algorithm
 {
+	public KDE kde;
+	
 	public AlphaAlgorithm(int minimumClusters, int maximumClusters, Field field)
 	{
 		super(minimumClusters, maximumClusters, field);
@@ -9,7 +11,7 @@ public class AlphaAlgorithm extends Algorithm
 	public void run()
 	{
 		Stopwatch.Timer KDETimer = Stopwatch.startNewTimer("KDE initialize");
-		KDE kde = new KDE(this.field);
+		kde = new KDE(this.field);
 		KDETimer.stop();
 		
 		Threshold thresholdFinder = new Threshold();
