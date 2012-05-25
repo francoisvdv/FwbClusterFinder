@@ -495,9 +495,8 @@ public class TestProgram extends JFrame implements ActionListener
 				return;
 			}
 			
-			final String s = JOptionPane.showInternalInputDialog(c, "How many points?", "Add noise", JOptionPane.QUESTION_MESSAGE);
-			
 			checkRunned();
+			final String s = JOptionPane.showInternalInputDialog(c, "How many points?", "Add noise", JOptionPane.QUESTION_MESSAGE);
 			
 			startProgress();
 			new MultiThread(new Runnable(){
@@ -583,15 +582,19 @@ public class TestProgram extends JFrame implements ActionListener
 			
 			startProgress();
 			
-			
+			runAlgo();
 		}
 	}
 
 	void checkRunned()
 	{
 		if(runned)
-		{
-			list.selectAll();
+		{	
+			list.selectAll();				// Add all clusters to Field again
+			contentpanel.resetColors();		// Reset the colors
+			PointCategory.resetIndex();		// Reset the point index
+			field.reset();					// Reset the field
+			updateContentPanel();
 			empty.removeAll();
 			empty.validate();
 			runned = false;

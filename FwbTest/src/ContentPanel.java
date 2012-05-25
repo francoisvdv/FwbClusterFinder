@@ -73,6 +73,15 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
 
 	}
 	
+	
+	/**
+	 * Reset all colors. 
+	 */
+	protected void resetColors()
+	{
+		colors = new HashMap<PointCategory, Color>();
+	}
+	
 	public Field getField()
 	{
 		return field;

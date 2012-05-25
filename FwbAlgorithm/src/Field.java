@@ -21,7 +21,7 @@ public final class Field extends PointCollection
 	
 	public Cluster createCluster()
 	{
-		Cluster c = new Cluster(clusters.size());
+		Cluster c = new Cluster();
 		clusters.add(c);
 		return c;
 	}
@@ -70,6 +70,21 @@ public final class Field extends PointCollection
 	public ArrayList<Cluster> getClusters()
 	{
 		return clusters;
+	}
+	
+	public void reset()
+	{
+		noise.clear();
+		for(Cluster cluster : clusters)
+		{
+			cluster.clear();
+		}
+		clusters.clear();
+		
+		for(Point p : this)
+		{
+			p.resetPointCategory();
+		}
 	}
 	
 	/**
@@ -128,6 +143,7 @@ public final class Field extends PointCollection
 	 */
 	public void startAssigningClusters(Float threshold)
 	{
+		long time = System.currentTimeMillis();
 		this.threshold = threshold;
 		
 		// toArray() is much faster than listIterator()
@@ -147,6 +163,7 @@ public final class Field extends PointCollection
 				}
 			}
 		}
+		System.out.println("FloodFill took: "+ (System.currentTimeMillis() - time));
 	}
 	
 	/**
@@ -179,7 +196,7 @@ public final class Field extends PointCollection
 	 */	
 	public void floodFill(Cell cell, Cluster cluster)
 	{
-		cell.setCategory(cluster);
+		//cell.setCategory(cluster);
 		LinkedList<Cell> list = new LinkedList<Cell>();
 		list.addLast(cell);
 		
@@ -191,7 +208,7 @@ public final class Field extends PointCollection
 			list.removeLast();
 			
 			// If the density of (n) is bigger than the threshold
-			if(n.getDensity() >= threshold)
+			if(n.getDensity() >= threshold && n.getCategory() != cluster)
 			{
 				// Get the leftmost cell (w) of this row
 				Cell w = floodFill_moveToWest(n, cluster);
