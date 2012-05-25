@@ -11,6 +11,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.awt.image.BufferedImage;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,6 +28,7 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
 	public static final int SELECT_CIRCLE = 1;
 	
 	Field field;
+	BufferedImage background;
 	Rectangle bounding;
 	
 	//View vars
@@ -95,6 +97,10 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
 		this.bounding = field.getBoundingRectangle();
 		repaint();
 	}
+	public void setBackgroundImage(BufferedImage img)
+	{
+		background = img;
+	}
 	public void setSelectionMode(int mode)
 	{
 		selectionMode = mode;
@@ -122,6 +128,11 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
 		Graphics g = g1.create();
 		g.setColor(Color.BLACK);
 		g.fillRect(0, 0, getWidth(), getHeight());
+		
+		if(background != null)
+			g.drawImage(background,
+					offsetX + ((getWidth() - dimension) / 2),
+					offsetY + ((getHeight() - dimension) / 2), (int)(dimension * zoomFactor), (int)(dimension * zoomFactor), null);
 		
 		for(int i = 0; i < field.size(); i++)
 		{

@@ -63,7 +63,7 @@ public final class KdeVisualizer
 		{
 			for(int j = 0; j < kde.scaledField.GRID_HEIGHT; j++)
 			{
-				g.setColor(densityToColor(kde.scaledField.getCell(i, j).getDensity(), kde.maxDens));
+			g.setColor(densityToColor(kde.scaledField.getCell_scaled(i, j).getDensity(), kde.maxDens));
 				g.drawLine(i, j, i, j);
 			}
 		}
