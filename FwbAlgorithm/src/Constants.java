@@ -1,5 +1,7 @@
 public final class Constants
 {
+	public static final boolean DEBUG = true;
+	
 	public final class KDE
 	{
 		public static final float BWRADIUS    = 2.5f;
@@ -11,6 +13,6 @@ public final class Constants
 	
 	public final class Threshold
 	{
-		
+		public static final int STEPCOUNT = 100;
 	}
 }
