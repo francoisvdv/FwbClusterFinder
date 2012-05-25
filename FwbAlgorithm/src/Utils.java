@@ -42,6 +42,6 @@ public final class Utils
 	
 	public static void Log(String message)
 	{
-		System.out.println(message);
+		//System.out.println(message);
 	}
 }
