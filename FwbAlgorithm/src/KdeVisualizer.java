@@ -52,7 +52,7 @@ public final class KdeVisualizer
 	 */
 	public static BufferedImage run(KDE kde)
 	{
-		BufferedImage img = new BufferedImage(kde.scaledField.GRID_WIDTH, kde.scaledField.GRID_HEIGHT, BufferedImage.TYPE_INT_RGB);
+		BufferedImage img = new BufferedImage(kde.scaledField.GRID_WIDTH, kde.scaledField.GRID_HEIGHT, BufferedImage.TYPE_INT_ARGB);
 		Graphics g = img.createGraphics();
 		g.setColor(Color.WHITE);
 		g.fillRect(0, 0, img.getWidth(), img.getHeight());
@@ -63,7 +63,11 @@ public final class KdeVisualizer
 		{
 			for(int j = 0; j < kde.scaledField.GRID_HEIGHT; j++)
 			{
-			g.setColor(densityToColor(kde.scaledField.getCell_scaled(i, j).getDensity(), kde.maxDens));
+				Cell cell = kde.scaledField.getCell_scaled(i, j);
+				if(cell == null)
+					continue;
+				
+				g.setColor(densityToColor(cell.getDensity(), kde.maxDens));
 				g.drawLine(i, j, i, j);
 			}
 		}

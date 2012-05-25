@@ -141,16 +141,18 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
 		for(int i = 0; i < field.size(); i++)
 		{
 			Point p = field.get(i);
-			
-			g.setColor(createOrGetColor(p.getPointCategory()));
-			
+
 			float relX = AbsoluteToRelativeX(p.getX());
 			float relY = AbsoluteToRelativeY(p.getY());
 
 			int x = offsetX + (int)(relX * dimension) + ((getWidth() - dimension) / 2) - (pointWidth / 2);
 			int y = offsetY + (int)(relY * dimension) + ((getHeight() - dimension) / 2) - (pointHeight / 2);
 			
-			g.fillOval(x, y, pointWidth, pointHeight);
+			if(x >= 0 && x < getWidth() && y >= 0 && y < getHeight())
+			{
+				g.setColor(createOrGetColor(p.getPointCategory()));
+				g.fillOval(x, y, pointWidth, pointHeight);
+			}
 		}
 
 		if(!keyCtrl && mousePressed)
