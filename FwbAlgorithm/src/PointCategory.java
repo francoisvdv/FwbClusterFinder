@@ -19,7 +19,10 @@ public abstract class PointCategory extends PointCollection
 			this.index = ++lastIndex;
 	}
 	
-	abstract int getNumber();
+	protected static void resetIndex()
+	{
+		lastIndex = 0;
+	}
 	
 	@Override
 	public String toString()

@@ -8,11 +8,6 @@ public class Noise extends PointCategory
 		index = 0;
 	}
 	
-	public int getNumber()
-	{
-		return 0;
-	}
-	
 	public String toString()
 	{
 		return "0";
