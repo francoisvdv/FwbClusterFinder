@@ -60,7 +60,7 @@ public class Threshold
 		
 		Utils.Log("Switches Size: " + switches.size());
 
-		for(int i = 0; i < switches.size(); i += 2)
+		for(int i = 0; i < switches.size() - 2; i += 2)
 		{
 			Utils.Log("Switch " + i + ": " + switches.get(i) + " | Switch " + (i+1) + ": " + switches.get(i+1));
 		}

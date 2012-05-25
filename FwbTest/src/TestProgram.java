@@ -685,7 +685,7 @@ public class TestProgram extends JFrame implements ActionListener
 					stopProgress();
 					list.selectAll();
 					
-					
+					contentpanel.setBackgroundImage(KdeVisualizer.run(a.kde));
 				}
 				else
 				{

@@ -32,4 +32,6 @@ local.properties
 # PDT-specific
 .buildpath
 /.metadata
-/FwbAlgorithm/outputscaledfield.fwb
+
+outputscaledfield.png
+outputscaledfield.fwb
