@@ -100,6 +100,7 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
 	public void setBackgroundImage(BufferedImage img)
 	{
 		background = img;
+		repaint();
 	}
 	public void setSelectionMode(int mode)
 	{
@@ -130,9 +131,12 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
 		g.fillRect(0, 0, getWidth(), getHeight());
 		
 		if(background != null)
+		{
 			g.drawImage(background,
 					offsetX + ((getWidth() - dimension) / 2),
-					offsetY + ((getHeight() - dimension) / 2), (int)(dimension * zoomFactor), (int)(dimension * zoomFactor), null);
+					offsetY + ((getHeight() - dimension) / 2),
+					(int)(dimension * Math.pow(zoomFactor, 1/2)), (int)(dimension * Math.pow(zoomFactor, 1/2)), null);
+		}
 		
 		for(int i = 0; i < field.size(); i++)
 		{
