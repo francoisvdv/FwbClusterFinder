@@ -40,8 +40,13 @@ public final class Utils
 		return (float) (Math.pow(x2-x1, 2) + Math.pow(y2-y1, 2));
 	}
 	
-	public static void Log(String message)
+	public static void log(String message)
 	{
-		System.out.println(message);
+		log("", message);
+	}
+	public static void log(String category, String message)
+	{
+		if(Constants.DEBUG)
+			System.out.println(category + ": " + message);
 	}
 }

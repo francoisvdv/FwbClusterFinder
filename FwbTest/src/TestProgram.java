@@ -17,6 +17,7 @@ public class TestProgram extends JFrame implements ActionListener
 {
 	static final long serialVersionUID = 6814435897208431145L;
 	static Font f;
+	static boolean runned = false;
 	
 	ContentPanel contentpanel;
 	JPanel menupanel;
@@ -25,6 +26,7 @@ public class TestProgram extends JFrame implements ActionListener
 	
 	boolean progressWorks = false;
 	JProgressBar progress;
+	CheckBoxList list;
 	JButton open, save, addnoise, addacluster, clear, center;
 	JFileChooser chooser;
 	ButtonGroup squarecircle, placeOfCluster;
@@ -32,6 +34,7 @@ public class TestProgram extends JFrame implements ActionListener
 	JSlider fillFactor;
 	JTextField minAlgo, maxAlgo;
 	JButton run;
+	JPanel empty;
 	
 	File loadedFile;
 	Field field;
@@ -126,9 +129,11 @@ public class TestProgram extends JFrame implements ActionListener
 		run.addActionListener(this);
 		run.setFocusPainted(false);
 	    
+		empty = new JPanel();
+		empty.setLayout(new BorderLayout());
+		
 		JSeparator sep1 = new JSeparator(); JSeparator sep2 = new JSeparator();
 		JSeparator sep3 = new JSeparator(); JSeparator sep4 = new JSeparator();
-		JPanel empty = new JPanel();
 		JLabel runalgo = new JLabel("Run algorithm"), addcluster = new JLabel("Add simple cluster");
 		JLabel addNoise = new JLabel("Add noise"), fillf = new JLabel("Fill factor:");
 		JLabel minalgo = new JLabel("Min:"), maxalgo = new JLabel("Max:");
@@ -328,6 +333,8 @@ public class TestProgram extends JFrame implements ActionListener
 				return;
 			}
 			
+			checkRunned();
+			
 			chooser = new JFileChooser();
 			chooser.setAcceptAllFileFilterUsed(false);
 			chooser.setFileFilter(new InputFileFilter(false));
@@ -371,6 +378,7 @@ public class TestProgram extends JFrame implements ActionListener
 				systemIsBusy();
 				return;
 			}
+			
 			startProgress();
 			new MultiThread(new Runnable(){
 				public void run()
@@ -389,6 +397,8 @@ public class TestProgram extends JFrame implements ActionListener
 				systemIsBusy();
 				return;
 			}
+			
+			checkRunned();
 			
 			chooser = new JFileChooser();
 			chooser.setAcceptAllFileFilterUsed(false);
@@ -443,13 +453,16 @@ public class TestProgram extends JFrame implements ActionListener
 				systemIsBusy();
 				return;
 			}
+			
 			int i = JOptionPane.showInternalConfirmDialog(c,
                     "Are you sure you want to clear the field?",
                     "Warning",
                     JOptionPane.YES_NO_OPTION,
                     JOptionPane.WARNING_MESSAGE);
+			
+			checkRunned();
 			if(i == JOptionPane.YES_OPTION)
-			{
+			{	
 				field = new Field();
 				updateContentPanel();
 			}
@@ -470,6 +483,8 @@ public class TestProgram extends JFrame implements ActionListener
 				return;
 			}
 			
+			checkRunned();
+			
 			contentpanel.setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
 		}
 		else if(e.getSource() == addnoise)
@@ -479,6 +494,8 @@ public class TestProgram extends JFrame implements ActionListener
 				systemIsBusy();
 				return;
 			}
+			
+			checkRunned();
 			final String s = JOptionPane.showInternalInputDialog(c, "How many points?", "Add noise", JOptionPane.QUESTION_MESSAGE);
 			
 			startProgress();
@@ -561,47 +578,122 @@ public class TestProgram extends JFrame implements ActionListener
 				return;
 			}
 			
-			startProgress();
-			new MultiThread(new Runnable(){
-				public void run()
-				{
-					int minumum, maximum;
-					try
-					{
-						minumum = Integer.parseInt(minAlgo.getText());
-					}
-					catch(Exception ex)
-					{
-						minumum = 0;
-					}
-					try
-					{
-						maximum = Integer.parseInt(maxAlgo.getText());
-					}
-					catch(Exception ex)
-					{
-						maximum = 0;
-					}
+			checkRunned();
 			
-					if(minumum <= maximum)
-					{
-						Algorithm a = new AlphaAlgorithm(minumum, maximum, field);
-						a.run();
-						stopProgress();
-					}
-					else
-					{
-						stopProgress();
-						JOptionPane.showInternalMessageDialog(c, "The min is higher than max", "Error", JOptionPane.ERROR_MESSAGE);
-					}
-				}
-			}).start();
+			startProgress();
+			
+			runAlgo();
 		}
 	}
 
-	public void updateContentPanel()
+	void checkRunned()
+	{
+		if(runned)
+		{	
+			list.selectAll();				// Add all clusters to Field again
+			contentpanel.resetColors();		// Reset the colors
+			PointCategory.resetIndex();		// Reset the point index
+			field.reset();					// Reset the field
+			updateContentPanel();
+			empty.removeAll();
+			empty.validate();
+			runned = false;
+		}
+	}
+	
+	void updateList()
+	{
+		if(runned)
+		{
+			empty.removeAll();
+			list = new CheckBoxList(field.getClusters(), field.getNoise(), this);
+			
+			JScrollPane sp = new JScrollPane();
+			sp.getViewport().add(list);
+			empty.add(sp);
+			sp.repaint();
+			empty.validate();
+		}
+	}
+	
+	void showCluster(PointCategory pc)
+	{
+		field.addAll(pc);
+		contentpanel.repaint();
+	}
+	
+	void selectAll()
+	{
+		list.selectAll();
+	}
+	
+	void showClusterNoRepaint(PointCategory pc)
+	{
+		field.addAll(pc);
+	}
+	
+	void hideCluster(PointCategory pc)
+	{
+		field.removeAll(pc);
+		contentpanel.repaint();
+	}
+	
+	void hideClusterNoRepaint(PointCategory pc)
+	{
+		field.removeAll(pc);
+	}
+	
+	void updateContentPanel()
 	{
 		contentpanel.setField(field);
+	}
+	
+	void repaintContentPanel()
+	{
+		contentpanel.repaint();
+	}
+	
+	void runAlgo()
+	{
+		new MultiThread(new Runnable(){
+			public void run()
+			{
+				int minumum, maximum;
+				try
+				{
+					minumum = Integer.parseInt(minAlgo.getText());
+				}
+				catch(Exception ex)
+				{
+					minumum = 0;
+				}
+				try
+				{
+					maximum = Integer.parseInt(maxAlgo.getText());
+				}
+				catch(Exception ex)
+				{
+					maximum = 0;
+				}
+		
+				if(minumum <= maximum)
+				{
+					AlphaAlgorithm a = new AlphaAlgorithm(minumum, maximum, field);
+					a.run();
+					runned = true;
+					updateList();
+					stopProgress();
+					list.selectAll();
+					
+					contentpanel.setBackgroundImage(KdeVisualizer.run(a.kde));
+				}
+				else
+				{
+					stopProgress();
+					JOptionPane.showInternalMessageDialog(c, "The min is higher than max", "Error", JOptionPane.ERROR_MESSAGE);
+				}
+			}
+		}).start();
 	}
 	
 	class MultiThread extends Thread

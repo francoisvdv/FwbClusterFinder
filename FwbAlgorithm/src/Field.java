@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 public final class Field extends PointCollection
 {
@@ -20,7 +21,7 @@ public final class Field extends PointCollection
 	
 	public Cluster createCluster()
 	{
-		Cluster c = new Cluster(clusters.size());
+		Cluster c = new Cluster();
 		clusters.add(c);
 		return c;
 	}
@@ -69,6 +70,21 @@ public final class Field extends PointCollection
 	public ArrayList<Cluster> getClusters()
 	{
 		return clusters;
+	}
+	
+	public void reset()
+	{
+		noise.clear();
+		for(Cluster cluster : clusters)
+		{
+			cluster.clear();
+		}
+		clusters.clear();
+		
+		for(Point p : this)
+		{
+			p.resetPointCategory();
+		}
 	}
 	
 	/**
@@ -127,6 +143,7 @@ public final class Field extends PointCollection
 	 */
 	public void startAssigningClusters(Float threshold)
 	{
+		long time = System.currentTimeMillis();
 		this.threshold = threshold;
 		
 		// toArray() is much faster than listIterator()
@@ -146,6 +163,7 @@ public final class Field extends PointCollection
 				}
 			}
 		}
+		System.out.println("FloodFill took: "+ (System.currentTimeMillis() - time));
 	}
 	
 	/**
@@ -162,7 +180,7 @@ public final class Field extends PointCollection
 		{
 			Cluster cluster = this.createCluster();
 			point.assignToPointCategory(cluster);
-			floodFill(cell, cluster, point);
+			floodFill(cell, cluster);
 		}
 		else
 		{
@@ -171,44 +189,117 @@ public final class Field extends PointCollection
 	}
 	
 	/**
-	 * Recursive floodFill method that assigns every
+	 * Non-recursive floodFill method that assigns every
 	 * cell in a same cluster to that cluster.
 	 * @param cell the cell from where to start
 	 * @param cluster the cluster
-	 */
-	public void floodFill(Cell cell, Cluster cluster, Point point) 
-	{ 
+	 */	
+	public void floodFill(Cell cell, Cluster cluster)
+	{
+		//cell.setCategory(cluster);
+		LinkedList<Cell> list = new LinkedList<Cell>();
+		list.addLast(cell);
+		
+		// While the queue is not empty
+		while(!list.isEmpty())
+		{
+			// Get the last element of the queue (n)
+			Cell n = list.getLast();
+			list.removeLast();
+			
+			// If the density of (n) is bigger than the threshold
+			if(n.getDensity() >= threshold && n.getCategory() != cluster)
+			{
+				// Get the leftmost cell (w) of this row
+				Cell w = floodFill_moveToWest(n, cluster);
+				// Get the rightmost cell (e) of this row
+				Cell e = floodFill_moveToEast(n, cluster);
+				
+				// While the west cell is not equal to the east cell
+				while(w != e){
+					// Set the category of the cell
+					w.setCategory(cluster);
+					
+					// Get the cell (up) above (w)
+					Cell up = scaledField.getUpperCell(w);
+					// If the upper cell is is all right
+					if(floodFill_checkCell(up, cluster))
+					{
+						// Add that cell to the queue
+						list.addLast(up);
+					}
+					
+					// Get the cel (down) below (w)
+					Cell down = scaledField.getBottomCell(w);
+					// If (down) is all right
+					if(floodFill_checkCell(down, cluster))
+					{
+						// Add (down) to the queue
+						list.addLast(down);
+					}
+					w = scaledField.getRightCell(w);
+				}
+				// Set the category 
+				e.setCategory(cluster);
+				
+				Cell up = scaledField.getUpperCell(e);
+				if(floodFill_checkCell(up, cluster))
+				{
+					list.addLast(up);
+				}
+				
+				Cell down = scaledField.getBottomCell(e);
+				if(floodFill_checkCell(down, cluster))
+				{
+					list.addLast(down);
+				}	
+			}
+		}
+	}
+	
+	private Cell floodFill_moveToWest(Cell cell, Cluster cluster)
+	{
+		Cell west = scaledField.getLeftCell(cell);
+		
+		if(!floodFill_checkCell(west, cluster))
+		{
+			return cell;
+		}
+	
+		return floodFill_moveToWest(west, cluster);
+	}
+	
+	private Cell floodFill_moveToEast(Cell cell, Cluster cluster)
+	{
+		Cell east = scaledField.getRightCell(cell);
+		
+		if(!floodFill_checkCell(east, cluster))
+		{
+			return cell;
+		}
+	
+		return floodFill_moveToEast(east, cluster);
+	}
+	
+	private boolean floodFill_checkCell(Cell cell, Cluster cluster)
+	{
 		if(cell == null)
 		{
-			return;
+			return false;
 		}
 		
 		// If the cell density is below threshold: return
 		if(cell.getDensity() < threshold)
 		{
-			return;
+			return false;
 		}
 		
 		// If the cell is already equal to the cluster: return
 		if(cell.getCategory() == cluster)
 		{
-			return;
+			return false;
 		}
-	
-		cell.setCategory(cluster);
 		
-		// floodFill in 4 directions
-		floodFill(scaledField.	// Up
-				getCell(point.getX(), cell.getMinY() - 1), 
-				cluster, point);
-		floodFill(scaledField.	// Right
-				getCell(cell.getMaxX() + 1, point.getY()), 
-				cluster, point);
-		floodFill(scaledField.	// Down
-				getCell(point.getX(), cell.getMaxY() + 1), 
-				cluster, point);
-		floodFill(scaledField.	// Left
-				getCell(cell.getMinX() - 1, point.getY()), 
-				cluster, point);
+		return true;
 	}
 }

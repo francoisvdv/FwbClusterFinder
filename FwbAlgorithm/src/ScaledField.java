@@ -251,4 +251,52 @@ public class ScaledField
 			
 		}
 	}
+	
+	public Cell getLeftCell(Cell cell)
+	{
+		int x = scaleX(cell.getMiddleX()) - 1;
+		
+		if(x < 0)
+		{
+			return null;
+		}
+		
+		return grid[x][scaleY(cell.getMiddleY())];
+	}
+	
+	public Cell getRightCell(Cell cell)
+	{
+		int x = scaleX(cell.getMiddleX()) + 1;
+
+		if(x >= GRID_WIDTH)
+		{
+			return null;
+		}
+		
+		return grid[x][scaleY(cell.getMiddleY())];
+	}
+	
+	public Cell getUpperCell(Cell cell)
+	{
+		int y = scaleY(cell.getMiddleY()) - 1;
+		
+		if(y < 0)
+		{
+			return null;
+		}
+		
+		return grid[scaleX(cell.getMiddleX())][y];
+	}
+	
+	public Cell getBottomCell(Cell cell)
+	{
+		int y = scaleY(cell.getMiddleY()) + 1;
+		
+		if(y >= GRID_HEIGHT)
+		{
+			return null;
+		}
+		
+		return grid[scaleX(cell.getMiddleX())][y];
+	}
 }

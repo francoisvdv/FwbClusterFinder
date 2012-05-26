@@ -41,6 +41,12 @@ public class Point
 	{
 		return pointCategory;
 	}
+	
+	public void resetPointCategory()
+	{
+		this.pointCategory = null;
+	}
+	
 	/**
 	 * Should only be called by the Field class.
 	 * @param category

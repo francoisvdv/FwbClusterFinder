@@ -1,9 +1,20 @@
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartUtilities;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.xy.XYDataset;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
 
 public class Threshold
 {
-	int stepCount = 100; // TODO: veranderen door testen
-
 	int previousNumberOfPoints;
 	int numberOfPoints;
 	float currentThreshold;
@@ -17,73 +28,86 @@ public class Threshold
 	 */
 	public float findThreshold(KDE KDE)
 	{
-		// Tussen element 0 en 1 zit een switch, tussen element 2 en 3 een
-		// switch, etc.
+		//Array that stores the 'switch-densities' between point counts. So between element 0 and 1 there
+		//are changes in the point counts, between element 2 and 3, etc.
 		ArrayList<Float> switches = new ArrayList<Float>();
-
+		
+		//Used for generating a graph of densities/pointcounts
+		HashMap<Float, Integer> pointCounts = new HashMap<>();
+		
 		maxThreshold = KDE.getMaxDensity();
 		previousNumberOfPoints = 0;
 
-		boolean inCluster = false; // Variabele die aangeeft of we op het moment
-									// 'in' een cluster zitten
-		float step = maxThreshold / stepCount;
+		boolean inCluster = false; //Variable indicating whether we are currently 'in' a cluster in our algorithm.
+		float step = maxThreshold / Constants.Threshold.STEPCOUNT; //The step value indicates how fine we should partition the density range.
 
 		if (Utils.floatAlmostEquals(step, 0))
-			return 0;
+			return 0; //If the step value is 0, it we can stop right away because the algorithm will fail.
 
+		//Start looping through the thresholds. We start at the max density and go down one step value each iteration.
 		for (currentThreshold = maxThreshold; currentThreshold >= 0; currentThreshold -= step)
 		{
 			numberOfPoints = KDE.getPointCountAboveThreshold(currentThreshold);
-
-			Utils.Log("NumberOfPoints: "  + numberOfPoints + " | PreviousNumberOfPoints: " + previousNumberOfPoints);
+			pointCounts.put(currentThreshold, numberOfPoints);
 			
+			//If the current number of points is larger than the previous number of points we are apparently iterating
+			//in a cluster.
 			if (numberOfPoints > previousNumberOfPoints)
 			{
-				// Er is een verandering
+				//If we are not yet iterating in a cluster, we apparently started in a new one.
 				if (!inCluster)
-				{
-					// Beginpunt van nieuwe cluster
 					switches.add(currentThreshold);
-				}
 
 				inCluster = true;
-			} else if (inCluster)
+			}
+			else
 			{
-				// Er is geen verandering meer, dus einde van cluster gevonden
-				switches.add(currentThreshold);
-
-				inCluster = false;
+				//There was no change in the number of points, so if we were iterating in a cluster we have now found the end of it.
+				if(inCluster)
+				{
+					switches.add(currentThreshold);
+					inCluster = false;
+				}
 			}
 			
 			previousNumberOfPoints = numberOfPoints;
 		}
+		if(inCluster && !Utils.floatAlmostEquals(switches.get(switches.size() - 1), currentThreshold))
+			switches.add(currentThreshold); //The 'closing' density hasn't been added yet.
 		
-		Utils.Log("Switches Size: " + switches.size());
-
+		assert switches.size() % 2 == 0; //The amount of switches should be equal because we have a start and end value for each switch.
+		
+		//Because we subtract step each time, we will eventually might get to a negative value. Since we don't have negative
+		//densities, make it zero.
+		if(switches.get(switches.size() - 1) < 0)
+			switches.set(switches.size() - 1, 0f);
+		
+		log("Switches size: " + switches.size());
 		for(int i = 0; i < switches.size(); i += 2)
 		{
-			Utils.Log("Switch " + i + ": " + switches.get(i) + " | Switch " + (i+1) + ": " + switches.get(i+1));
+			log("Switch " + i + ": " + switches.get(i) + " | Switch " + (i+1) + ": " + switches.get(i+1));
 		}
+
+		if(Constants.DEBUG)
+			graph(pointCounts);
 		
-		/*
-		 * Om de noise eraf te knallen: We detecteren of de laatste cluster veel
-		 * 'steps' bevat in vergelijking met de rest, en de cluster die daarvoor
-		 * komt kunnen we samenvoegen wanneer de hoeveelheid steps tussen die
-		 * twee klein is.
+		/* 
+		 * To cut off the noise, we check if the last switch contains lots of 'steps' compared to previous
+		 * switches. If this is the case, we can be certain that this is noise. One other thing we apply
+		 * is that if the amount of steps between two consecutive switches is very small, we merge these two
+		 * according to the mergeThreshold parameter.
 		 */
 
+		//TODO: aanpassen door testen.
+		float mergeThreshold = (float) Math.PI / Constants.Threshold.STEPCOUNT * maxThreshold;
+		log("MergeThreshold: " + mergeThreshold);
+		
 		boolean noiseDetected = false;
-
-		// Merge last thresholds
-		float mergeThreshold = (float) Math.PI / stepCount * maxThreshold; // TODO:
-																			// aanpassen
-																			// door
-																			// testen
 		
-		Utils.Log("MergeThreshold: " + mergeThreshold);
-		
+		//Loop through all the switches, starting from the back.
 		for (int i = switches.size() - 2; i >= 0; i -= 2)
 		{
+			//If the following breaks, we found a cluster.
 			if (Math.abs(switches.get(i) - switches.get(i + 1)) > mergeThreshold)
 				break; // Als het een cluster is dan breakt ie altijd. Als het
 						// noise is kán hij breaken.
@@ -115,7 +139,7 @@ public class Threshold
 
 			// de average van alle switches behalve de laatste
 			int averageSteps = (int) Math.ceil(totalDifference / totalSteps);
-			float maximalDeviation = averageSteps * 1.4f; // TODO: Deviation
+			float maximalDeviation = averageSteps * 0f; // TODO: Deviation
 															// 1.4f bepalen door
 															// testen
 			
@@ -129,5 +153,37 @@ public class Threshold
 		}
 
 		return switches.get(switches.size() - 1);
+	}
+	
+	void log(String message)
+	{
+		Utils.log("Threshold", message);
+	}
+	
+	void graph(HashMap<Float, Integer> pointCounts)
+	{
+		final XYSeries series = new XYSeries("First");
+		
+		Iterator it = pointCounts.entrySet().iterator();
+	    while (it.hasNext())
+	    {
+	        Map.Entry pairs = (Map.Entry)it.next();
+	        series.add((float)pairs.getKey(), (int)pairs.getValue());
+	        it.remove(); // avoids a ConcurrentModificationException
+	    }
+	    
+		final XYSeriesCollection dataset = new XYSeriesCollection(series);
+		final JFreeChart chart = ChartFactory.createXYLineChart("Point count switches", 
+				"Threshold", "Points above threshold", (XYDataset)dataset, PlotOrientation.VERTICAL, false, false, false);
+		
+		File f = new File("thresholdoutput.png");
+	    try
+		{
+			ChartUtilities.saveChartAsPNG(f, chart, 750, 750);
+		} catch (IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }
