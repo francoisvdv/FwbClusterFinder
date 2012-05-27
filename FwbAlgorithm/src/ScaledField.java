@@ -10,8 +10,22 @@ public class ScaledField
 	
 	public ScaledField(Rectangle rect)
 	{
-		this.GRID_WIDTH = Constants.KDE.MAXGRIDSIZE;
-		this.GRID_HEIGHT= Constants.KDE.MAXGRIDSIZE;
+		int maxS = (int)Math.pow(Constants.KDE.MAXGRIDSIZE, 2);
+		
+		int width = (int) rect.getWidth();
+		int height= (int) rect.getHeight();
+		
+		if(width*height > maxS)
+		{
+			double r = ((double)width/(double)height);
+			double r2= ((double)height/(double)width);
+			
+			width = (int)Math.sqrt(maxS*r);
+			height= (int)Math.sqrt(maxS*r2);
+		}
+		
+		this.GRID_WIDTH = width;
+		this.GRID_HEIGHT= height;
 		
 		this.SCALE_X = (float)rect.getWidth() /this.GRID_WIDTH;
 		this.SCALE_Y = (float)rect.getHeight()/this.GRID_HEIGHT;
@@ -49,6 +63,8 @@ public class ScaledField
 	
 	protected void initialize()
 	{
+		System.out.println(this.GRID_WIDTH + " " + this.GRID_HEIGHT);
+		
 		Stopwatch.Timer gridTimer = Stopwatch.startNewTimer("make emty grid");
 		this.grid = new Cell[GRID_WIDTH][GRID_HEIGHT];
 		gridTimer.stop();

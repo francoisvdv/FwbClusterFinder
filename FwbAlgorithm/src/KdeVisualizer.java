@@ -52,13 +52,11 @@ public final class KdeVisualizer
 	 */
 	public static BufferedImage run(KDE kde)
 	{
-		BufferedImage img = new BufferedImage(kde.scaledField.GRID_WIDTH, kde.scaledField.GRID_HEIGHT, BufferedImage.TYPE_INT_ARGB);
+		BufferedImage img = new BufferedImage(kde.scaledField.GRID_WIDTH, kde.scaledField.GRID_HEIGHT, BufferedImage.TYPE_INT_RGB);
 		Graphics g = img.createGraphics();
 		g.setColor(Color.WHITE);
 		g.fillRect(0, 0, img.getWidth(), img.getHeight());
-		
-		int lastPercentage = 0;
-		
+	
 		for(int i = 0; i < kde.scaledField.GRID_WIDTH; i++)
 		{
 			for(int j = 0; j < kde.scaledField.GRID_HEIGHT; j++)
