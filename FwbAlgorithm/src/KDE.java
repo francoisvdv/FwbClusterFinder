@@ -92,11 +92,12 @@ public class KDE
 	}
 	
 	// uses quicksort
-	// change to some form of counting sort
+	// maby change to some form of counting sort
 	protected Point[] sort(Point[] unsorted)
 	{
 		Point[] sorted = unsorted.clone();
-		this.sort_recursive(sorted, 0, sorted.length-1);
+		int start = this.partition(sorted, 0, sorted.length-1, 0.0f);
+		this.sort_recursive(sorted, start+1, sorted.length-1);
 		return sorted;
 	}
 	
@@ -130,27 +131,44 @@ public class KDE
 		assert pivotPos <= end;
 		assert start < end;
 		
-		// var used for swapping
-		Point temp;
-		
 		// make a pivot
-		float pivot = scaledField.getCell(partiallySorted[pivotPos]).getDensity();
+		float pivotVal = scaledField.getCell(partiallySorted[pivotPos]).getDensity();
 		// place pivot at the end
-		temp = partiallySorted[pivotPos];
+		Point temp = partiallySorted[pivotPos];
 		partiallySorted[pivotPos] = partiallySorted[end];
 		partiallySorted[end] = temp;
 		// "remove" pivot from array
 		end--;
+		// partition
+		int middle = this.partition(partiallySorted, start, end, pivotVal);
+		// move pivot
+		temp = partiallySorted[++middle];
+		partiallySorted[middle] = partiallySorted[partiallySorted.length-1];
+		partiallySorted[partiallySorted.length-1] = temp;
+		
+		return middle;
+	}
+	
+	protected int partition(Point[] partiallySorted, int start, int end, float pivotVal)
+	{
+		assert start < end;
+		
+		// var used for swapping
+		Point temp;
+		
 		// make two empty lists: smaller and greater or equal
-		//  list smaller:          between start and middle, including both borders
-		//  list greater or equal: between middle+1 and i-1, including both borders
+		//  list smaller or equal: between start and middle, including both borders
+		//  list greater:          between middle+1 and i-1, including both borders
 		int middle = start-1;
+		
+		if(start < 0)
+			System.out.println(":(");
 		
 		for(int i=start; i<=end; i++)
 		{
 			// density at point
 			float dens = scaledField.getCell(partiallySorted[i]).getDensity();
-			if(dens < pivot)
+			if(dens <= pivotVal)
 			{
 				// swap point at i with the point at middle
 				// (and increase middle)
@@ -161,10 +179,6 @@ public class KDE
 			//else
 				// swap point at i with the point at i => do nothing
 		}
-		// move pivot
-		temp = partiallySorted[++middle];
-		partiallySorted[middle] = partiallySorted[partiallySorted.length-1];
-		partiallySorted[partiallySorted.length-1] = temp;
 		
 		return middle;
 	}
@@ -172,17 +186,24 @@ public class KDE
 	// chooses a pivot between start and end (random or not)
 	protected int getPivotPos(int start, int end)
 	{
-		return end;
+		assert start <= end;
+		
+		if(start == end)
+			return end;
+		
+		java.util.Random r = new java.util.Random();
+		return r.nextInt(end-start)+start;
 	}
 	
 	//TODO
 	// http://en.wikipedia.org/wiki/Kernel_density_estimation#Practical_estimation_of_the_bandwidth
 	protected void calcBandwidth()
 	{
-		float c = Constants.KDE.BWFACTOR;
+		float c = 3.14159f; //Constants.KDE.BWFACTOR;
+		float c_2 = 0.008f;
 		float s = this.field.getBoundingRectangle().getSurface();
 		float n = this.field.size();
-		this.bandwidth = (float) (c*Math.sqrt((double)s)/n);
+		this.bandwidth = (float) (c*Math.sqrt((double)s)/(Math.sqrt(n)+c_2*n));
 //		System.out.println("w: " + field.getBoundingRectangle().getWidth() + ", h: " + field.getBoundingRectangle().getHeight());
 //		System.out.println(c + "*sqrt(" + s + ")/" + n + " = " + this.bandwidth);
 	}
