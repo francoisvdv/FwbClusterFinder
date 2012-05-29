@@ -143,7 +143,6 @@ public final class Field extends PointCollection
 	 */
 	public void startAssigningClusters(Float threshold)
 	{
-		long time = System.currentTimeMillis();
 		this.threshold = threshold;
 		
 		// toArray() is much faster than listIterator()
@@ -163,8 +162,6 @@ public final class Field extends PointCollection
 				}
 			}
 		}
-		
-		Utils.log("FloodFill", "took: "+ (System.currentTimeMillis() - time));
 	}
 	
 	/**
