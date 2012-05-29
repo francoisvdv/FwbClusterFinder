@@ -63,8 +63,6 @@ public class ScaledField
 	
 	protected void initialize()
 	{
-		System.out.println(this.GRID_WIDTH + " " + this.GRID_HEIGHT);
-		
 		Stopwatch.Timer gridTimer = Stopwatch.startNewTimer("make emty grid");
 		this.grid = new Cell[GRID_WIDTH][GRID_HEIGHT];
 		gridTimer.stop();
