@@ -297,4 +297,22 @@ public class ScaledField
 		
 		return grid[scaleX(cell.getMiddleX())][y];
 	}
+             
+        public float getAvgDens()
+        { 
+            
+            int numberCells = GRID_WIDTH*GRID_HEIGHT;
+            float totalDens = 0;
+            float averageDens = 0;
+            
+            for(int i=0;i<this.GRID_WIDTH;i++)
+            {   
+                for(int j=0;j<this.GRID_HEIGHT;j++)
+                {
+                    totalDens += grid[i][j].getDensity();
+                }
+            }
+            
+            return averageDens = totalDens/numberCells;
+        }
 }
