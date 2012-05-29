@@ -163,7 +163,8 @@ public final class Field extends PointCollection
 				}
 			}
 		}
-		System.out.println("FloodFill took: "+ (System.currentTimeMillis() - time));
+		
+		Utils.log("FloodFill", "took: "+ (System.currentTimeMillis() - time));
 	}
 	
 	/**

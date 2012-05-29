@@ -33,7 +33,7 @@ public class Threshold
 		ArrayList<Float> switches = new ArrayList<Float>();
 		
 		//Used for generating a graph of densities/pointcounts
-		HashMap<Float, Integer> pointCounts = new HashMap<>();
+		HashMap<Float, Integer> pointCounts = new HashMap<Float, Integer>();
 		
 		maxThreshold = KDE.getMaxDensity();
 		previousNumberOfPoints = 0;
@@ -41,9 +41,12 @@ public class Threshold
 		boolean inCluster = false; //Variable indicating whether we are currently 'in' a cluster in our algorithm.
 		float step = maxThreshold / Constants.Threshold.STEPCOUNT; //The step value indicates how fine we should partition the density range.
 
-		if (Utils.floatAlmostEquals(step, 0))
+		if (maxThreshold == 0)
+		{
+			log("Step too small: " + step + " maxThreshold: " + maxThreshold + " - Threshold stopped.");
 			return 0; //If the step value is 0, it we can stop right away because the algorithm will fail.
-
+		}
+		
 		//Start looping through the thresholds. We start at the max density and go down one step value each iteration.
 		for (currentThreshold = maxThreshold; currentThreshold >= 0; currentThreshold -= step)
 		{
@@ -83,7 +86,7 @@ public class Threshold
 			switches.set(switches.size() - 1, 0f);
 		
 		log("Switches size: " + switches.size());
-		for(int i = 0; i < switches.size(); i += 2)
+		for(int i = 0; i <= switches.size() - 2; i += 2)
 		{
 			log("Switch " + i + ": " + switches.get(i) + " | Switch " + (i+1) + ": " + switches.get(i+1));
 		}
@@ -99,7 +102,7 @@ public class Threshold
 		 */
 
 		//TODO: aanpassen door testen.
-		float mergeThreshold = (float) Math.PI / Constants.Threshold.STEPCOUNT * maxThreshold;
+		float mergeThreshold = 0;//(float) Math.PI / 3 / Constants.Threshold.STEPCOUNT * maxThreshold;
 		log("MergeThreshold: " + mergeThreshold);
 		
 		boolean noiseDetected = false;
@@ -110,7 +113,7 @@ public class Threshold
 			//If the following breaks, we found a cluster.
 			if (Math.abs(switches.get(i) - switches.get(i + 1)) > mergeThreshold)
 				break; // Als het een cluster is dan breakt ie altijd. Als het
-						// noise is kán hij breaken.
+						// noise is kan hij breaken.
 
 			// Als hij niet breekt is het sowieso noise.
 			noiseDetected = true;
@@ -122,8 +125,8 @@ public class Threshold
 		if (noiseDetected) // we hebben sowieso noise, dus laatste eraf halen
 		{
 			// Hak laatste eraf
-			switches.remove(switches.size() - 1);
-			switches.remove(switches.size() - 1);
+			//switches.remove(switches.size() - 1);
+			//switches.remove(switches.size() - 1);
 		} else
 		// het is niet zeker of we noise hebben, bepaal dit
 		{
@@ -151,8 +154,8 @@ public class Threshold
 				switches.remove(switches.size() - 1);
 			}
 		}
-
-		return switches.get(switches.size() - 1);
+		
+		return switches.size() == 0 ? 0 : switches.get(switches.size() - 1);
 	}
 	
 	void log(String message)

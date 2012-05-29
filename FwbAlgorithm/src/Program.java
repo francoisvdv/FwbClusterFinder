@@ -35,6 +35,7 @@ public final class Program
 		printTimer.stop();
 		totalTimer.stop();
 		
-		System.out.print(Stopwatch.getResult());
+		if(Constants.DEBUG)
+			System.out.print(Stopwatch.getResult());
 	}
 }
