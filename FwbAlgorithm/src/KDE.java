@@ -7,6 +7,7 @@ public class KDE
 	protected float bandwidth;
 	protected Point[] sortedPoints;
 	protected float maxDens;
+        protected float minDens;
 	
 	protected int recursiveCount = 0;
 	
@@ -46,6 +47,9 @@ public class KDE
 				
 				if(cell.getDensity() > this.maxDens)
 					this.maxDens = cell.getDensity();
+                                
+                                if(cell.getDensity() < this.minDens && cell.getDensity() != 0)
+					this.minDens = cell.getDensity();
 			}
 		}
 		foreachTimer.stop();
@@ -57,11 +61,21 @@ public class KDE
 		this.sortedPoints = this.sort(points);
 		sortTimer.stop();
 	}
-	
+        
 	public float getMaxDensity()
 	{
 		return this.maxDens;
 	}
+        
+        public float getMinDensity()
+	{
+		return this.minDens;
+	}
+        
+        public float getAvgDens()
+        {
+          return scaledField.getAvgDens();
+        }
 	
 	public int getPointCountAboveThreshold(float threshold)
 	{
