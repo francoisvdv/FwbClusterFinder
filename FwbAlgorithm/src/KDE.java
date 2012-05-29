@@ -67,15 +67,15 @@ public class KDE
 		return this.maxDens;
 	}
         
-        public float getMinDensity()
+	public float getMinDensity()
 	{
 		return this.minDens;
 	}
-        
-        public float getAvgDens()
-        {
-          return scaledField.getAvgDens();
-        }
+	
+	public float getAvgDens()
+	{
+		return scaledField.getAvgDens();
+	}
 	
 	public int getPointCountAboveThreshold(float threshold)
 	{
