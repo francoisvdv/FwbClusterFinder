@@ -101,7 +101,7 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
 	{
 		this.field = field;
 		this.bounding = field.getBoundingRectangle();
-
+		setBackground(null);
 		resetColors();
 		repaint();
 	}
