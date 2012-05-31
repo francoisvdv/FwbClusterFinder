@@ -1,9 +1,11 @@
+import java.awt.Color;
+
 public class Point
 {
 	private int x;
 	private int y;
 	private PointCategory pointCategory;
-	
+
 	public Point(int x, int y)
 	{
 		this.x = x;
