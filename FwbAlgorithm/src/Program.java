@@ -31,10 +31,11 @@ public final class Program
 		algo1.run();
 		runTimer.stop();
 		Stopwatch.Timer printTimer = Stopwatch.startNewTimer("print output");
-		//algo1.printPoints();
+		algo1.printPoints();
 		printTimer.stop();
 		totalTimer.stop();
 		
-		System.out.print(Stopwatch.getResult());
+		if(Constants.DEBUG)
+			System.out.print(Stopwatch.getResult());
 	}
 }

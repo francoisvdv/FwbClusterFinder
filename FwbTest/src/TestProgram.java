@@ -619,7 +619,7 @@ public class TestProgram extends JFrame implements ActionListener
 	void showCluster(PointCategory pc)
 	{
 		field.addAll(pc);
-		contentpanel.repaint();
+		repaintContentPanel();
 	}
 	
 	void selectAll()
@@ -635,7 +635,7 @@ public class TestProgram extends JFrame implements ActionListener
 	void hideCluster(PointCategory pc)
 	{
 		field.removeAll(pc);
-		contentpanel.repaint();
+		repaintContentPanel();
 	}
 	
 	void hideClusterNoRepaint(PointCategory pc)
@@ -643,12 +643,12 @@ public class TestProgram extends JFrame implements ActionListener
 		field.removeAll(pc);
 	}
 	
-	void updateContentPanel()
+	synchronized void updateContentPanel()
 	{
 		contentpanel.setField(field);
 	}
 	
-	void repaintContentPanel()
+	synchronized void repaintContentPanel()
 	{
 		contentpanel.repaint();
 	}
@@ -684,8 +684,10 @@ public class TestProgram extends JFrame implements ActionListener
 					updateList();
 					stopProgress();
 					list.selectAll();
-					
+
 					contentpanel.setBackgroundImage(KdeVisualizer.run(a.kde));
+					contentpanel.algorithmRun();
+					repaintContentPanel();
 				}
 				else
 				{

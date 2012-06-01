@@ -41,7 +41,7 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
 	int offsetY = 0;
 	
 	Random random = new Random();
-	HashMap<PointCategory, Color> colors = new HashMap<PointCategory, Color>();
+	Color[] categoryColors;
 	
 	//Input vars
 	int selectionMode = SELECT_CIRCLE;
@@ -81,7 +81,8 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
 	 */
 	protected void resetColors()
 	{
-		colors = new HashMap<PointCategory, Color>();
+		this.categoryColors = new Color[PointCategory.lastIndex == 0 ? 1 : PointCategory.lastIndex + 1];
+		this.categoryColors[0] = Color.white;
 	}
 	
 	public Field getField()
@@ -98,12 +99,10 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
 	
 	public void setField(Field field)
 	{
-		colors.clear();
-		colors.put(null, Color.WHITE);
-		colors.put(field.getNoise(), Color.WHITE);
-		
 		this.field = field;
 		this.bounding = field.getBoundingRectangle();
+		setBackground(null);
+		resetColors();
 		repaint();
 	}
 	public void setBackgroundImage(BufferedImage img)
@@ -115,15 +114,18 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
 	{
 		selectionMode = mode;
 	}
-	
-	public Color createOrGetColor(PointCategory category)
+	public void algorithmRun()
 	{
-		if(!colors.containsKey(category))
-			return colors.put(category, new Color(random.nextInt(255), random.nextInt(255), random.nextInt(255)));
-		
-		return colors.get(category);
+		resetColors();
+		for(int i = 0; i < field.size(); i++)
+		{
+			PointCategory pc = field.get(i).getPointCategory();
+			if(categoryColors[pc.index] == null)
+				categoryColors[pc.index] =  new Color(random.nextInt(255), random.nextInt(255), random.nextInt(255));
+		}
+		repaint();
 	}
-	
+
 	@Override
 	public void paintComponent(Graphics g1)
 	{
@@ -146,7 +148,7 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
 					offsetY + ((getHeight() - dimension) / 2),
 					(int)(dimension * Math.pow(zoomFactor, 1/2)), (int)(dimension * Math.pow(zoomFactor, 1/2)), null);
 		}
-		
+
 		for(int i = 0; i < field.size(); i++)
 		{
 			Point p = field.get(i);
@@ -159,8 +161,14 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
 			
 			if(x >= 0 && x < getWidth() && y >= 0 && y < getHeight())
 			{
-				g.setColor(createOrGetColor(p.getPointCategory()));
-				g.fillOval(x, y, pointWidth, pointHeight);
+				if(p.getPointCategory() != null)
+					g.setColor(categoryColors[p.getPointCategory().index]);
+				else
+					g.setColor(Color.white);
+				
+				g.drawLine(x, y, x, y);
+				//g.fillRect(x, y, pointWidth, pointHeight);
+				//g.fillOval(x, y, pointWidth, pointHeight);
 			}
 		}
 

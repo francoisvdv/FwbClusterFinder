@@ -13,6 +13,6 @@ public final class Constants
 	
 	public final class Threshold
 	{
-		public static final int STEPCOUNT = 100;
+		public static final int STEPCOUNT = 1000;
 	}
 }

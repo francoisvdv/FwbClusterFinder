@@ -63,8 +63,6 @@ public class ScaledField
 	
 	protected void initialize()
 	{
-		System.out.println(this.GRID_WIDTH + " " + this.GRID_HEIGHT);
-		
 		Stopwatch.Timer gridTimer = Stopwatch.startNewTimer("make emty grid");
 		this.grid = new Cell[GRID_WIDTH][GRID_HEIGHT];
 		gridTimer.stop();
@@ -298,5 +296,21 @@ public class ScaledField
 		}
 		
 		return grid[scaleX(cell.getMiddleX())][y];
+	}
+	
+	public float getAvgDens()
+	{
+		int numberCells = GRID_WIDTH*GRID_HEIGHT;
+		float totalDens = 0;
+		
+		for(int i=0;i<this.GRID_WIDTH;i++)
+		{
+			for(int j=0;j<this.GRID_HEIGHT;j++)
+			{
+				totalDens += grid[i][j].getDensity();
+			}
+		}
+		
+		return totalDens/numberCells;
 	}
 }

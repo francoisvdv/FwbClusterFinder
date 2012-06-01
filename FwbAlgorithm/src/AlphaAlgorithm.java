@@ -14,10 +14,14 @@ public class AlphaAlgorithm extends Algorithm
 		kde = new KDE(this.field);
 		KDETimer.stop();
 		
+		Stopwatch.Timer ThresholdTimer = Stopwatch.startNewTimer("Finding threshold");
 		Threshold thresholdFinder = new Threshold();
 		float threshold = thresholdFinder.findThreshold(kde);
+		ThresholdTimer.stop();
 		
+		Stopwatch.Timer floodfillTimer = Stopwatch.startNewTimer("flood fill");
 		field.setScaledField(kde.scaledField);
 		field.startAssigningClusters(threshold);
+		floodfillTimer.stop();
 	}
 }
