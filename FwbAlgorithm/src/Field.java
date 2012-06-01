@@ -3,6 +3,7 @@ import java.util.LinkedList;
 
 public final class Field extends PointCollection
 {
+	
 	private ArrayList<Cluster> clusters = new ArrayList<Cluster>();
 	private Noise noise = Noise.getInstance();
 	private Float threshold;
@@ -143,7 +144,8 @@ public final class Field extends PointCollection
 	 */
 	public void startAssigningClusters(Float threshold)
 	{
-		long time = System.currentTimeMillis();
+		Stopwatch.Timer floodFillTimer = Stopwatch.startNewTimer("Floodfill");
+		
 		this.threshold = threshold;
 		
 		// toArray() is much faster than listIterator()
@@ -163,7 +165,8 @@ public final class Field extends PointCollection
 				}
 			}
 		}
-		System.out.println("FloodFill took: "+ (System.currentTimeMillis() - time));
+		
+		floodFillTimer.stop();
 	}
 	
 	/**
@@ -229,7 +232,7 @@ public final class Field extends PointCollection
 						list.addLast(up);
 					}
 					
-					// Get the cel (down) below (w)
+					// Get the cell (down) below (w)
 					Cell down = scaledField.getBottomCell(w);
 					// If (down) is all right
 					if(floodFill_checkCell(down, cluster))
