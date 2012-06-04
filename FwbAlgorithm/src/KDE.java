@@ -251,7 +251,7 @@ public class KDE
 	protected void calcBandwidth()
 	{
 		float c = 1f; //Constants.KDE.BWFACTOR;
-		float c_2 = 0.02f;
+		float c_2 = 0.0002f;
 		float s = this.field.getBoundingRectangle().getSurface();
 		float n = this.field.size();
 		this.bandwidth = (float) (c*Math.sqrt((double)s)/Math.sqrt(n) * c_2/n);
