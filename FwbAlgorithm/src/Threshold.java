@@ -21,11 +21,11 @@ public class Threshold
 	float maxThreshold;
 
 	/**
-	 * Returns a Threshold value. Everything BELOW this threshold should be cut
-	 * off (noise).
-	 *
-	 * @return
-	 */
+	* Returns a Threshold value. Everything BELOW this threshold should be cut
+	* off (noise).
+	*
+	* @return
+	*/
 	public float findThreshold(KDE KDE)
 	{
 		//Array that stores the 'switch-densities' between point counts. So between element 0 and 1 there
@@ -35,7 +35,7 @@ public class Threshold
 		//Used for generating a graph of densities/pointcounts
 		HashMap<Float, Integer> pointCounts = new HashMap<Float, Integer>();
 
-		maxThreshold = KDE.getMaxDensity();
+		maxThreshold = KDE.getMaxCellDensity();
 		previousNumberOfPoints = 0;
 
 		boolean inCluster = false; //Variable indicating whether we are currently 'in' a cluster in our algorithm.
@@ -102,12 +102,12 @@ public class Threshold
 		}
 
 		/*
-		 * To cut off the noise, we check if the last switch contains lots of
-		 * 'steps' compared to previous switches. If this is the case, we can be
-		 * certain that this is noise. One other thing we apply is that if the
-		 * amount of steps between two consecutive switches is very small, we
-		 * merge these two according to the mergeThreshold parameter.
-		 */
+		* To cut off the noise, we check if the last switch contains lots of
+		* 'steps' compared to previous switches. If this is the case, we can be
+		* certain that this is noise. One other thing we apply is that if the
+		* amount of steps between two consecutive switches is very small, we
+		* merge these two according to the mergeThreshold parameter.
+		*/
 
 		//TODO: aanpassen door testen.
 		float mergeThreshold = 0;//(float) Math.PI / 3 / Constants.Threshold.STEPCOUNT * maxThreshold;

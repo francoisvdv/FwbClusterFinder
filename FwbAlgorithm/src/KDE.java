@@ -3,11 +3,10 @@
 public class KDE
 {
 	public    ScaledField scaledField;
+	protected ScaledField.Stats scaledFieldStats;
 	protected Field field;
 	protected float bandwidth;
 	protected Point[] sortedPoints;
-	protected float maxDens;
-        protected float minDens;
 	
 	protected int recursiveCount = 0;
 	
@@ -16,8 +15,64 @@ public class KDE
 		this.field = field;
 		this.initialize();
 	}
+        
+	public float getMaxCellDensity()
+	{
+		return this.scaledFieldStats.maxCellDens;
+	}
 	
-	public void initialize()
+	public float getMaxPointDensity()
+	{
+		return this.scaledFieldStats.maxPointDens;
+	}
+        
+	public float getMinCellDensity()
+	{
+		return this.scaledFieldStats.minCellDens;
+	}
+	
+	public float getMinPointDensity()
+	{
+		return this.scaledFieldStats.minPointDens;
+	}
+	
+	public float getAvgCellDens()
+	{
+		return this.scaledFieldStats.avgCellDens;
+	}
+	
+	public float getAvgPointDens()
+	{
+		return this.scaledFieldStats.avgPointDens;
+	}
+	
+	public ScaledField.Stats getDensityStats()
+	{
+		return this.scaledFieldStats;
+	}
+	
+	public int getPointCountAboveThreshold(float threshold)
+	{
+		return this.getPointCountAboveThreshold(threshold, 0, sortedPoints.length-1);
+	}
+	
+	// uses binarysearch
+	protected int getPointCountAboveThreshold(float threshold, int start, int end)
+	{
+		if(start >= end)
+			return sortedPoints.length-1-start;
+		
+		int middle = (int)Math.floor((start+end)/2);
+		float dens = scaledField.getCell(sortedPoints[middle]).getDensity();
+		if(dens < threshold)
+			return getPointCountAboveThreshold(threshold, middle+1, end);
+		else if(dens > threshold)
+			return getPointCountAboveThreshold(threshold, start, middle-1);
+		else
+			return getPointCountAboveThreshold_moveLeft(threshold, middle);
+	}
+	
+	public final void initialize()
 	{
 		Stopwatch.Timer bwTimer = Stopwatch.startNewTimer("calcBandwidth()");
 		this.calcBandwidth();
@@ -45,57 +100,39 @@ public class KDE
 				float sqdist = Utils.calcSquaredDistance(cell.getMiddleX(), cell.getMiddleY(), p.getX(), p.getY());
 				cell.increaseDensity(this.calcDensity(sqdist));
 				
-				if(cell.getDensity() > this.maxDens)
-					this.maxDens = cell.getDensity();
-                                
-                                if(cell.getDensity() < this.minDens && cell.getDensity() != 0)
-					this.minDens = cell.getDensity();
+//				if(cell.getDensity() > this.getMaxCellDensity())
+//					maxCellDensity = cell.getDensity();
 			}
 		}
 		foreachTimer.stop();
 		
-		if(Program.DEBUG)
-			this.scaledField.toFile(this.getMaxDensity());
-		
-		Stopwatch.Timer sortTimer = Stopwatch.startNewTimer("sorting points on density");
+		Stopwatch.Timer sortTimer = Stopwatch.startNewTimer("Sorting points on density");
 		this.sortedPoints = this.sort(points);
 		sortTimer.stop();
-	}
-        
-	public float getMaxDensity()
-	{
-		return this.maxDens;
-	}
-        
-	public float getMinDensity()
-	{
-		return this.minDens;
-	}
-	
-	public float getAvgDens()
-	{
-		return scaledField.getAvgDens();
-	}
-	
-	public int getPointCountAboveThreshold(float threshold)
-	{
-		return this.getPointCountAboveThreshold(threshold, 0, sortedPoints.length-1);
-	}
-	
-	// uses binarysearch
-	public int getPointCountAboveThreshold(float threshold, int start, int end)
-	{
-		if(start >= end)
-			return sortedPoints.length-1-start;
 		
-		int middle = (int)Math.floor((start+end)/2);
-		float dens = scaledField.getCell(sortedPoints[middle]).getDensity();
-		if(dens < threshold)
-			return getPointCountAboveThreshold(threshold, middle+1, end);
-		else if(dens > threshold)
-			return getPointCountAboveThreshold(threshold, start, middle-1);
-		else
-			return getPointCountAboveThreshold_moveLeft(threshold, middle);
+		Stopwatch.Timer StatsTimer = Stopwatch.startNewTimer("retieving cellstats");
+		this.scaledFieldStats = this.scaledField.getStats();
+		StatsTimer.stop();
+		
+		Stopwatch.Timer Stats2Timer = Stopwatch.startNewTimer("updating pointstats");
+		float total = 0;
+		boolean noZero = false;
+		int pointCount = points.length;
+		this.scaledFieldStats.minPointDens = this.scaledField.getCell(points[0]).getDensity();
+		this.scaledFieldStats.maxPointDens = this.scaledField.getCell(points[points.length-1]).getDensity();
+		for(int i=0; i<points.length; i++)
+		{
+			Point p = (Point) points[i];
+			float dens = this.scaledField.getCell(p).getDensity();
+			total += dens;
+			if(noZero && dens == 0)
+				pointCount--;
+		}
+		this.scaledFieldStats.avgPointDens = total/pointCount;
+		Stats2Timer.stop();
+		
+		if(Constants.DEBUG)
+			this.scaledField.toFile(this.getMaxCellDensity());
 	}
 	
 	protected int getPointCountAboveThreshold_moveLeft(float threshold, int middle)
@@ -213,11 +250,11 @@ public class KDE
 	// http://en.wikipedia.org/wiki/Kernel_density_estimation#Practical_estimation_of_the_bandwidth
 	protected void calcBandwidth()
 	{
-		float c = 3.14159f; //Constants.KDE.BWFACTOR;
-		float c_2 = 0.008f;
+		float c = 1f; //Constants.KDE.BWFACTOR;
+		float c_2 = 0.02f;
 		float s = this.field.getBoundingRectangle().getSurface();
 		float n = this.field.size();
-		this.bandwidth = (float) (c*Math.sqrt((double)s)/(Math.sqrt(n)+c_2*n));
+		this.bandwidth = (float) (c*Math.sqrt((double)s)/Math.sqrt(n) * c_2/n);
 //		System.out.println("w: " + field.getBoundingRectangle().getWidth() + ", h: " + field.getBoundingRectangle().getHeight());
 //		System.out.println(c + "*sqrt(" + s + ")/" + n + " = " + this.bandwidth);
 	}
