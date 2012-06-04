@@ -26,81 +26,12 @@ public class Threshold
 	 *
 	 * @return
 	 */
-	public float findThreshold(KDE KDE)
+	public float findThreshold_old(KDE KDE)
 	{
-		//Array that stores the 'switch-densities' between point counts. So between element 0 and 1 there
-		//are changes in the point counts, between element 2 and 3, etc.
-		ArrayList<Float> switches = new ArrayList<Float>();
-
-		//Used for generating a graph of densities/pointcounts
-		HashMap<Float, Integer> pointCounts = new HashMap<Float, Integer>();
-
-		maxThreshold = KDE.getMaxDensity();
-		previousNumberOfPoints = 0;
-
-		boolean inCluster = false; //Variable indicating whether we are currently 'in' a cluster in our algorithm.
-		float step = maxThreshold / Constants.Threshold.STEPCOUNT; //The step value indicates how fine we should partition the density range.
-
-		if (maxThreshold == 0)
-		{
-			log("Step too small: " + step + " maxThreshold: " + maxThreshold + " - Threshold stopped.");
-			return 0; //If the step value is 0, it we can stop right away because the algorithm will fail.
-		}
-
-		//Start looping through the thresholds. We start at the max density and go down one step value each iteration.
-		for (currentThreshold = maxThreshold; currentThreshold >= 0; currentThreshold -= step)
-		{
-			numberOfPoints = KDE.getPointCountAboveThreshold(currentThreshold);
-			pointCounts.put(currentThreshold, numberOfPoints);
-
-			//If the current number of points is larger than the previous number of points we are apparently iterating
-			//in a cluster.
-			if (numberOfPoints > previousNumberOfPoints)
-			{
-				//If we are not yet iterating in a cluster, we apparently started in a new one.
-				if (!inCluster)
-				{
-					switches.add(currentThreshold);
-				}
-
-				inCluster = true;
-			}
-			else
-			{
-				//There was no change in the number of points, so if we were iterating in a cluster we have now found the end of it.
-				if (inCluster)
-				{
-					switches.add(currentThreshold);
-					inCluster = false;
-				}
-			}
-
-			previousNumberOfPoints = numberOfPoints;
-		}
-		if (inCluster && !Utils.floatAlmostEquals(switches.get(switches.size() - 1), currentThreshold))
-		{
-			switches.add(currentThreshold); //The 'closing' density hasn't been added yet.
-		}
-		assert switches.size() % 2 == 0; //The amount of switches should be equal because we have a start and end value for each switch.
-
-		//Because we subtract step each time, we will eventually might get to a negative value. Since we don't have negative
-		//densities, make it zero.
-		if (switches.get(switches.size() - 1) < 0)
-		{
-			switches.set(switches.size() - 1, 0f);
-		}
-
-		log("Switches size: " + switches.size());
-		for (int i = 0; i <= switches.size() - 2; i += 2)
-		{
-			log("Switch " + i + ": " + switches.get(i) + " | Switch " + (i + 1) + ": " + switches.get(i + 1));
-		}
-
-		if (Constants.DEBUG)
-		{
-			graph(pointCounts);
-		}
-
+		ArrayList<Float> switches = findSwitches(KDE);
+		if(switches == null || switches.isEmpty())
+			return 0;
+		
 		/*
 		 * To cut off the noise, we check if the last switch contains lots of
 		 * 'steps' compared to previous switches. If this is the case, we can be
@@ -166,7 +97,98 @@ public class Threshold
 
 		return switches.size() == 0 ? 0 : switches.get(switches.size() - 1);
 	}
+	
+	public float findThreshold(KDE KDE)
+	{
+		ArrayList<Float> switches = findSwitches(KDE);
+		if(switches == null || switches.isEmpty())
+			return 0;
+		
+		//Remove 'noise'
+		switches.remove(switches.size() - 1);
+		switches.remove(switches.size() - 1);
+		
+		return switches.get(switches.size() - 1);
+	}
+	
+	ArrayList<Float> findSwitches(KDE KDE)
+	{
+		//Array that stores the 'switch-densities' between point counts. So between element 0 and 1 there
+		//are changes in the point counts, between element 2 and 3, etc.
+		ArrayList<Float> switches = new ArrayList<Float>();
 
+		//Used for generating a graph of densities/pointcounts
+		HashMap<Float, Integer> pointCounts = new HashMap<Float, Integer>();
+
+		maxThreshold = KDE.getMaxDensity();
+		previousNumberOfPoints = 0;
+
+		boolean inCluster = false; //Variable indicating whether we are currently 'in' a cluster in our algorithm.
+		float step = maxThreshold / Constants.Threshold.STEPCOUNT; //The step value indicates how fine we should partition the density range.
+
+		if (maxThreshold == 0)
+		{
+			log("Step too small: " + step + " maxThreshold: " + maxThreshold + " - Threshold stopped.");
+			return null; //If the step value is 0, it we can stop right away because the algorithm will fail.
+		}
+
+		//Start looping through the thresholds. We start at the max density and go down one step value each iteration.
+		for (currentThreshold = maxThreshold; currentThreshold >= 0; currentThreshold -= step)
+		{
+			numberOfPoints = KDE.getPointCountAboveThreshold(currentThreshold);
+			pointCounts.put(currentThreshold, numberOfPoints);
+
+			//If the current number of points is larger than the previous number of points we are apparently iterating
+			//in a cluster.
+			if (numberOfPoints > previousNumberOfPoints)
+			{
+				//If we are not yet iterating in a cluster, we apparently started in a new one.
+				if (!inCluster)
+				{
+					switches.add(currentThreshold);
+				}
+
+				inCluster = true;
+			}
+			else
+			{
+				//There was no change in the number of points, so if we were iterating in a cluster we have now found the end of it.
+				if (inCluster)
+				{
+					switches.add(currentThreshold);
+					inCluster = false;
+				}
+			}
+
+			previousNumberOfPoints = numberOfPoints;
+		}
+		if (inCluster && !Utils.floatAlmostEquals(switches.get(switches.size() - 1), currentThreshold))
+		{
+			switches.add(currentThreshold); //The 'closing' density hasn't been added yet.
+		}
+		assert switches.size() % 2 == 0; //The amount of switches should be equal because we have a start and end value for each switch.
+
+		//Because we subtract step each time, we will eventually might get to a negative value. Since we don't have negative
+		//densities, make it zero.
+		if (switches.get(switches.size() - 1) < 0)
+		{
+			switches.set(switches.size() - 1, 0f);
+		}
+
+		log("Switches size: " + switches.size());
+		for (int i = 0; i <= switches.size() - 2; i += 2)
+		{
+			log("Switch " + i + ": " + switches.get(i) + " | Switch " + (i + 1) + ": " + switches.get(i + 1));
+		}
+
+		if (Constants.DEBUG)
+		{
+			graph(pointCounts);
+		}
+		
+		return switches;
+	}
+	
 	void log(String message)
 	{
 		Utils.log("Threshold", message);

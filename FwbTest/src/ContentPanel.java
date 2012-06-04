@@ -120,7 +120,7 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
 		for(int i = 0; i < field.size(); i++)
 		{
 			PointCategory pc = field.get(i).getPointCategory();
-			if(categoryColors[pc.index] == null)
+			if(pc != null && pc.index < categoryColors.length && categoryColors[pc.index] == null)
 				categoryColors[pc.index] =  new Color(random.nextInt(255), random.nextInt(255), random.nextInt(255));
 		}
 		repaint();
@@ -161,7 +161,7 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
 			
 			if(x >= 0 && x < getWidth() && y >= 0 && y < getHeight())
 			{
-				if(p.getPointCategory() != null)
+				if(p.getPointCategory() != null && p.getPointCategory().index < categoryColors.length)
 					g.setColor(categoryColors[p.getPointCategory().index]);
 				else
 					g.setColor(Color.white);
