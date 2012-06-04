@@ -1,7 +1,5 @@
 public final class Program
 {
-	public final static boolean DEBUG = true;
-	
 	/**
 	 * @param args
 	 */
@@ -35,7 +33,6 @@ public final class Program
 		printTimer.stop();
 		totalTimer.stop();
 		
-		if(Constants.DEBUG)
-			System.out.print(Stopwatch.getResult());
+		Utils.log(Stopwatch.getResult());
 	}
 }

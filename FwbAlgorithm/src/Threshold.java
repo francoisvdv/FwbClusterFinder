@@ -120,7 +120,7 @@ public class Threshold
 		//Used for generating a graph of densities/pointcounts
 		HashMap<Float, Integer> pointCounts = new HashMap<Float, Integer>();
 
-		maxThreshold = KDE.getMaxDensity();
+		maxThreshold = KDE.getMaxCellDensity();
 		previousNumberOfPoints = 0;
 
 		boolean inCluster = false; //Variable indicating whether we are currently 'in' a cluster in our algorithm.

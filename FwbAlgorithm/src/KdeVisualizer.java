@@ -65,7 +65,7 @@ public final class KdeVisualizer
 				if(cell == null)
 					continue;
 				
-				g.setColor(densityToColor(cell.getDensity(), kde.maxDens));
+				g.setColor(densityToColor(cell.getDensity(), kde.getMaxCellDensity()));
 				g.drawLine(i, j, i, j);
 			}
 		}

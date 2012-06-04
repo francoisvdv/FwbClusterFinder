@@ -291,6 +291,7 @@ public class TestProgram extends JFrame implements ActionListener
 	{
 		progressWorks = false;
 		progress.setIndeterminate(false);
+		// TODO: ADD NOISE WERKT NIET MEER!!!
 		updateContentPanel();
 	}
 	
@@ -565,7 +566,6 @@ public class TestProgram extends JFrame implements ActionListener
 							}
 						}
 					}
-					
 					stopProgress();
 				}
 			}).start();

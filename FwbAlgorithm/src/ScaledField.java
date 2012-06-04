@@ -44,6 +44,8 @@ public class ScaledField
 		
 		if(width*height > maxS)
 		{
+			Utils.log("SF","begrensd");
+			
 			double r = ((double)width/(double)height);
 			double r2= ((double)height/(double)width);
 			
@@ -63,6 +65,8 @@ public class ScaledField
 	
 	protected void initialize()
 	{
+		Utils.log(GRID_WIDTH + "x" + GRID_HEIGHT);
+		
 		Stopwatch.Timer gridTimer = Stopwatch.startNewTimer("make emty grid");
 		this.grid = new Cell[GRID_WIDTH][GRID_HEIGHT];
 		gridTimer.stop();
@@ -298,19 +302,50 @@ public class ScaledField
 		return grid[scaleX(cell.getMiddleX())][y];
 	}
 	
-	public float getAvgDens()
+	public Stats getStats()
 	{
+		Stats stats = new Stats();
+		this.updateCellStats(stats);
+		return stats;
+	}
+	
+	protected void updateCellStats(Stats stats)
+	{
+		boolean noZero = false;
+		
 		int numberCells = GRID_WIDTH*GRID_HEIGHT;
 		float totalDens = 0;
+		float maxDens = 0;
+		float minDens = 0;
 		
 		for(int i=0;i<this.GRID_WIDTH;i++)
 		{
 			for(int j=0;j<this.GRID_HEIGHT;j++)
 			{
-				totalDens += grid[i][j].getDensity();
+				float dens = grid[i][j].getDensity();
+				totalDens += dens;
+				maxDens = Math.max(dens, maxDens);
+				minDens = Math.min(dens, minDens);
+				
+				if(noZero && grid[i][j].getDensity() == 0)
+					numberCells--;
 			}
 		}
 		
-		return totalDens/numberCells;
+		stats.avgCellDens = totalDens/numberCells;
+		stats.maxCellDens = maxDens;
+		stats.minCellDens = minDens;
+	}
+	
+	public class Stats
+	{
+		public float maxPointDens = -1;
+		public float minPointDens = -1;
+		public float avgPointDens = -1;
+		public float maxCellDens = -1;
+		public float avgCellDens = -1;
+		public float minCellDens = -1;
+		
+		public Stats() {}
 	}
 }
