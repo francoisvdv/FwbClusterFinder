@@ -46,7 +46,7 @@ public final class Utils
 	}
 	public static void log(String category, String message)
 	{
-		category = category.length()==0? category+": " : "";
+		category = category.length()!=0? category+": " : "";
 		if(Constants.DEBUG)
 			System.out.println(category + message);
 	}
