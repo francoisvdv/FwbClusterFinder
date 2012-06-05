@@ -10,54 +10,71 @@ public class AlphaAlgorithm extends Algorithm
 	@Override
 	public void run()
 	{
-		Stopwatch.Timer KdeTimer = Stopwatch.startNewTimer("KDE initialize");
+		boolean noiseDetected = false;
+		
+		//Run KDE
+		Stopwatch.Timer kdeTimer = Stopwatch.startNewTimer("KDE initialize");
 		kde = new KDE(this.field);
-		KdeTimer.stop();
+		kdeTimer.stop();
 		
 		/*
-		 * First try a floodfill run with the minimum point density. If the
-		 * KDE is correctly setup, we get single clusters in high density areas,
-		 * and if there is noise, each noise point itself becomes a cluster.
+		 * First try a floodfill run with a little less than the minimum point
+		 * density. If the KDE is correctly setup, we get single clusters in
+		 * high density areas, and if there is noise, each noise point
+		 * itself becomes a cluster.
 		 */
 		{
-			Stopwatch.Timer timer = Stopwatch.startNewTimer("Floodfill");
+			Stopwatch.Timer timer = Stopwatch.startNewTimer("Floodfill 1");
 			field.setScaledField(kde.scaledField);
-			field.startAssigningClusters(kde.getMinPointDensity() * 1f);
+			field.startAssigningClusters(kde.getMinPointDensity() * 0.9f);
 			timer.stop();
 		}
 		
+		/*
+		 * If the amount of clusters is less than the minimum or higher than
+		 * the maximum we assume we have noise.
+		 */
 		int clusterCount = field.getNumberOfClusters();
-		if(clusterCount >= minimumClusters && clusterCount <= maximumClusters)
+		if(clusterCount < minimumClusters || clusterCount > maximumClusters)
 		{
-			//This is an acceptable result, so leave it at this.
-			return;
+			/*
+			 * This is an unacceptable result, so we assume we have detected
+			 * noise.
+			 */
+			noiseDetected = true;
 		}
-		System.out.println(clusterCount);
-		if(1 == 1)
-			return;
 		
 		//Reset the field to perform new operations on it.
 		field.reset();
 		PointCategory.resetIndex();
 		
-		/*
-		 * We are now at a point at which we know that we have noise. So, cut
-		 * off the last 'cluster' (which is noise) and rerun floodfill.
-		 */
 		float threshold;
+		if(noiseDetected)
 		{
+			/*
+			* We are now at a point at which we know that we have noise. So,
+			* the threshold must be set to cut off the 'cluster' (which is noise).
+			*/
 			Stopwatch.Timer timer = Stopwatch.startNewTimer("Finding threshold");
 			Threshold thresholdFinder = new Threshold();
 			threshold = thresholdFinder.findThreshold(kde);
 			timer.stop();
 		}
+		else	
+		{
+			/*
+			 * We know we have no noise, so rerun floodfill with a threshold that's
+			 * a little above the minimum point density.
+			 */
+			threshold = kde.getMinPointDensity() * 1.1f;
+		}
 		
 		/*
-		 * Now do a floodfill run with the threshold value for cutting off
-		 * the last 'cluster' (noise).
-		 */
+		* Now do a floodfill run with the threshold value for cutting off
+		* the last 'cluster' (noise).
+		*/
 		{	
-			Stopwatch.Timer floodfillTimer = Stopwatch.startNewTimer("Floodfill");
+			Stopwatch.Timer floodfillTimer = Stopwatch.startNewTimer("Floodfill 2");
 			field.setScaledField(kde.scaledField);
 			field.startAssigningClusters(threshold);
 			floodfillTimer.stop();

@@ -175,14 +175,14 @@ public class Threshold
 			switches.set(switches.size() - 1, 0f);
 		}
 
-		log("Switches size: " + switches.size());
-		for (int i = 0; i <= switches.size() - 2; i += 2)
-		{
-			log("Switch " + i + ": " + switches.get(i) + " | Switch " + (i + 1) + ": " + switches.get(i + 1));
-		}
-
 		if (Constants.DEBUG)
 		{
+			log("Switches size: " + switches.size());
+			for (int i = 0; i <= switches.size() - 2; i += 2)
+			{
+				log("Switch " + i + ": " + switches.get(i) + " | Switch " + (i + 1) + ": " + switches.get(i + 1));
+			}
+
 			graph(pointCounts);
 		}
 		
