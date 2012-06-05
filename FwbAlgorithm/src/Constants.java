@@ -1,6 +1,6 @@
 public final class Constants
 {
-	public static final boolean DEBUG = true;
+	public static final boolean DEBUG = false;
 	
 	public final class KDE
 	{
@@ -13,6 +13,6 @@ public final class Constants
 	
 	public final class Threshold
 	{
-		public static final int STEPCOUNT = 10000;
+		public static final int STEPCOUNT = 200;
 	}
 }

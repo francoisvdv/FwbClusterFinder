@@ -13,9 +13,9 @@ public class AlphaAlgorithm extends Algorithm
 		boolean noiseDetected = false;
 		
 		//Run KDE
-		Stopwatch.Timer kdeTimer = Stopwatch.startNewTimer("KDE initialize");
+		Stopwatch.Timer timer = Stopwatch.startNewTimer("KDE initialize");
 		kde = new KDE(this.field);
-		kdeTimer.stop();
+		timer.stop();
 		
 		/*
 		 * First try a floodfill run with a little less than the minimum point
@@ -24,12 +24,12 @@ public class AlphaAlgorithm extends Algorithm
 		 * itself becomes a cluster.
 		 */
 		{
-			Stopwatch.Timer timer = Stopwatch.startNewTimer("Floodfill 1");
+			timer = Stopwatch.startNewTimer("Floodfill 1");
 			field.setScaledField(kde.scaledField);
 			field.startAssigningClusters(kde.getMinPointDensity() * 0.9f);
 			timer.stop();
 		}
-		
+
 		/*
 		 * If the amount of clusters is less than the minimum or higher than
 		 * the maximum we assume we have noise.
@@ -45,8 +45,8 @@ public class AlphaAlgorithm extends Algorithm
 		}
 		
 		//Reset the field to perform new operations on it.
-		field.reset();
 		PointCategory.resetIndex();
+		field.reset();
 		
 		float threshold;
 		if(noiseDetected)
@@ -55,7 +55,7 @@ public class AlphaAlgorithm extends Algorithm
 			* We are now at a point at which we know that we have noise. So,
 			* the threshold must be set to cut off the 'cluster' (which is noise).
 			*/
-			Stopwatch.Timer timer = Stopwatch.startNewTimer("Finding threshold");
+			timer = Stopwatch.startNewTimer("Finding threshold");
 			Threshold thresholdFinder = new Threshold();
 			threshold = thresholdFinder.findThreshold(kde);
 			timer.stop();
@@ -69,15 +69,17 @@ public class AlphaAlgorithm extends Algorithm
 			threshold = kde.getMinPointDensity() * 1.1f;
 		}
 		
+		Utils.log("AlphaAlgorithm", "" + threshold);
+		
 		/*
 		* Now do a floodfill run with the threshold value for cutting off
 		* the last 'cluster' (noise).
 		*/
 		{	
-			Stopwatch.Timer floodfillTimer = Stopwatch.startNewTimer("Floodfill 2");
+			timer = Stopwatch.startNewTimer("Floodfill 2");
 			field.setScaledField(kde.scaledField);
 			field.startAssigningClusters(threshold);
-			floodfillTimer.stop();
+			timer.stop();
 		}
 	}
 }

@@ -300,6 +300,17 @@ public class ScaledField
 		return grid[scaleX(cell.getMiddleX())][y];
 	}
 	
+	public void reset()
+	{
+		for(int x=0; x<GRID_WIDTH; x++)
+		{
+			for(int y=0; y<GRID_HEIGHT; y++)
+			{
+				this.grid[x][y].setCategory(null);
+			}
+		}
+	}
+	
 	public Stats getStats()
 	{
 		Stats stats = new Stats();

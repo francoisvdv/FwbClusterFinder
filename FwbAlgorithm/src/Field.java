@@ -86,6 +86,8 @@ public final class Field extends PointCollection
 		{
 			p.resetPointCategory();
 		}
+		
+		scaledField.reset();
 	}
 	
 	/**
@@ -144,8 +146,6 @@ public final class Field extends PointCollection
 	 */
 	public void startAssigningClusters(Float threshold)
 	{
-		Stopwatch.Timer floodFillTimer = Stopwatch.startNewTimer("Floodfill");
-		
 		this.threshold = threshold;
 		
 		// toArray() is much faster than listIterator()
@@ -165,8 +165,6 @@ public final class Field extends PointCollection
 				}
 			}
 		}
-		
-		floodFillTimer.stop();
 	}
 	
 	/**

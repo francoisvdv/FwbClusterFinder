@@ -260,7 +260,7 @@ public class KDE
 		int middle = start-1;
 		
 		if(start < 0)
-			System.out.println(":(");
+			Utils.log("KDE", ":(");
 		
 		for(int i=start; i<=end; i++)
 		{
