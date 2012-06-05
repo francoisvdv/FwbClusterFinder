@@ -22,7 +22,7 @@ public class AlphaAlgorithm extends Algorithm
 		{
 			Stopwatch.Timer timer = Stopwatch.startNewTimer("Floodfill");
 			field.setScaledField(kde.scaledField);
-			field.startAssigningClusters(kde.getMinPointDensity());
+			field.startAssigningClusters(kde.getMinPointDensity() * 1f);
 			timer.stop();
 		}
 		
@@ -32,6 +32,9 @@ public class AlphaAlgorithm extends Algorithm
 			//This is an acceptable result, so leave it at this.
 			return;
 		}
+		System.out.println(clusterCount);
+		if(1 == 1)
+			return;
 		
 		//Reset the field to perform new operations on it.
 		field.reset();
