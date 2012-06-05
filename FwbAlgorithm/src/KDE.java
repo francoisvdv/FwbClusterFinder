@@ -241,15 +241,15 @@ public class KDE
 		int middle = this.partition(partiallySorted, start, end, pivotVal);
 		// move pivot
 		temp = partiallySorted[++middle];
-		partiallySorted[middle] = partiallySorted[partiallySorted.length-1];
-		partiallySorted[partiallySorted.length-1] = temp;
+		partiallySorted[middle] = partiallySorted[end+1];
+		partiallySorted[end+1] = temp;
 		
 		return middle;
 	}
 	
 	protected int partition(Point[] partiallySorted, int start, int end, float pivotVal)
 	{
-		assert start < end;
+		assert start <= end;
 		
 		// var used for swapping
 		Point temp;
