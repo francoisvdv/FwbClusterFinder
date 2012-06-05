@@ -10,41 +10,54 @@ public class AlphaAlgorithm extends Algorithm
 	@Override
 	public void run()
 	{
-		Stopwatch.Timer KDETimer = Stopwatch.startNewTimer("KDE initialize");
+		Stopwatch.Timer KdeTimer = Stopwatch.startNewTimer("KDE initialize");
 		kde = new KDE(this.field);
-		KDETimer.stop();
+		KdeTimer.stop();
 		
-		//First floodfill run
+		/*
+		 * First try a floodfill run with the minimum point density. If the
+		 * KDE is correctly setup, we get single clusters in high density areas,
+		 * and if there is noise, each noise point itself becomes a cluster.
+		 */
 		{
-			Stopwatch.Timer floodfillTimer = Stopwatch.startNewTimer("flood fill");
+			Stopwatch.Timer timer = Stopwatch.startNewTimer("Floodfill");
 			field.setScaledField(kde.scaledField);
-			field.startAssigningClusters(0f);
-			floodfillTimer.stop();
+			field.startAssigningClusters(kde.getMinPointDensity());
+			timer.stop();
 		}
 		
-		int clusterCount1 = field.getNumberOfClusters();
-
-		//Find threshold
+		int clusterCount = field.getNumberOfClusters();
+		if(clusterCount >= minimumClusters && clusterCount <= maximumClusters)
+		{
+			//This is an acceptable result, so leave it at this.
+			return;
+		}
+		
+		//Reset the field to perform new operations on it.
+		field.reset();
+		PointCategory.resetIndex();
+		
+		/*
+		 * We are now at a point at which we know that we have noise. So, cut
+		 * off the last 'cluster' (which is noise) and rerun floodfill.
+		 */
 		float threshold;
 		{
-			Stopwatch.Timer ThresholdTimer = Stopwatch.startNewTimer("Finding threshold");
+			Stopwatch.Timer timer = Stopwatch.startNewTimer("Finding threshold");
 			Threshold thresholdFinder = new Threshold();
 			threshold = thresholdFinder.findThreshold(kde);
-			ThresholdTimer.stop();
+			timer.stop();
 		}
-		//Second floodfill run
-		{	
-			field.reset();
-			PointCategory.resetIndex();
 		
-			Stopwatch.Timer floodfillTimer = Stopwatch.startNewTimer("flood fill");
+		/*
+		 * Now do a floodfill run with the threshold value for cutting off
+		 * the last 'cluster' (noise).
+		 */
+		{	
+			Stopwatch.Timer floodfillTimer = Stopwatch.startNewTimer("Floodfill");
 			field.setScaledField(kde.scaledField);
 			field.startAssigningClusters(threshold);
 			floodfillTimer.stop();
 		}
-		
-		int clusterCount2 = field.getNumberOfClusters();
-		
-		System.out.println(clusterCount1 + "||" + clusterCount2);
 	}
 }
