@@ -36,8 +36,6 @@ public class ScaledField
 	
 	public ScaledField(Rectangle rect, float bandwidth)
 	{
-		Utils.log("SF","test");
-		
 		long maxS = (int)Math.pow(Constants.KDE.MAXGRIDSIZE, 2);
 		
 		float scale = bandwidth/Constants.KDE.CELLS_PER_BANDWIDTH;
@@ -46,8 +44,6 @@ public class ScaledField
 		
 		if(width*height > maxS)
 		{
-			Utils.log("SF","begrensd");
-			
 			double r = ((double)width/(double)height);
 			double r2= ((double)height/(double)width);
 			

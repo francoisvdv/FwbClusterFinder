@@ -23,5 +23,7 @@ public class AlphaAlgorithm extends Algorithm
 		field.setScaledField(kde.scaledField);
 		field.startAssigningClusters(threshold);
 		floodfillTimer.stop();
+		
+		Utils.log(Stopwatch.getResult());
 	}
 }

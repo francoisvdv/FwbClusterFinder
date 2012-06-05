@@ -7,6 +7,9 @@ public class KDE
 	protected Field field;
 	protected float bandwidth;
 	protected Point[] sortedPoints;
+	protected float[] densCache;
+	protected boolean densCached = false;
+	protected float   densCacheStep;
 	
 	protected int recursiveCount = 0;
 	
@@ -77,6 +80,10 @@ public class KDE
 		Stopwatch.Timer bwTimer = Stopwatch.startNewTimer("calcBandwidth()");
 		this.calcBandwidth();
 		bwTimer.stop();
+		
+//		Stopwatch.Timer densInitTimer = Stopwatch.startNewTimer("initializing density calculation");
+//		this.initDensityCalculation();
+//		densInitTimer.stop();
 		
 		Stopwatch.Timer SFTimer = Stopwatch.startNewTimer("constructing scaled field");
 		this.scaledField = new ScaledField(field.getBoundingRectangle(), this.bandwidth);
@@ -250,24 +257,54 @@ public class KDE
 	// http://en.wikipedia.org/wiki/Kernel_density_estimation#Practical_estimation_of_the_bandwidth
 	protected void calcBandwidth()
 	{
-		float c = 1f; //Constants.KDE.BWFACTOR;
-		float c_2 = 0.0002f;
+		float c = 0.8f; //Constants.KDE.BWFACTOR;
+		//float c_2 = 100000f;
 		float s = this.field.getBoundingRectangle().getSurface();
 		float n = this.field.size();
-		this.bandwidth = (float) (c*Math.sqrt((double)s)/Math.sqrt(n) * c_2/n);
+		this.bandwidth = (float)(c*Math.sqrt(s/n));
+		
+		Utils.log("ScaledField", "S="+s+"; N="+n+"; bw="+this.bandwidth+";");
+//		this.bandwidth = (float) (c*Math.sqrt((double)s)/Math.sqrt(n) * c_2/n);
+		
 //		System.out.println("w: " + field.getBoundingRectangle().getWidth() + ", h: " + field.getBoundingRectangle().getHeight());
 //		System.out.println(c + "*sqrt(" + s + ")/" + n + " = " + this.bandwidth);
+	}
+	
+	protected void initDensityCalculation()
+	{
+		int steps = (int)(5*Constants.KDE.CELLS_PER_BANDWIDTH*Constants.KDE.BWRADIUS);
+		float step= Constants.KDE.BWRADIUS*this.bandwidth/steps;
+		this.densCache = new float[steps];
+		
+		for(int i=0; i<steps; i++)
+		{
+			this.densCache[i] = this.calcDensity((float)Math.pow(i*step, 2));
+		}
+		this.densCacheStep = step;
+		this.densCached = true;
 	}
 	
 	//TODO
 	protected float calcDensity(float squaredDistance)
 	{
-		double a = 1/(this.bandwidth*Math.sqrt(2*Math.PI));
-		
-		return (float) (a * Math.pow(
-				Math.E,
-				//-1 * (Math.pow(distance ,2) / (2*Math.pow(this.bandwidth, 2)))
-				-1 * (squaredDistance / (2*Math.pow(this.bandwidth, 2))) // distance is already squared
-			));
+		if(!this.densCached)
+		{
+			double a = 1/(this.bandwidth*Math.sqrt(2*Math.PI));
+
+			return (float) (a * Math.pow(
+					Math.E,
+					//-1 * (Math.pow(distance ,2) / (2*Math.pow(this.bandwidth, 2)))
+					-1 * (squaredDistance / (2*Math.pow(this.bandwidth, 2))) // distance is already squared
+				));
+		}
+		else
+		{
+			int lowerBound = (int)(Math.sqrt(squaredDistance)/this.densCacheStep);
+			int upperBound = lowerBound+1;
+			float upperWeight = (float)(Math.sqrt(squaredDistance)/this.densCacheStep - lowerBound);
+			float lowerWeight = 1-upperWeight;
+			
+			return lowerWeight*this.densCache[lowerBound] + upperWeight*this.densCache[upperBound];
+		}
 	}
 }
