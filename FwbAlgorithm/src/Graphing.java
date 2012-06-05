@@ -3,6 +3,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+
+/*
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
@@ -10,11 +12,13 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
+*/
 
 public final class Graphing
 {
 	public static void graphPointCounts(HashMap<Float, Integer> pointCounts)
 	{
+		/*
 		final XYSeries series = new XYSeries("First");
 
 		Iterator it = pointCounts.entrySet().iterator();
@@ -39,10 +43,12 @@ public final class Graphing
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		*/
 	}
 	
 	public static void graphSortedDensities(HashMap<Integer, Float> densities)
 	{
+		/*
 		final XYSeries series = new XYSeries("First");
 
 		Iterator it = densities.entrySet().iterator();
@@ -67,5 +73,6 @@ public final class Graphing
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		*/ 
 	}
 }
