@@ -163,7 +163,6 @@ public class KDE
 			for(int i = 0; i < sortedPoints.length; i++)
 			{
 				sortedDensities.put(i, this.scaledField.getCell(sortedPoints[i]).getDensity());
-				System.out.println(this.scaledField.getCell(sortedPoints[i]).getDensity());
 			}
 			Graphing.graphSortedDensities(sortedDensities);
 		}

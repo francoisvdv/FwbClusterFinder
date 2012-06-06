@@ -3,10 +3,6 @@ import java.util.HashMap;
 
 public class Threshold
 {
-	int previousNumberOfPoints;
-	int numberOfPoints;
-	float currentThreshold;
-	float maxThreshold;
 
 	/**
 	 * Returns a Threshold value. Everything BELOW this threshold should be cut
@@ -86,7 +82,7 @@ public class Threshold
 		return switches.size() == 0 ? 0 : switches.get(switches.size() - 1);
 	}
 	
-	public float findThreshold(KDE KDE)
+	public float findThreshold_old2(KDE KDE)
 	{
 		ArrayList<Float> switches = findSwitches(KDE);
 		if(switches == null || switches.isEmpty())
@@ -99,6 +95,36 @@ public class Threshold
 		return switches.get(switches.size() - 1);
 	}
 	
+	public float findThreshold(KDE KDE)
+	{
+		int previousNumberOfPoints = 0;
+		int numberOfPoints = 0;
+
+		float minThreshold = KDE.getMinPointDensity();
+		float maxThreshold = KDE.getMaxCellDensity();
+		float step = maxThreshold / Constants.Threshold.STEPCOUNT;
+		
+		float currentThreshold = 0;
+		
+		//Find first switch
+		for(currentThreshold = minThreshold; currentThreshold <= maxThreshold; currentThreshold += step)
+		{
+			numberOfPoints = KDE.getPointCountAboveThreshold(currentThreshold);
+			if(currentThreshold == minThreshold)
+			{
+				previousNumberOfPoints = numberOfPoints;
+				continue;
+			}
+			
+			if(numberOfPoints == previousNumberOfPoints)
+				break;
+
+			previousNumberOfPoints = numberOfPoints;
+		}
+		
+		return currentThreshold;
+	}
+	
 	ArrayList<Float> findSwitches(KDE KDE)
 	{
 		//Array that stores the 'switch-densities' between point counts. So between element 0 and 1 there
@@ -108,8 +134,8 @@ public class Threshold
 		//Used for generating a graph of densities/pointcounts
 		HashMap<Float, Integer> pointCounts = new HashMap<Float, Integer>();
 
-		maxThreshold = KDE.getMaxCellDensity();
-		previousNumberOfPoints = 0;
+		float maxThreshold = KDE.getMaxCellDensity();
+		int previousNumberOfPoints = 0;
 
 		boolean inCluster = false; //Variable indicating whether we are currently 'in' a cluster in our algorithm.
 		float step = maxThreshold / Constants.Threshold.STEPCOUNT; //The step value indicates how fine we should partition the density range.
@@ -121,9 +147,10 @@ public class Threshold
 		}
 
 		//Start looping through the thresholds. We start at the max density and go down one step value each iteration.
+		float currentThreshold;
 		for (currentThreshold = maxThreshold; currentThreshold >= 0; currentThreshold -= step)
 		{
-			numberOfPoints = KDE.getPointCountAboveThreshold(currentThreshold);
+			int numberOfPoints = KDE.getPointCountAboveThreshold(currentThreshold);
 			pointCounts.put(currentThreshold, numberOfPoints);
 
 			//If the current number of points is larger than the previous number of points we are apparently iterating

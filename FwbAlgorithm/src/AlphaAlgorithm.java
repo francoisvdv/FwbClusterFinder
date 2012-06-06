@@ -48,6 +48,9 @@ public class AlphaAlgorithm extends Algorithm
 		PointCategory.resetIndex();
 		field.reset();
 		
+		Utils.log("AlphaAlgorithm", "NoiseDetected: " + noiseDetected);
+		Utils.log("AlphaAlgorithm", "clusterCount: "  + clusterCount);
+		
 		float threshold;
 		if(noiseDetected)
 		{
@@ -69,7 +72,7 @@ public class AlphaAlgorithm extends Algorithm
 			threshold = kde.getMinPointDensity() * 1.1f;
 		}
 		
-		Utils.log("AlphaAlgorithm", "" + threshold);
+		Utils.log("AlphaAlgorithm: Threshold", "" + threshold);
 		
 		/*
 		* Now do a floodfill run with the threshold value for cutting off
