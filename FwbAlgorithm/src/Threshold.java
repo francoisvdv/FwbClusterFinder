@@ -117,12 +117,12 @@ public class Threshold
 				continue;
 			}
 			
-			log("currentThrehsold: " + currentThreshold + " | numberOfPoints: " +
-					numberOfPoints + " | prev#Points: " + previousNumberOfPoints + 
-					"switchCount:  " + switchCount);
-			Utils.log(""+KDE.scaledField.getCell(KDE.sortedPoints[numberOfPoints-1]).getDensity());
-			Utils.log(""+KDE.scaledField.getCell(KDE.sortedPoints[numberOfPoints]).getDensity());
-			Utils.log(""+KDE.scaledField.getCell(KDE.sortedPoints[numberOfPoints+1]).getDensity());
+			//log("currentThrehsold: " + currentThreshold + " | numberOfPoints: " +
+			//		numberOfPoints + " | prev#Points: " + previousNumberOfPoints + 
+			//		"switchCount:  " + switchCount);
+			//Utils.log(""+KDE.scaledField.getCell(KDE.sortedPoints[numberOfPoints-1]).getDensity());
+			//Utils.log(""+KDE.scaledField.getCell(KDE.sortedPoints[numberOfPoints]).getDensity());
+			//Utils.log(""+KDE.scaledField.getCell(KDE.sortedPoints[numberOfPoints+1]).getDensity());
 			//currentThreshold =
 			//		KDE.scaledField.getCell(KDE.sortedPoints[numberOfPoints]).getDensity();
 			
