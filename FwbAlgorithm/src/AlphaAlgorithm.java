@@ -84,5 +84,7 @@ public class AlphaAlgorithm extends Algorithm
 			field.startAssigningClusters(threshold);
 			timer.stop();
 		}
+		
+		//Utils.log(Stopwatch.getResult());
 	}
 }

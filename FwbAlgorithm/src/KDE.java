@@ -1,4 +1,4 @@
-import java.util.HashMap;
+import java.util.*;
 
 // TODO: scaled field moet ergens gemaakt worden (in KDE of in Field)
 
@@ -175,14 +175,39 @@ public class KDE
 		return middle+1;
 	}
 	
+	protected class DensityComparator implements Comparator<Point>
+	{
+		protected ScaledField ScaledField;
+		
+		public DensityComparator(ScaledField SF)
+		{
+			this.ScaledField = SF;
+		}
+		
+		@Override
+		public int compare(Point p1, Point p2)
+		{
+			float dens1 = ScaledField.getCell(p1).getDensity();
+			float dens2 = ScaledField.getCell(p2).getDensity();
+			if(dens1 < dens2)
+				return -1;
+			else if(dens2 < dens1)
+				return 1;
+			else
+				return 0;
+		}
+	}
+	
 	// uses quicksort
 	// maby change to some form of counting sort
 	protected Point[] sort(Point[] unsorted)
 	{
-		Point[] sorted = unsorted.clone();
-		int start = this.partition(sorted, 0, sorted.length-1, 0.0f);
-		this.sort_recursive(sorted, start+1, sorted.length-1);
-		return sorted;
+		ArrayList<Point> sorted = new ArrayList<Point>(Arrays.asList(unsorted));
+		Collections.sort(sorted, new DensityComparator(this.scaledField));
+//		int start = this.partition(sorted, 0, sorted.length-1, 0.0f);
+//		this.sort_recursive(sorted, start+1, sorted.length-1);
+		Point[] points = new Point[sorted.size()];
+		return sorted.toArray(points);
 	}
 	
 	// in-place version of quicksort
@@ -194,12 +219,16 @@ public class KDE
 			s = "breakpoint here";
 		
 		if(start >= end)
+		{
+			recursiveCount--;
 			return;
+		}
 		
 		int pivotPos = getPivotPos(start, end);
 		pivotPos = partition(partiallySorted, start, end, pivotPos);
 		this.sort_recursive(partiallySorted, start, pivotPos-1);
 		this.sort_recursive(partiallySorted, pivotPos+1, end);
+		recursiveCount--;
 	}
 	
 	// Given
@@ -284,7 +313,7 @@ public class KDE
 	protected void calcBandwidth()
 	{
 		float c_1 = -0.08f; //Constants.KDE.BWFACTOR;
-		float c_2 = 1.65f;
+		float c_2 = 1.60f;
 		float s   = this.field.getBoundingRectangle().getSurface();
 		float n   = this.field.size();
 		float c   = (float)(c_1*Math.log(Math.sqrt(s/n))+c_2);
