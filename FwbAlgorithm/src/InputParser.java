@@ -43,6 +43,8 @@ public class InputParser
 	}
 	boolean parseInputClusters()
 	{
+		Utils.log("IP", "parseInputClusters");
+		
 		if(!inputScanner.hasNextLine())
 			return false;
 		
@@ -83,6 +85,8 @@ public class InputParser
 	}
 	boolean parseInputPoints()
 	{
+		Utils.log("IP", "parseInputPoints");
+		
 		if(!inputScanner.hasNextLine())
 			return false;
 		
