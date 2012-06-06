@@ -102,7 +102,7 @@ public class Threshold
 
 		float minThreshold = KDE.getMinPointDensity();
 		float maxThreshold = KDE.getMaxCellDensity();
-		float step = maxThreshold / Constants.Threshold.STEPCOUNT;
+		float step = maxThreshold / getStepCount(KDE);
 		
 		float currentThreshold = 0;
 		
@@ -161,7 +161,7 @@ public class Threshold
 		int previousNumberOfPoints = 0;
 
 		boolean inCluster = false; //Variable indicating whether we are currently 'in' a cluster in our algorithm.
-		float step = maxThreshold / Constants.Threshold.STEPCOUNT; //The step value indicates how fine we should partition the density range.
+		float step = maxThreshold / getStepCount(KDE); //The step value indicates how fine we should partition the density range.
 
 		if (maxThreshold == 0)
 		{
@@ -226,6 +226,14 @@ public class Threshold
 		return switches;
 	}
 	
+        int getStepCount(KDE KDE)
+        {
+            if(KDE.field.size() > 7000)
+                return 300;
+            else
+                return 100;
+        }
+        
 	void log(String message)
 	{
 		Utils.log("Threshold", message);
