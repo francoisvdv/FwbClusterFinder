@@ -10,9 +10,4 @@ public final class Constants
 		public static final float CELLS_PER_BANDWIDTH
 		                                      = 4;
 	}
-	
-	public final class Threshold
-	{
-		public static final int STEPCOUNT = 200;
-	}
 }
