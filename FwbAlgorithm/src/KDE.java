@@ -283,13 +283,15 @@ public class KDE
 	// http://en.wikipedia.org/wiki/Kernel_density_estimation#Practical_estimation_of_the_bandwidth
 	protected void calcBandwidth()
 	{
-		float c = 0.9f; //Constants.KDE.BWFACTOR;
-		//float c_2 = 100000f;
-		float s = this.field.getBoundingRectangle().getSurface();
-		float n = this.field.size();
+		float c_1 = -0.08f; //Constants.KDE.BWFACTOR;
+		float c_2 = 1.65f;
+		float s   = this.field.getBoundingRectangle().getSurface();
+		float n   = this.field.size();
+		float c   = (float)(c_1*Math.log(Math.sqrt(s/n))+c_2);
 		this.bandwidth = (float)(c*Math.sqrt(s/n));
+		//this.bandwidth = (float)(c_1*Math.log(Math.sqrt(s/n))+c_2);
 		
-		Utils.log("ScaledField", "S="+s+"; N="+n+"; bw="+this.bandwidth+";");
+		Utils.log("ScaledField", "S="+s+"; N="+n+"; bw="+this.bandwidth+"; c="+c);
 		Utils.log("ScaledField", ""+Math.sqrt(s/n));
 //		this.bandwidth = (float) (c*Math.sqrt((double)s)/Math.sqrt(n) * c_2/n);
 		
