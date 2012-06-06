@@ -106,9 +106,10 @@ public class Threshold
 		
 		float currentThreshold = 0;
 		
-		//Find first switch
+		int switchCount = 0;
+		boolean inSwitch = true;
 		for(currentThreshold = minThreshold; currentThreshold <= maxThreshold; currentThreshold += step)
-		{
+		{		
 			numberOfPoints = KDE.getPointCountAboveThreshold(currentThreshold);
 			if(currentThreshold == minThreshold)
 			{
@@ -116,8 +117,30 @@ public class Threshold
 				continue;
 			}
 			
+			log("currentThrehsold: " + currentThreshold + " | numberOfPoints: " +
+					numberOfPoints + " | prev#Points: " + previousNumberOfPoints + 
+					"switchCount:  " + switchCount);
+			Utils.log(""+KDE.scaledField.getCell(KDE.sortedPoints[numberOfPoints-1]).getDensity());
+			Utils.log(""+KDE.scaledField.getCell(KDE.sortedPoints[numberOfPoints]).getDensity());
+			Utils.log(""+KDE.scaledField.getCell(KDE.sortedPoints[numberOfPoints+1]).getDensity());
+			//currentThreshold =
+			//		KDE.scaledField.getCell(KDE.sortedPoints[numberOfPoints]).getDensity();
+			
 			if(numberOfPoints == previousNumberOfPoints)
-				break;
+			{
+				if(inSwitch)
+				{
+					switchCount++;
+					if(switchCount == 2)
+						break;
+				}
+				
+				inSwitch = false;
+			}
+			else
+			{
+				inSwitch = true;
+			}
 
 			previousNumberOfPoints = numberOfPoints;
 		}
