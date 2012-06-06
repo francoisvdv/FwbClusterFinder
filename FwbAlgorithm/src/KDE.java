@@ -163,7 +163,6 @@ public class KDE
 			for(int i = 0; i < sortedPoints.length; i++)
 			{
 				sortedDensities.put(i, this.scaledField.getCell(sortedPoints[i]).getDensity());
-				System.out.println(this.scaledField.getCell(sortedPoints[i]).getDensity());
 			}
 			Graphing.graphSortedDensities(sortedDensities);
 		}
@@ -284,13 +283,14 @@ public class KDE
 	// http://en.wikipedia.org/wiki/Kernel_density_estimation#Practical_estimation_of_the_bandwidth
 	protected void calcBandwidth()
 	{
-		float c = 0.8f; //Constants.KDE.BWFACTOR;
+		float c = 0.9f; //Constants.KDE.BWFACTOR;
 		//float c_2 = 100000f;
 		float s = this.field.getBoundingRectangle().getSurface();
 		float n = this.field.size();
 		this.bandwidth = (float)(c*Math.sqrt(s/n));
 		
 		Utils.log("ScaledField", "S="+s+"; N="+n+"; bw="+this.bandwidth+";");
+		Utils.log("ScaledField", ""+Math.sqrt(s/n));
 //		this.bandwidth = (float) (c*Math.sqrt((double)s)/Math.sqrt(n) * c_2/n);
 		
 //		System.out.println("w: " + field.getBoundingRectangle().getWidth() + ", h: " + field.getBoundingRectangle().getHeight());
