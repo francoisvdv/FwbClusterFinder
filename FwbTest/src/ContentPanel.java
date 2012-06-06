@@ -172,7 +172,7 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
 			}
 		}
 
-		if(!keyCtrl && mousePressed)
+		if(keyCtrl && mousePressed)
 		{
 			int x1, x2, y1, y2, w, h;
 			x1 = currentX > startX ? startX : currentX;
@@ -257,7 +257,7 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
 	@Override
 	public void mouseDragged(MouseEvent e)
 	{
-		if(keyCtrl)
+		if(!keyCtrl)
 		{
 			offsetX += e.getX() - startX;
 			offsetY += e.getY() - startY;
