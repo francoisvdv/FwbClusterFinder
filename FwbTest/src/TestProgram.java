@@ -361,8 +361,10 @@ public class TestProgram extends JFrame implements ActionListener
 								if(ip.parseInput())
 								{
 									field = new Field(new ArrayList<Point>(Arrays.asList(ip.getPoints())));
+									minAlgo.setText(String.valueOf(ip.minimumClusters));
+									maxAlgo.setText(String.valueOf(ip.maximumClusters));
 								}
-							} 
+							}
 							catch (FileNotFoundException e1){}
 							contentpanel.center();
 							stopProgress();
