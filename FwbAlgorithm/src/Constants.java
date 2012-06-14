@@ -1,6 +1,6 @@
 public final class Constants
 {
-	public static final boolean DEBUG = true;
+	public static final boolean DEBUG = false;
 	
 	public final class KDE
 	{

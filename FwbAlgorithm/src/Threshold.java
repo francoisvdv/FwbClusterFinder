@@ -145,7 +145,7 @@ public class Threshold
 			previousNumberOfPoints = numberOfPoints;
 		}
 		
-		return currentThreshold;
+		return currentThreshold - 2 * step;
 	}
 	
 	ArrayList<Float> findSwitches(KDE KDE)
@@ -226,13 +226,15 @@ public class Threshold
 		return switches;
 	}
 	
-        int getStepCount(KDE KDE)
-        {
-            if(KDE.field.size() > 7000)
-                return 300;
-            else
-                return 100;
-        }
+	int getStepCount(KDE KDE)
+	{
+		if(KDE.field.size() > 100000)
+			return 1000;
+		else if(KDE.field.size() > 7000)
+			return 300;
+		else
+			return 100;
+	}
         
 	void log(String message)
 	{

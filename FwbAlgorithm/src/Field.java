@@ -102,7 +102,7 @@ public final class Field extends PointCollection
 		{
 			Rectangle r = new Rectangle();
 			
-			for(int i=0; i<this.size(); i++)
+			for(int i=0; i < this.size(); i++)
 			{
 				Point p = this.get(i);
 				

@@ -168,7 +168,7 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
 				
 				g.drawLine(x, y, x, y);
 				//g.fillRect(x, y, pointWidth, pointHeight);
-				//g.fillOval(x, y, pointWidth, pointHeight);
+				g.fillOval(x, y, pointWidth, pointHeight);
 			}
 		}
 

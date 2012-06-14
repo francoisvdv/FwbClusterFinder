@@ -1,3 +1,8 @@
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+
 public class AlphaAlgorithm extends Algorithm
 {
 	public KDE kde;
@@ -43,6 +48,10 @@ public class AlphaAlgorithm extends Algorithm
 			 */
 			noiseDetected = true;
 		}
+		else
+		{
+			
+		}
 		
 		//Reset the field to perform new operations on it.
 		PointCategory.resetIndex();
@@ -85,6 +94,79 @@ public class AlphaAlgorithm extends Algorithm
 			timer.stop();
 		}
 		
+		/*
+		 * If there are clusters that don't have the minimal amount of
+		 * points in them, we consider them noise.
+		 */
+		boolean resetClusterIndices = false;
+		int minimalClusterSize = Math.max(3, (int)(0.005f * field.size())); //0.5%
+		ArrayList<Cluster> clusters = field.getClusters();
+		for(int i = 0; i < clusters.size(); i++)
+		{
+			if(clusters.get(i).size() <= minimalClusterSize)
+			{
+				for(int j = 0; j < clusters.get(i).size(); j++)
+				{
+					clusters.get(i).get(j).assignToPointCategory(field.getNoise());
+				}
+				
+				clusters.remove(i);
+				i--;
+				resetClusterIndices = true;
+			}
+		}
+
+		/*
+		 * If we have more than the maximum amount of clusters, consider the ones
+		 * with the minimum amount of points as noise.
+		 */
+		if(clusters.size() > maximumClusters)
+		{
+			Collections.sort(clusters, new ClusterSizeComparator());
+			int rm = clusters.size() - maximumClusters;
+			for(int i = 0; i < rm; i++)
+			{
+				for(int j = 0; j < clusters.get(0).size(); j++)
+				{
+					clusters.get(0).get(j).assignToPointCategory(field.getNoise());
+				}
+				
+				clusters.remove(0);
+				
+				resetClusterIndices = true;
+			}
+		}
+		
+		/*
+		 * If we have less than the minimum amount of clusters, we assign the first
+		 * points of noise to be clusters.
+		 */
+		if(clusters.size() < minimumClusters)
+		{
+			int rm = minimumClusters - clusters.size();
+			for(int i = 0; i < rm && i < field.getNoise().size(); i++)
+			{
+				field.getNoise().get(i).assignToPointCategory(field.createCluster());		
+				resetClusterIndices = true;
+			}
+		}
+		
+		//Need to reset cluster indices
+		if(resetClusterIndices)
+		{
+			for(int i = 0; i < clusters.size(); i++)
+			{
+				clusters.get(i).index = i + 1;
+			}
+		}
 		//Utils.log(Stopwatch.getResult());
+	}
+	public class ClusterSizeComparator implements Comparator<PointCategory>
+	{
+		@Override
+		public int compare(PointCategory o1, PointCategory o2)
+		{
+			return (o1.size() > o2.size() ? 1 : (o1.size() == o2.size() ? 0 : -1));
+		}
 	}
 }
